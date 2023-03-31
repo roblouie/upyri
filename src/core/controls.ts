@@ -1,4 +1,4 @@
-import { magnitude } from '@/helpers';
+import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 
 const enum XboxControllerButton {
   A,
@@ -26,7 +26,10 @@ class Controls {
   isRight = false;
   isConfirm = false;
   isEscape = false;
-  inputDirection: DOMPoint;
+  isJump = false;
+  inputDirection: EnhancedDOMPoint;
+  private mouseMovement = new EnhancedDOMPoint();
+  private onMouseMoveCallback?: (mouseMovement: EnhancedDOMPoint) => void;
 
   keyMap: Map<string, boolean> = new Map();
   previousState = { isUp: this.isUp, isDown: this.isDown, isConfirm: this.isConfirm, isEscape: this.isEscape };
@@ -34,7 +37,18 @@ class Controls {
   constructor() {
     document.addEventListener('keydown', event => this.toggleKey(event, true));
     document.addEventListener('keyup', event => this.toggleKey(event, false));
-    this.inputDirection = new DOMPoint();
+    document.addEventListener('mousemove', event => {
+      this.mouseMovement.x = event.movementX;
+      this.mouseMovement.y = event.movementY;
+      if (this.onMouseMoveCallback) {
+        this.onMouseMoveCallback(this.mouseMovement);
+      }
+    });
+    this.inputDirection = new EnhancedDOMPoint();
+  }
+
+  onMouseMove(callback: (mouseMovement: EnhancedDOMPoint) => void) {
+    this.onMouseMoveCallback = callback;
   }
 
   queryController() {
@@ -53,7 +67,7 @@ class Controls {
     this.inputDirection.y = (upVal + downVal) || gamepad?.axes[1] || 0;
 
     const deadzone = 0.1;
-    if (magnitude(this.inputDirection) < deadzone) {
+    if (this.inputDirection.magnitude < deadzone) {
       this.inputDirection.x = 0;
       this.inputDirection.y = 0;
     }
@@ -64,6 +78,7 @@ class Controls {
     this.isRight = this.inputDirection.x > 0;
     this.isConfirm = Boolean(this.keyMap.get('Enter') || isButtonPressed(XboxControllerButton.A) || isButtonPressed(XboxControllerButton.Start));
     this.isEscape = Boolean(this.keyMap.get('Escape') || isButtonPressed(XboxControllerButton.Select));
+    this.isJump = Boolean(this.keyMap.get('Space') || isButtonPressed(XboxControllerButton.A));
   }
 
   private toggleKey(event: KeyboardEvent, isPressed: boolean) {

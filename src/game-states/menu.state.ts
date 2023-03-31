@@ -2,9 +2,9 @@ import { State } from '@/core/state';
 import { drawEngine } from '@/core/draw-engine';
 import { controls } from '@/core/controls';
 import { gameStateMachine } from '@/game-state-machine';
-import { gameState } from './game.state';
+import { gameStates } from '@/game-states/game-states';
 
-class MenuState implements State {
+export class MenuState implements State {
   private isStartSelected = true;
 
   onUpdate() {
@@ -23,7 +23,7 @@ class MenuState implements State {
 
     if (controls.isConfirm && !controls.previousState.isConfirm) {
       if (this.isStartSelected) {
-        gameStateMachine.setState(gameState);
+        gameStateMachine.setState(gameStates.gameState);
       } else {
         this.toggleFullscreen();
       }
@@ -38,5 +38,3 @@ class MenuState implements State {
     }
   }
 }
-
-export const menuState = new MenuState();
