@@ -81,8 +81,11 @@ export class MoldableCubeGeometry {
 
           let texS = ix / gridX;
           if (segmentedWallArgs) {
+            if (uDir === -1) {
+              texS = 1 - texS;
+            }
             texS *= (width / 10); // 10 is a fixed texture size, needs updated
-            texS -= (segmentedWallArgs.runningLeft / 10);
+            texS += (segmentedWallArgs.runningLeft / 10);
           }
           uvs.push(texS);
 
