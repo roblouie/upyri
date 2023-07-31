@@ -15,9 +15,18 @@ type FilterString = `<filter${string}</filter>`;
 type RectString = `<rect${string}/>`;
 type EllipseString = `<ellipse${string}/>`;
 type TextString = `<text${string}</text>`;
+type LinearGradientString = `<linearGradient${string}</linearGradient>`;
+type RadialGradientString = `<radialGradient${string}</radialGradient>`;
+type SvgStopString = `<stop${string}/>`;
+type SvgMaskString = `<mask${string}</mask>`;
+type FeMorphologyString = `<feMorphology${string}/>`;
 
 interface HasId {
   id_?: string;
+}
+
+interface Maskable {
+  mask?: string;
 }
 
 interface Placeable {
@@ -56,6 +65,10 @@ interface DoesColorTransformation {
   colorInterpolationFilters?: 'sRGB' | 'linearRGB';
 }
 
+interface HasGradientTransform {
+  gradientTransform?: string;
+}
+
 interface FeTurbulenceAttributes extends DoesColorTransformation, HasId {
   seed_?: number
   baseFrequency?: number | [number, number];
@@ -65,7 +78,7 @@ interface FeTurbulenceAttributes extends DoesColorTransformation, HasId {
   stitchTiles_?: 'stitch' | 'noStitch'
 }
 
-interface SvgEllipseAttributes extends Filterable, Drawable {
+interface SvgEllipseAttributes extends Filterable, Drawable, Maskable {
   cx: LengthOrPercentage,
   cy: LengthOrPercentage,
   rx: LengthOrPercentage,
@@ -74,15 +87,30 @@ interface SvgEllipseAttributes extends Filterable, Drawable {
 
 type SvgFilterAttributes = HasId & Placeable & Sizeable;
 
+type SvgLinearGradientAttributes = HasId & HasGradientTransform;
+
+interface SvgRadialGradientAttributes extends HasId, HasGradientTransform {
+  cx?: LengthOrPercentage,
+  cy?: LengthOrPercentage,
+  fr?: LengthOrPercentage,
+  fx?: LengthOrPercentage,
+  fy?: LengthOrPercentage,
+}
+
+interface SvgStopAttributes {
+  offset: LengthOrPercentage;
+  stopColor: string;
+}
+
 interface FeColorMatrixAttributes extends DoesColorTransformation {
   in?: string;
   type_?: 'matrix' | 'saturate' | 'hueRotate' | 'luminanceToAlpha';
-  values?: number[];
+  values?: number[] | string;
 }
 
-type SvgRectAttributes = Filterable & Placeable & Sizeable & Drawable;
+type SvgRectAttributes = Filterable & Placeable & Sizeable & Drawable & Maskable;
 
-export type SvgTextAttributes = HasId & Filterable & Placeable & Sizeable & Drawable & Styleable;
+export type SvgTextAttributes = HasId & Filterable & Placeable & Sizeable & Drawable & Styleable & Maskable;
 
 interface FeBlendAttributes extends HasInputs {
   mode: 'normal' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten' | 'color-dodge'
@@ -103,13 +131,19 @@ interface FeDisplacementMapAttributes extends HasInputs, DoesColorTransformation
   scale_?: number;
 }
 
+interface FeMorphologyAttributes {
+  radius: LengthOrPercentage;
+  operator: 'dilate' | 'erode';
+}
+
 export interface SvgAttributes extends Sizeable, HasId, Styleable {
   viewBox?: string;
 }
 
 export type AllSvgAttributes = FeTurbulenceAttributes & SvgEllipseAttributes & HasId
   & FeColorMatrixAttributes & SvgRectAttributes & SvgTextAttributes & FeCompositeAttributes
-  & FeDisplacementMapAttributes & FeBlendAttributes & FeDiffuseLightingAttributes & SvgAttributes;
+  & FeDisplacementMapAttributes & FeBlendAttributes & FeDiffuseLightingAttributes & SvgAttributes
+  & SvgLinearGradientAttributes & SvgRadialGradientAttributes & SvgStopAttributes & FeMorphologyAttributes;
 
 
 export function svg(attributes: SvgAttributes, ...elements: string[]): SvgString {
@@ -139,6 +173,24 @@ export function text(attributes: SvgTextAttributes, textToDisplay?: any): TextSt
   return `<text ${attributesToString(attributes)}>${textToDisplay ?? ''}</text>`;
 }
 
+// Gradients
+export function linearGradient(attributes: SvgLinearGradientAttributes, ...stops: SvgStopString[]): LinearGradientString {
+  return `<linearGradient ${attributesToString(attributes)}>${stops.join('')}</linearGradient>`;
+}
+
+export function radialGradient(attributes: SvgRadialGradientAttributes, ...stops: SvgStopString[]): RadialGradientString {
+  return `<radialGradient ${attributesToString(attributes)}>${stops.join('')}</radialGradient>`;
+}
+
+export function svgStop(attributes: SvgStopAttributes): SvgStopString {
+  return `<stop ${attributesToString(attributes)} />`;
+}
+
+// Mask
+export function mask(attributes: HasId, ...elements: string[]): SvgMaskString {
+  return `<mask ${attributesToString(attributes)}>${elements.join('')}</mask>`;
+}
+
 // Minify-safe attribute converter
 export function attributesToString(object: Partial<AllSvgAttributes>) {
   const mapper = {
@@ -148,13 +200,19 @@ export function attributesToString(object: Partial<AllSvgAttributes>) {
     'cy': object.cy,
     'fill': object.fill,
     'filter': object.filter ? `url(#${object.filter})` : object.filter,
+    'fr': object.fr,
+    'fx': object.fx,
+    'fy': object.fy,
+    'gradientTransform': object.gradientTransform,
     'height': object.height_,
     'id': object.id_,
     'in': object.in,
     'in2': object.in2,
     'lighting-color': object.lightingColor,
+    'mask': object.mask,
     'mode': object.mode,
     'numOctaves': object.numOctaves_,
+    'offset': object.offset,
     'operator': object.operator,
     'result': object.result,
     'rx': object.rx,
@@ -162,6 +220,7 @@ export function attributesToString(object: Partial<AllSvgAttributes>) {
     'scale': object.scale_,
     'seed': object.seed_,
     'stitchTiles': object.stitchTiles_,
+    'stop-color': object.stopColor,
     'style': object.style,
     'surfaceScale': object.surfaceScale,
     'type': object.type_,
@@ -202,6 +261,11 @@ export function feFunc(color: 'R' | 'G' | 'B' | 'A', type: 'linear' | 'discrete'
 // Displacement Map
 export function feDisplacementMap(attributes: FeDisplacementMapAttributes): FeDisplacementMapString {
   return `<feDisplacementMap ${attributesToString(attributes)} />`;
+}
+
+// Morphology
+export function feMorphology(attributes: FeMorphologyAttributes): FeMorphologyString {
+  return `<feMorphology ${attributesToString(attributes)} />`;
 }
 
 // Composite

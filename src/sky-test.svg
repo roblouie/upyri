@@ -1,0 +1,20 @@
+<svg height="1024" style="background: #2189d9" width="1024" xmlns="http://www.w3.org/2000/svg">
+    <filter height="100%" id="filter" width="100%" x="0" y="0">
+        <feTurbulence baseFrequency="0.003" numOctaves="6" seed="2" stitchTiles="stitch" type="fractalNoise"/>
+        <feComponentTransfer color-interpolation-filters="sRGB">
+            <feFuncR type="table" tableValues="1,1"/>
+            <feFuncG type="table" tableValues="1,1"/>
+            <feFuncB type="table" tableValues="1,1"/>
+            <feFuncA type="table" tableValues="0,0,0.8"/>
+        </feComponentTransfer>
+    </filter>
+    <mask id="mask">
+        <radialGradient id="myGradient">
+            <stop offset="80%" stop-color="white" />
+            <stop offset="100%" stop-color="black" />
+        </radialGradient>
+        <ellipse cx="50%" cy="50%" rx="50%" ry="50%" fill="url('#myGradient')" />
+    </mask>
+
+    <rect filter="url(#filter)" mask="url(#mask)" height="1024" width="1024" x="0" y="0"/>
+</svg>

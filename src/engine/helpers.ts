@@ -15,10 +15,12 @@ export function hexToWebgl(hex: string): number[] {
   return [...context.getImageData(0, 0, 1, 1).data].map(val => val / 255);
 }
 
-export function doTimes(times: number, callback: (index: number) => void) {
+export function doTimes<T>(times: number, callback: (index: number) => T): T[] {
+  const result: T[] = [];
   for (let i = 0; i < times; i++) {
-    callback(i);
+    result.push(callback(i));
   }
+  return result;
 }
 
 export function clamp(value: number, min: number, max: number): number {

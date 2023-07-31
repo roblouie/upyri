@@ -11,8 +11,11 @@ import { PlaneGeometry } from '@/engine/plane-geometry';
 import { Material } from '@/engine/renderer/material';
 import { getGroupedFaces, meshToFaces } from '@/engine/physics/parse-faces';
 import { Skybox } from '@/engine/skybox';
-import { skyboxes, textures } from '@/textures';
+import { drawGrass, materials, skyboxes } from '@/textures';
 import { gameStates } from '@/game-states/game-states';
+import { newNoiseLandscape } from '@/engine/new-new-noise';
+import { NoiseType } from '@/engine/svg-maker/base';
+import { textureLoader } from '@/engine/renderer/texture-loader';
 
 export class GameState implements State {
   player: FirstPersonPlayer;
@@ -25,18 +28,20 @@ export class GameState implements State {
     this.scene = new Scene();
     this.groupedFaces = { floorFaces: [], wallFaces: [], ceilingFaces: [] };
 
-    const floor = new Mesh(new PlaneGeometry(50, 50), new Material({ color: '#0f0' }));
+    c2d.addEventListener('click', () => {
+      c2d.requestPointerLock();
+    });
+  }
+
+  async onEnter() {
+    const heightmap = await newNoiseLandscape(256, 5, 1/28, 2, NoiseType.Fractal, 50);
+    const floor = new Mesh(new PlaneGeometry(511, 511, 255, 255, heightmap), materials.grass);
 
     getGroupedFaces(meshToFaces([floor]), this.groupedFaces);
     this.scene.add_(floor);
 
-    console.log(textures.clouds);
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
-
-    c2d.addEventListener('click', () => {
-      c2d.requestPointerLock();
-    });
   }
 
   onUpdate(): void {
