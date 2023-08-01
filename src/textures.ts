@@ -1,4 +1,5 @@
 import {
+  AllSvgAttributes,
   ellipse,
   feColorMatrix,
   feComponentTransfer,
@@ -27,6 +28,8 @@ import { textureLoader } from '@/engine/renderer/texture-loader';
 const textureSize = 512;
 const skyboxSize = 2048;
 
+const fullSize = (otherProps: Partial<AllSvgAttributes>): Partial<AllSvgAttributes> => ({ x: 0, y: 0, width_: '100%', height_: '100%', ...otherProps });
+
 export const materials: {[key: string]: Material} = {};
 export const skyboxes: {[key: string]: TexImageSource[]} = {};
 
@@ -45,13 +48,12 @@ export async function initTextures() {
     horSlices[2],
     horSlices[0],
   ];
-  console.log(skyboxes.test);
 
   textureLoader.bindTextures();
 }
 
-function drawClouds(width_: number) {
-  return filter({ id_: 'filter', width_: '100%', height_: '100%', x: 0, y: 0 },
+function drawClouds() {
+  return filter(fullSize({ id_: 'filter' }),
       feTurbulence({ seed_: 2, type_: NoiseType.Fractal, numOctaves_: 6, baseFrequency: 0.003, stitchTiles_: 'stitch' }),
       feComponentTransfer({},
         feFunc('R',  'table', [1, 1]),
@@ -73,7 +75,7 @@ function drawClouds(width_: number) {
       svgStop({ offset: '80%', stopColor: '#4190d2' })
     )
     + ellipse({cx: 1000, cy: 1200, rx: 200, ry: 200, fill: 'url(#sun)' })
-    + rect({ x: 0, y: 0, width_, height_: skyboxSize, filter: 'filter', mask: 'url(#mask)' });
+    + rect(fullSize({ filter: 'filter', mask: 'url(#mask)' }));
 }
 
 function drawBetterClouds(width_: number) {
@@ -88,7 +90,7 @@ function drawBetterClouds(width_: number) {
   ];
 
   return doTimes(2, index => {
-    return filter({ id_: `filter${index}`, width_: '100%', height_: '100%', x: 0, y: 0 },
+    return filter(fullSize({ id_: `filter${index}` }),
       feTurbulence({ seed_: seeds[index], type_: NoiseType.Fractal, numOctaves_: numOctaves[index], baseFrequency: baseFrequencies[index], stitchTiles_: 'stitch' }),
       feComponentTransfer({},
         feFunc('R',  'table', [1, 1]),
@@ -137,14 +139,12 @@ function drawSkyboxHor() {
 }
 
 function drawSkyboxTop() {
-  return svg({ width_: skyboxSize, height_: skyboxSize, style: 'background: #2189d9' }, drawClouds(skyboxSize));
+  return svg({ width_: skyboxSize, height_: skyboxSize, style: 'background: #2189d9' }, drawClouds());
 }
 
 function horizontalSkyboxSlice(svgSetting: SvgAttributes, ...elements: string[]) {
   let xPos = 0;
   const context = new OffscreenCanvas(skyboxSize, skyboxSize).getContext('2d')!;
-
-  console.log(svg(svgSetting, ...elements));
 
   return async (): Promise<ImageData> => {
     // @ts-ignore
@@ -166,7 +166,7 @@ export function drawGrass() {
                                        0, 0, 0, 0, 0.5]
       })
     ),
-    rect({x: 0, y: 0, width_: '100%', height_: '100%', fill: '#051'}),
-    rect({x: 0, y: 0, width_: '100%', height_: '100%', filter: 'noise'}),
+    rect(fullSize({ fill: '#051' })),
+    rect(fullSize({ filter: 'noise' })),
   ));
 }

@@ -1,54 +1,23 @@
-import { hexToWebgl } from '@/engine/helpers';
 import {
-  feColorMatrix,
-  feComponentTransfer, feFunc,
   feTurbulence,
   filter,
   NoiseType,
   rect,
   svg,
-  SvgString
 } from '@/engine/svg-maker/base';
 import { toHeightmap } from '@/engine/svg-maker/converters';
 
-export function noiseImageReplacement(
-  size: number,
-  seed_: number,
-  baseFrequency: number | [number, number],
-  numOctaves_: number,
-  type_: NoiseType,
-  fromColor: string,
-  toColor: string,
-  colorScale = 1,
-): SvgString {
-  const fromColorArray = hexToWebgl(fromColor);
-  const toColorArray = hexToWebgl(toColor);
 
-  return svg({ width_: 256, height_: 256 },
+export async function newNoiseLandscape(size: number,seed_: number, baseFrequency: number, numOctaves_: number, type_: NoiseType, scale_: number) {
+  const s = svg({ width_: 256, height_: 256 },
     filter({ id_: 'noise' },
       feTurbulence({ seed_, baseFrequency, numOctaves_, type_, stitchTiles_: 'stitch' }),
-      feColorMatrix({ colorInterpolationFilters: 'sRGB', values: [
-        0, 0, 0, colorScale, 0,
-        0, 0, 0, colorScale, 0,
-        0, 0, 0, colorScale, 0,
-        0, 0, 0, colorScale, 0,
-      ]}),
-      feComponentTransfer({},
-        feFunc('R', 'table', [fromColorArray[0], toColorArray[0]]),
-        feFunc('G', 'table', [fromColorArray[1], toColorArray[1]]),
-        feFunc('B', 'table', [fromColorArray[2], toColorArray[2]]),
-        feFunc('A', 'table', [fromColorArray[3], toColorArray[3]]),
-      ),
     ),
     rect({ x: 0, y: 0, width_: '100%', height_: '100%', filter: 'noise' }),
   );
+  return toHeightmap(s, scale_);
 }
 
-export async function newNoiseLandscape(size: number,seed: number, frequency: number, octaves: number, noiseType: NoiseType, scale: number) {
-  const image = noiseImageReplacement(size, seed, frequency, octaves, noiseType, 'black', 'white', 1);
-  return toHeightmap(image, scale);
-}
-
-export function randomNumber(seed: number): number {
-  return (Math.sin(seed * 127.1 + 38481) * 43780) % 1;
+export function randomNumber(seed_: number): number {
+  return (Math.sin(seed_ * 127.1 + 38481) * 43780) % 1;
 }

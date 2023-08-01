@@ -1,10 +1,9 @@
-#c2d, #c3d {
+canvas, svg, #tmpl {
     width: min(100vw, calc(100vh * 16/9));
     position: absolute;
-    image-rendering: pixelated; /* You definitely want this if you are doing pixel art */
+    aspect-ratio: 16/9;
 }
 
-/* Get rid of any margins, set background black, use flexbox to center */
 html, body {
     margin: 0;
     background-color: black;
@@ -12,4 +11,10 @@ html, body {
     justify-content: center;
     align-items: center;
     height: 100%;
+}
+
+svg {
+    font-size: 80px;
+    stroke: #fff;
+    font-weight: 800;
 }

@@ -1,18 +1,33 @@
 import { State } from '@/core/state';
-import { drawEngine } from '@/core/draw-engine';
 import { controls } from '@/core/controls';
 import { gameStateMachine } from '@/game-state-machine';
 import { gameStates } from '@/game-states/game-states';
+import { createColumn, drawLoadingScreen, overlaySvg } from '@/draw-helpers';
+import { rect, text } from '@/engine/svg-maker/base';
 
 export class MenuState implements State {
   private isStartSelected = true;
 
+  onEnter() {
+    const nextRow = createColumn('50%', 180, 60);
+    tmpl.innerHTML = overlaySvg({ style: 'text-anchor: middle' },
+      text({ ...nextRow(0), style: 'font-size: 140px' }, 'JS13K 2023'),
+      text({ ...nextRow(100), id_: 'start' }, 'Start'),
+      text({ ...nextRow(80), id_: 'fullscreen' }, 'Fullscreen'),
+    );
+  }
+
   onUpdate() {
-    const xCenter = drawEngine.context.canvas.width / 2;
-    drawEngine.drawText('Menu', 80, xCenter, 90);
-    drawEngine.drawText('Start Game', 60, xCenter, 600, this.isStartSelected ? 'white' : 'gray');
-    drawEngine.drawText('Toggle Fullscreen', 60, xCenter, 700, this.isStartSelected ? 'gray' : 'white');
     this.updateControls();
+    try {
+      if (this.isStartSelected) {
+        start.style.fill = '#fff';
+        fullscreen.style.fill = '#000';
+      } else {
+        start.style.fill = '#000';
+        fullscreen.style.fill = '#fff';
+      }
+    } catch(e) {}
   }
 
   updateControls() {
@@ -23,7 +38,8 @@ export class MenuState implements State {
 
     if (controls.isConfirm && !controls.previousState.isConfirm) {
       if (this.isStartSelected) {
-        gameStateMachine.setState(gameStates.gameState);
+        drawLoadingScreen();
+        setTimeout(() => gameStateMachine.setState(gameStates.gameState));
       } else {
         this.toggleFullscreen();
       }
