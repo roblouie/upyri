@@ -9,8 +9,9 @@ type FeCompositeString = `<feComposite${string}/>`;
 type FeBlendString = `<feBlend${string}/>`;
 type FeDiffuseLightingString = `<feDiffuseLighting${string}</feDiffuseLighting>`;
 type FeDistanceLightString = `<feDistantLight${string}/>`
+type FeMorphologyString = `<feMorphology${string}/>`;
 
-type FilterElements = FeTurbulenceString | FeColorMatrixString | FeFuncString | FeComponentTransferString | FeDisplacementMapString | FeCompositeString | FeBlendString | FeDiffuseLightingString;
+type FilterElements = FeTurbulenceString | FeColorMatrixString | FeFuncString | FeComponentTransferString | FeDisplacementMapString | FeCompositeString | FeBlendString | FeDiffuseLightingString | FeMorphologyString;
 type FilterString = `<filter${string}</filter>`;
 type RectString = `<rect${string}/>`;
 type EllipseString = `<ellipse${string}/>`;
@@ -19,7 +20,6 @@ type LinearGradientString = `<linearGradient${string}</linearGradient>`;
 type RadialGradientString = `<radialGradient${string}</radialGradient>`;
 type SvgStopString = `<stop${string}/>`;
 type SvgMaskString = `<mask${string}</mask>`;
-type FeMorphologyString = `<feMorphology${string}/>`;
 
 interface HasId {
   id_?: string;
@@ -123,7 +123,11 @@ interface FeDiffuseLightingAttributes extends HasInputs {
   surfaceScale: number;
 }
 
-interface FeCompositeAttributes extends HasInputs {
+interface HasOperator {
+  operator: string;
+}
+
+interface FeCompositeAttributes extends HasInputs, HasOperator {
   operator: 'over' | 'in' | 'out' | 'atop' | 'xor' | 'lighter' | 'arithmetic';
 }
 
@@ -131,7 +135,7 @@ interface FeDisplacementMapAttributes extends HasInputs, DoesColorTransformation
   scale_?: number;
 }
 
-interface FeMorphologyAttributes {
+interface FeMorphologyAttributes extends HasOperator {
   radius: LengthOrPercentage;
   operator: 'dilate' | 'erode';
 }
@@ -141,9 +145,10 @@ export interface SvgAttributes extends Sizeable, HasId, Styleable {
 }
 
 export type AllSvgAttributes = FeTurbulenceAttributes & SvgEllipseAttributes & HasId
-  & FeColorMatrixAttributes & SvgRectAttributes & SvgTextAttributes & FeCompositeAttributes
+  & FeColorMatrixAttributes & SvgRectAttributes & SvgTextAttributes
   & FeDisplacementMapAttributes & FeBlendAttributes & FeDiffuseLightingAttributes & SvgAttributes
-  & SvgLinearGradientAttributes & SvgRadialGradientAttributes & SvgStopAttributes & FeMorphologyAttributes;
+  & SvgLinearGradientAttributes & SvgRadialGradientAttributes & SvgStopAttributes
+  & HasOperator & Pick<FeMorphologyAttributes, 'radius'>;
 
 
 export function svg(attributes: SvgAttributes, ...elements: string[]): SvgString {
@@ -214,6 +219,7 @@ export function attributesToString(object: Partial<AllSvgAttributes>) {
     'numOctaves': object.numOctaves_,
     'offset': object.offset,
     'operator': object.operator,
+    'radius': object.radius,
     'result': object.result,
     'rx': object.rx,
     'ry': object.ry,
