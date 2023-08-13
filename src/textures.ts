@@ -187,7 +187,6 @@ export function drawBloodText(attributes: SvgTextAttributes, textToDisplay?: any
       feComposite({ in2: 'SourceGraphic', operator: 'in' }),
     ) +
     group({ filter: 'bloodPattern' },
-      rect({ x: 400, y: 160, width_: 1100, height_: 440, filter: 'circleDistort'})
-    ) +
-  text({ ...attributes, filter: 'circleDistort', style: 'font-size: 360px; transform: scaleY(1.5);' }, textToDisplay);
+      text({ ...attributes, filter: 'circleDistort', style: 'font-size: 360px; transform: scaleY(1.5);' }, textToDisplay)
+    );
 }
