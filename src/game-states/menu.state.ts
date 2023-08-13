@@ -4,28 +4,37 @@ import { gameStateMachine } from '@/game-state-machine';
 import { gameStates } from '@/game-states/game-states';
 import { createColumn, drawLoadingScreen, overlaySvg } from '@/draw-helpers';
 import { rect, text } from '@/engine/svg-maker/base';
+import { drawBloodText } from '@/textures';
 
 export class MenuState implements State {
   private isStartSelected = true;
 
   onEnter() {
-    const nextRow = createColumn('50%', 180, 60);
+    const nextRow = createColumn('50%', 280, 60);
     tmpl.innerHTML = overlaySvg({ style: 'text-anchor: middle' },
-      text({ ...nextRow(0), style: 'font-size: 140px' }, 'JS13K 2023'),
-      text({ ...nextRow(100), id_: 'start' }, 'Start'),
+      drawBloodText({ ...nextRow(100), id_: 'title' }, 'UPYRI'),
+      text({ ...nextRow(300), id_: 'start' }, 'Start'),
       text({ ...nextRow(80), id_: 'fullscreen' }, 'Fullscreen'),
     );
+    // TODO: Probably add this to the svg library, if I have enough space to keep it anyway
+    tmpl.querySelectorAll('feTurbulence').forEach((el: HTMLElement) => {
+      el.innerHTML = `<animate
+        attributeName="baseFrequency"
+        values="0.13 0.08;0.13 0.025"
+        dur="40s"
+        repeatCount="indefinite" />`;
+    });
   }
 
   onUpdate() {
     this.updateControls();
     try {
       if (this.isStartSelected) {
-        start.style.fill = '#fff';
-        fullscreen.style.fill = '#000';
+        start.style.fill = 'red';
+        fullscreen.style.fill = '#333';
       } else {
-        start.style.fill = '#000';
-        fullscreen.style.fill = '#fff';
+        start.style.fill = '#333';
+        fullscreen.style.fill = 'red';
       }
     } catch(e) {}
   }

@@ -40,9 +40,7 @@ class Controls {
     document.addEventListener('mousemove', event => {
       this.mouseMovement.x = event.movementX;
       this.mouseMovement.y = event.movementY;
-      if (this.onMouseMoveCallback) {
-        this.onMouseMoveCallback(this.mouseMovement);
-      }
+      this.onMouseMoveCallback?.(this.mouseMovement);
     });
     this.inputDirection = new EnhancedDOMPoint();
   }

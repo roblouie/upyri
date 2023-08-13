@@ -18,7 +18,7 @@ import {
   rect,
   svg,
   SvgAttributes,
-  svgStop
+  svgStop, SvgTextAttributes, text
 } from '@/engine/svg-maker/base';
 import { toImage } from '@/engine/svg-maker/converters';
 import { doTimes } from '@/engine/helpers';
@@ -157,7 +157,7 @@ function horizontalSkyboxSlice(svgSetting: SvgAttributes, ...elements: string[])
 
 export function drawGrass() {
   return toImage(svg({ width_: textureSize, height_: textureSize },
-    filter({ id_: 'noise', x: 0, y: 0, width_: '100%', height_: '100%' },
+    filter(fullSize({ id_: 'noise' }),
       feTurbulence({ seed_: 3, type_: NoiseType.Fractal, baseFrequency: 0.04, numOctaves_: 4, stitchTiles_: 'stitch' }),
       feMorphology({ operator: 'dilate', radius: 3 }),
       feColorMatrix({ values: [0, 0, 0, 0.3, -0.1,
@@ -169,4 +169,25 @@ export function drawGrass() {
     rect(fullSize({ fill: '#051' })),
     rect(fullSize({ filter: 'noise' })),
   ));
+}
+
+export function drawBloodText(attributes: SvgTextAttributes, textToDisplay?: any) {
+    return filter({ id_: 'circleDistort' },
+      feTurbulence({ baseFrequency: [0.13, 0.02], numOctaves_: 1, type_: NoiseType.Fractal, result: 'circleDistortNoise' }),
+      feDisplacementMap({ in: 'SourceGraphic', in2: 'circleDistortNoise', scale_: 70 }),
+    ) +
+    filter({ id_: 'bloodPattern' },
+      feTurbulence({ baseFrequency: 0.04, numOctaves_: 1, type_: NoiseType.Fractal }),
+      feColorMatrix({ values: [
+          0.4, 0.2, 0.2, 0, -0.1,
+          0, 2, 0, 0, -1.35,
+          0, 2, 0, 0, -1.35,
+          0, 0, 0, 0, 1,
+        ] }),
+      feComposite({ in2: 'SourceGraphic', operator: 'in' }),
+    ) +
+    group({ filter: 'bloodPattern' },
+      rect({ x: 400, y: 160, width_: 1100, height_: 440, filter: 'circleDistort'})
+    ) +
+  text({ ...attributes, filter: 'circleDistort', style: 'font-size: 360px; transform: scaleY(1.5);' }, textToDisplay);
 }

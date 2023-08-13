@@ -19,5 +19,5 @@ export async function newNoiseLandscape(size: number,seed_: number, baseFrequenc
 }
 
 export function randomNumber(seed_: number): number {
-  return (Math.sin(seed_ * 127.1 + 38481) * 43780) % 1;
+  return Math.sin(seed_ * 99999) % 1;
 }

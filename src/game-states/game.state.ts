@@ -26,10 +26,6 @@ export class GameState implements State {
     this.player = new FirstPersonPlayer(camera);
     this.scene = new Scene();
     this.groupedFaces = { floorFaces: [], wallFaces: [], ceilingFaces: [] };
-
-    tmpl.addEventListener('click', () => {
-      tmpl.requestPointerLock();
-    });
   }
 
   async onEnter() {
@@ -42,6 +38,9 @@ export class GameState implements State {
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
     clearTemplate();
+    tmpl.addEventListener('click', () => {
+      tmpl.requestPointerLock();
+    });
   }
 
   onUpdate(): void {

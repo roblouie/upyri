@@ -14,7 +14,7 @@ html, body {
 }
 
 svg {
+    font-family: sans-serif;
     font-size: 80px;
-    stroke: #fff;
-    font-weight: 800;
+    font-weight: bold;
 }
