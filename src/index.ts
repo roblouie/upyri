@@ -16,7 +16,7 @@ const interval = 1000 / 60;
   gameStates.gameState = new GameState();
   gameStates.menuState = new MenuState();
 
-  createGameStateMachine(gameStates.menuState);
+  createGameStateMachine(gameStates.gameState);
 
   draw(0);
 

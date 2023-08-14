@@ -24,7 +24,7 @@ export const viewProjection = 'K';
 
 export const fragment_glsl = `#version 300 es
 precision highp float;
-in vec4 v;in vec2 l;in float i;in vec3 m;in mat4 n;uniform vec2 f;uniform vec4 e,t;uniform mediump sampler2DArray h;out vec4 o;vec3 s=vec3(-1,2,1);void main(){vec3 v=normalize(mat3(n)*m),z=normalize(s);float A=max(dot(z,v),0.);vec3 d=length(t)>0.?t.xyz:e.xyz*.1f+A*e.xyz*.3f;vec4 C=vec4(d.x-.1f,d.y-.1f,d.z,e.w);o=i<0.?C:texture(h,vec3(l*f,i))*C;}`;
+in vec4 v;in vec2 l;in float i;in vec3 m;in mat4 n;uniform vec2 f;uniform vec4 e,t;uniform mediump sampler2DArray h;out vec4 o;vec3 s=vec3(-1,2,1);void main(){vec3 v=normalize(mat3(n)*m),z=normalize(s);float A=max(dot(z,v),0.);vec3 d=length(t)>0.?t.xyz:e.xyz*.4f+A*e.xyz*.8f;vec4 C=vec4(d.x-.1f,d.y-.1f,d.z,e.w);o=i<0.?C:texture(h,vec3(l*f,i))*C;}`;
 
 export const instanced_vertex_glsl = `#version 300 es
 layout(location=0) in vec3 d;layout(location=1) in vec3 C;layout(location=2) in vec2 A;layout(location=3) in float D;layout(location=4) in mat4 z;layout(location=8) in mat4 L;uniform mat4 K;out vec2 l;out float i;out vec3 m;out mat4 n;void main(){vec4 v=vec4(d,1);gl_Position=K*z*v;l=A;i=D;m=C;n=L;}`;

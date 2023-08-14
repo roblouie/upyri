@@ -15,6 +15,8 @@ import { gameStates } from '@/game-states/game-states';
 import { newNoiseLandscape } from '@/engine/new-new-noise';
 import { NoiseType } from '@/engine/svg-maker/base';
 import { clearTemplate } from '@/draw-helpers';
+import { Material } from '@/engine/renderer/material';
+import { segmentedWall } from '@/modeling/building-blocks';
 
 export class GameState implements State {
   player: FirstPersonPlayer;
@@ -29,11 +31,13 @@ export class GameState implements State {
   }
 
   async onEnter() {
-    const heightmap = await newNoiseLandscape(256, 5, 1/28, 2, NoiseType.Fractal, 40);
-    const floor = new Mesh(new PlaneGeometry(511, 511, 255, 255, heightmap), materials.grass);
+    const heightmap = await newNoiseLandscape(256, 5, 0.04, 1, NoiseType.Fractal, 90);
+    const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap), materials.grass);
+
+    const wall =  new Mesh(segmentedWall(10, 33, [2, 1, 3, 1, 2], [1, 0, 0, 1, 1]), new Material({ color: 'green' }));
 
     getGroupedFaces(meshToFaces([floor]), this.groupedFaces);
-    this.scene.add_(floor);
+    this.scene.add_(floor, wall);
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
