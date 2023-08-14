@@ -22,11 +22,12 @@ void main() {
     vec3 correctedNormals = normalize(mat3(vNormalMatrix) * vNormal);
     vec3 normalizedLightPosition = normalize(light_direction);
     float litPercent = max(dot(normalizedLightPosition, correctedNormals), 0.0);
-    float ambientLight = 0.4f;
+    float ambientLight = 0.1f;
+    float maxLit = 0.3f;
 
-    vec3 litColor = length(emissive) > 0.0 ? emissive.rgb : (color.rgb * ambientLight) + (litPercent * color.rgb * 0.7);
+    vec3 litColor = length(emissive) > 0.0 ? emissive.rgb : (color.rgb * ambientLight) + (litPercent * color.rgb * maxLit);
 
-    vec4 vColor = vec4(litColor, color.a);
+    vec4 vColor = vec4(litColor.r - 0.1f, litColor.g - 0.1f, litColor.b, color.a);
 
     if (vDepth < 0.0) {
         outColor = vColor;

@@ -16,8 +16,8 @@ const ClosureCompiler = require('google-closure-compiler').compiler;
 
 const shaderMinifyConfig = {
   shouldMinify: true,
-  shaderDirectory: './src/web-gl',
-  output: './src/web-gl/shaders.ts',
+  shaderDirectory: './src/engine/shaders',
+  output: './src/engine/shaders/shaders.ts',
   debounce: 2000,
 };
 

@@ -7,6 +7,7 @@ import {
   SvgTextAttributes,
   text
 } from '@/engine/svg-maker/base';
+import { drawBloodText } from '@/textures';
 
 export function overlaySvg(additionalAttributes?: Partial<SvgAttributes>, ...elements: string[]): SvgString {
   return svg({...additionalAttributes, viewBox: `0 0 1920 1080` }, ...elements);
@@ -23,7 +24,7 @@ export function createColumn(x: LengthOrPercentage, startingY: number, baseSpaci
 export function drawLoadingScreen() {
   tmpl.innerHTML = overlaySvg({ style: 'text-anchor: middle' },
     rect({x: 0, y: 0, width_: '100%', height_: '100%' }),
-    text({ x: '50%', y: '50%', style: 'font-size: 140px' }, 'Loading...')
+    drawBloodText({ x: '50%', y: '50%', style: 'font-size: 140px' }, 'Loading')
   );
 }
 

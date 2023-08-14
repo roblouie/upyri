@@ -52,29 +52,45 @@ export async function initTextures() {
   textureLoader.bindTextures();
 }
 
+const night = 'black';
+
+function stars() {
+  return filter(fullSize({id_: 'stars'}),
+    feTurbulence({ baseFrequency: 0.2, stitchTiles_: 'stitch' }),
+    feColorMatrix({ values: [
+        0, 0, 0, 9, -5.5,
+        0, 0, 0, 9, -5.5,
+        0, 0, 0, 9, -5.5,
+        0, 0, 0, 0, 1
+      ]
+    })
+  );
+}
+
 function drawClouds() {
-  return filter(fullSize({ id_: 'filter' }),
+  return stars() + filter(fullSize({ id_: 'filter' }),
       feTurbulence({ seed_: 2, type_: NoiseType.Fractal, numOctaves_: 6, baseFrequency: 0.003, stitchTiles_: 'stitch' }),
       feComponentTransfer({},
-        feFunc('R',  'table', [1, 1]),
-        feFunc('G',  'table', [1, 1]),
+        feFunc('R',  'table', [0.8, 0.8]),
+        feFunc('G',  'table', [0.8, 0.8]),
         feFunc('B',  'table', [1, 1]),
-        feFunc('A',  'table', [0, 0, 1.5])
+        feFunc('A',  'table', [0, 0, 1])
       )
     ) +
     mask({ id_: 'mask' },
       radialGradient({ id_: 'gradient' },
-        svgStop({ offset: '80%', stopColor: 'white' }),
+        svgStop({ offset: '20%', stopColor: 'white' }),
+        svgStop({ offset: '30%', stopColor: '#666' }),
         svgStop({ offset: '100%', stopColor: 'black' })
       ),
-      ellipse({ cx: '50%', cy: '50%', rx: '50%', ry: '50%', fill: 'url(#gradient)'})
+      ellipse({ cx: 1000, cy: 1000, rx: '50%', ry: '50%', fill: 'url(#gradient)'})
     )
     + radialGradient({ id_: 'sun' },
-      svgStop({ offset: '20%', stopColor: '#fff' }),
-      svgStop({ offset: '30%', stopColor: '#eaff39' }),
-      svgStop({ offset: '80%', stopColor: '#4190d2' })
+      svgStop({ offset: '10%', stopColor: '#fff' }),
+      svgStop({ offset: '30%', stopColor: '#0000' })
     )
-    + ellipse({cx: 1000, cy: 1200, rx: 200, ry: 200, fill: 'url(#sun)' })
+    + rect(fullSize({ filter: 'stars' }))
+    + ellipse({cx: 1000, cy: 1000, rx: 200, ry: 200, fill: 'url(#sun)' })
     + rect(fullSize({ filter: 'filter', mask: 'url(#mask)' }));
 }
 
@@ -89,13 +105,13 @@ function drawBetterClouds(width_: number) {
     [0, 0, 1.5]
   ];
 
-  return doTimes(2, index => {
+  const clouds = doTimes(2, index => {
     return filter(fullSize({ id_: `filter${index}` }),
       feTurbulence({ seed_: seeds[index], type_: NoiseType.Fractal, numOctaves_: numOctaves[index], baseFrequency: baseFrequencies[index], stitchTiles_: 'stitch' }),
       feComponentTransfer({},
-        feFunc('R',  'table', [1, 1]),
-        feFunc('G',  'table', [1, 1]),
-        feFunc('B',  'table', [1, 1]),
+        feFunc('R',  'table', [0.2, 0.2]),
+        feFunc('G',  'table', [0.2, 0.2]),
+        feFunc('B',  'table', [0.25, 0.25]),
         feFunc('A',  'table', alphaTableValues[index])
       )
     ) +
@@ -110,6 +126,10 @@ function drawBetterClouds(width_: number) {
       ) +
       rect({ filter: `filter${index}`, height_: heights[index], width_, x: 0, y: yPositions[index], mask: `url(#mask${index})`});
   }).join('');
+
+  const done = stars() + rect(fullSize({ filter: 'stars' })) + clouds;
+  console.log(done);
+  return done;
 }
 
 
@@ -120,7 +140,7 @@ function landPattern(y: number, color: string, seed_: number, numOctaves: number
     ) +
     filter({ id_: `groundPattern${y}`, x: 0, width_: '100%' },
       feTurbulence({ id_: 'test', baseFrequency: [0.02, 0.01], numOctaves_: numOctaves, type_: NoiseType.Fractal, result: `noise${y}`, seed_, stitchTiles_: 'stitch' }),
-      feDiffuseLighting({ in: `noise${y}`, lightingColor: color, surfaceScale: 12 },
+      feDiffuseLighting({ in: `noise${y}`, lightingColor: color, surfaceScale: 22 },
         feDistantLight(45, 60)
       ),
       feComposite({ in2: 'SourceGraphic', operator: 'in' }),
@@ -131,15 +151,14 @@ function landPattern(y: number, color: string, seed_: number, numOctaves: number
 }
 
 function drawSkyboxHor() {
-  return horizontalSkyboxSlice({ width_: skyboxSize * 4, height_: skyboxSize, style: 'background:linear-gradient(#2189d9,#0059bd)' },
+  return horizontalSkyboxSlice({ width_: skyboxSize * 4, height_: skyboxSize, style: `background:${night};` },
     drawBetterClouds(skyboxSize * 4),
-    landPattern(1000, '#051', 15, 3),
-    landPattern(1040, '#071', 3, 2),
+    landPattern(1000, '#1c1d2d', 15, 4),
   );
 }
 
 function drawSkyboxTop() {
-  return svg({ width_: skyboxSize, height_: skyboxSize, style: 'background: #2189d9' }, drawClouds());
+  return svg({ width_: skyboxSize, height_: skyboxSize, style: `background: ${night}` }, drawClouds());
 }
 
 function horizontalSkyboxSlice(svgSetting: SvgAttributes, ...elements: string[]) {
@@ -160,13 +179,13 @@ export function drawGrass() {
     filter(fullSize({ id_: 'noise' }),
       feTurbulence({ seed_: 3, type_: NoiseType.Fractal, baseFrequency: 0.04, numOctaves_: 4, stitchTiles_: 'stitch' }),
       feMorphology({ operator: 'dilate', radius: 3 }),
-      feColorMatrix({ values: [0, 0, 0, 0.3, -0.1,
-                                       0.3, 0.3, 0.3, 0.3, -0.1,
-                                       0, 0, 0, 0.2, -0.1,
+      feColorMatrix({ values: [0.1, 0.1, 0, 0.2, -0.1,
+                                       0, 0.1, 0.3, 0.2, -0.1,
+                                       0, 0, 0.1, 0.2, -0.1,
                                        0, 0, 0, 0, 0.5]
       })
     ),
-    rect(fullSize({ fill: '#051' })),
+    rect(fullSize({ fill: '#361e1e' })),
     rect(fullSize({ filter: 'noise' })),
   ));
 }
