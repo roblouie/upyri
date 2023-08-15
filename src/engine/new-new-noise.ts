@@ -11,10 +11,10 @@ import { toHeightmap } from '@/engine/svg-maker/converters';
 export async function newNoiseLandscape(size: number,seed_: number, baseFrequency: number, numOctaves_: number, type_: NoiseType, scale_: number) {
   const s = svg({ width_: 256, height_: 256 },
     filter({ id_: 'noise' },
-      feTurbulence({ seed_, baseFrequency, numOctaves_, type_, stitchTiles_: 'stitch' }),
+      feTurbulence({ seed_, baseFrequency, numOctaves_, type_ }),
     ),
     rect({ x: 0, y: 0, width_: '100%', height_: '100%', filter: 'noise' }),
-    rect({ x: 120, y: 120, width_: 60, height_: 60, fill: '#888' })
+    rect({ x: 120, y: 120, width_: 60, height_: 60, fill: '#bbb' })
   );
   return toHeightmap(s, scale_);
 }

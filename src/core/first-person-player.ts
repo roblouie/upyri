@@ -24,7 +24,7 @@ export class FirstPersonPlayer {
 
   constructor(camera: Camera) {
     this.mesh = new Mesh(new MoldableCubeGeometry(0.3, 1, 0.3), new Material());
-    this.feetCenter.y = 90;
+    this.feetCenter.y = 22;
     this.camera = camera;
     this.listener = audioCtx.listener;
 
@@ -37,7 +37,7 @@ export class FirstPersonPlayer {
   }
 
   update(groupedFaces: { floorFaces: Face[]; wallFaces: Face[] }) {
-    debug.innerHTML = this.feetCenter.y;
+    // debug.innerHTML = this.feetCenter.y;
     this.updateVelocityFromControls();
     this.velocity.y -= 0.003; // gravity
     this.feetCenter.add_(this.velocity);

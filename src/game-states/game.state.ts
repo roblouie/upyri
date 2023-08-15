@@ -34,10 +34,11 @@ export class GameState implements State {
     const heightmap = await newNoiseLandscape(256, 5, 0.04, 1, NoiseType.Fractal, 90);
     const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap), materials.grass);
 
-    const wall =  new Mesh(segmentedWall(10, 33, [2, 1, 3, 1, 2], [1, 0, 0, 1, 1]), new Material({ color: 'green' }));
+    const wall =  new Mesh(segmentedWall(5, 10, [10, 3, 10, 2, 10, 3, 10], [0, 4, 0, 0, 0, 4, 0], 0, 21), new Material({ color: 'gray' }));
+    const secondWall = new Mesh(segmentedWall(6, 2, [0,0,0,0,0,0,0], [3, 1, 3, 1, 3, 1, 3, 1], -3, 31), new Material({ color: 'gray' }));
 
     getGroupedFaces(meshToFaces([floor]), this.groupedFaces);
-    this.scene.add_(floor, wall);
+    this.scene.add_(floor, wall, secondWall);
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
