@@ -181,21 +181,22 @@ export function drawGrass() {
     filter(fullSize({ id_: 'noise' }),
       feTurbulence({ seed_: 3, type_: NoiseType.Fractal, baseFrequency: 0.04, numOctaves_: 4, stitchTiles_: 'stitch' }),
       feMorphology({ operator: 'dilate', radius: 3 }),
-      feColorMatrix({ values: [0.1, 0.1, 0, 0.2, -0.1,
-                                       0, 0.1, 0.3, 0.2, -0.1,
-                                       0, 0, 0.1, 0.2, -0.1,
-                                       0, 0, 0, 0, 0.5]
-      })
+      feComponentTransfer({},
+        feFunc('R',  'table', [0.2, 0.2]),
+        feFunc('G',  'table', [0.2, 0.2]),
+        feFunc('B',  'table', [0.25, 0.25]),
+        // feFunc('A',  'table', [0.])
+      )
     ),
-    rect(fullSize({ fill: '#361e1e' })),
+    rect(fullSize({ fill: '#171717' })),
     rect(fullSize({ filter: 'noise' })),
   ));
 }
 
 function tileTest() {
   return toImage(svg({ width_: 512, height_: 512 },
-    `<pattern id="pattern" width="80" height="128" patternUnits="userSpaceOnUse">
-        <path d="m 0 123 h 74 V 66 H 0 V56 h36 V0 h8 v56 h 37 V 0 H 0" stroke="red" stroke-width="1"/>
+    `<pattern id="pattern" width="160" height="256" patternUnits="userSpaceOnUse">
+        <path d="m 0 246 h 148 V 125 H 0 V112 h72 V0 h15 v112 h 74 V 0 H 0" stroke="red" stroke-width="1"/>
     </pattern>` +
     filter({ id_: 'rock', x: 0, y: 0, width_: '100%', height_: '100%' },
       `<feDropShadow dx="1" dy="1" result="s"/>` +

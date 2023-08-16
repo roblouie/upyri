@@ -80,10 +80,10 @@ export class MoldableCubeGeometry {
           this.vertices.push(vector);
 
           uvs.push(ix / gridX);
-          let texVBase = (1 - (iy / gridY));
           let texV = (1 - (iy / gridY)) * (height / (segmentedWallArgs?.wallHeight ?? height));
+          // TODO: Handle texture width for segmented walls so segments can be made thin enough for narrow windows etc.
           if (segmentedWallArgs?.isTop && segmentedWallArgs.wallHeight !== height) {
-            texV -= 0.3;
+            texV -= 0.3; // TODO: Fix to be dynamic by computing height/ wall height like above and subtracting
           }
           // uvs.push(texVBase * (height / (segmentedWallArgs?.wallHeight ?? height)));
           uvs.push(texV);
