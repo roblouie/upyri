@@ -33,12 +33,12 @@ module.exports = {
     'linebreak-style': 0,
     'function-paren-newline': 'off',
     'unused-imports/no-unused-imports': 'warn',
-    'id-denylist': [
-      'warn', 'seed', 'direction', 'clone', 'normalize', 'setAttribute', 'done', 'all', 'translate', 'scale', 'rotate',
-      'position', 'rotation', 'children', 'parent', 'remove', 'setRotation', 'textureRepeat', 'load', 'image',
-      'width', 'height', 'offset', 'style', 'color', 'gradientTransform', 'operator', 'radius', 'result', 'stitchTiles',
-      'surfaceScale', 'baseFrequency', 'viewBox'
-    ],
+    // 'id-denylist': [
+    //   'warn', 'seed', 'direction', 'clone', 'normalize', 'setAttribute', 'done', 'all', 'translate', 'scale', 'rotate',
+    //   'position', 'rotation', 'children', 'parent', 'remove', 'setRotation', 'textureRepeat', 'load', 'image',
+    //   'width', 'height', 'offset', 'style', 'color', 'gradientTransform', 'operator', 'radius', 'result', 'stitchTiles',
+    //   'surfaceScale', 'baseFrequency', 'viewBox'
+    // ],
     'unused-imports/no-unused-vars': [
       'warn',
       {

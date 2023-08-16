@@ -74,13 +74,6 @@ export class GameState implements State {
 
     const castle = new Mesh(castleContainer.value!, materials.brickWall);
 
-    const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(57.4, 26, 43), materials.castleWriting)
-    const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(47.4, 24, 42), materials.handprint)
-
-    const coffin = new Mesh(makeCoffin().translate_(0, 55, -9), materials.wood);
-
-    const bridge = new Mesh(new MoldableCubeGeometry(18, 1, 65).translate_(0, 20.5, -125), materials.planks);
-
     this.coffinTopBloodstain.scale_.set(0, 1, 0);
 
     // .rotate_(0, -1)
@@ -90,11 +83,8 @@ export class GameState implements State {
 
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
 
-    const groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle, coffin, this.coffinTop]));
+    const groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle, this.coffinTop]));
 
-
-    // Banners
-    const bannerHeightmap = await testHeightmap();
 
     function onlyUnique(value: any, index: number, array: any[]) {
       return array.indexOf(value) === index;
@@ -122,7 +112,7 @@ export class GameState implements State {
       });
     });
 
-    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, coffin, this.coffinTop, this.coffinTopBloodstain, bridge, makeBanners(bannerHeightmap), makeSymbols());
+    this.scene.add_(floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, this.coffinTop, this.coffinTopBloodstain, makeSymbols());
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();

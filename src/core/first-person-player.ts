@@ -86,7 +86,12 @@ export class FirstPersonPlayer {
   }
 
   wallCollision(wallFaces: Face[]) {
-    const wallCollisions = findWallCollisionsFromList(wallFaces, this.feetCenter, 1.1, 1.5);
+    const wallCollisions = findWallCollisionsFromList(wallFaces, this.feetCenter, 1.1, 4);
+
+    if (wallCollisions.numberOfWallsHit > 0) {
+      debugger;
+    }
+
     this.feetCenter.x += wallCollisions.xPush;
     this.feetCenter.z += wallCollisions.zPush;
     if (wallCollisions.numberOfWallsHit > 0) {
