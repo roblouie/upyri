@@ -129,6 +129,8 @@ interface HasOperator {
 
 interface FeCompositeAttributes extends HasInputs, HasOperator {
   operator: 'over' | 'in' | 'out' | 'atop' | 'xor' | 'lighter' | 'arithmetic';
+  k2?: number;
+  k3?: number;
 }
 
 interface FeDisplacementMapAttributes extends HasInputs, DoesColorTransformation {
@@ -148,7 +150,7 @@ export type AllSvgAttributes = FeTurbulenceAttributes & SvgEllipseAttributes & H
   & FeColorMatrixAttributes & SvgRectAttributes & SvgTextAttributes
   & FeDisplacementMapAttributes & FeBlendAttributes & FeDiffuseLightingAttributes & SvgAttributes
   & SvgLinearGradientAttributes & SvgRadialGradientAttributes & SvgStopAttributes
-  & HasOperator & Pick<FeMorphologyAttributes, 'radius'>;
+  & HasOperator & Pick<FeMorphologyAttributes, 'radius'> & Pick<FeCompositeAttributes, 'k2' | 'k3'>;
 
 
 export function svg(attributes: SvgAttributes, ...elements: string[]): SvgString {
@@ -213,6 +215,8 @@ export function attributesToString(object: Partial<AllSvgAttributes>) {
     'id': object.id_,
     'in': object.in,
     'in2': object.in2,
+    'k2': object.k2,
+    'k3': object.k3,
     'lighting-color': object.lightingColor,
     'mask': object.mask,
     'mode': object.mode,

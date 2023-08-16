@@ -12,6 +12,8 @@ function getTextureForSide(uDivisions: number, vDivisions: number, texture: Text
   return new Array((uDivisions + 1) * (vDivisions + 1)).fill().map(_ => texture.id);
 }
 
+type SegmentedWallArgs = { isTop?: boolean; wallHeight: number };
+
 
 export class MoldableCubeGeometry {
   vertices: EnhancedDOMPoint[] = [];
@@ -32,7 +34,7 @@ export class MoldableCubeGeometry {
     return [...topTexture, ...bottomTexture, ...leftTexture, ...rightTexture,  ...backTexture, ...frontTexture];
   }
 
-  constructor(width = 1, height = 1, depth = 1, widthSegments = 1, heightSegments = 1, depthSegments = 1, sidesToDraw = 6) {
+  constructor(width = 1, height = 1, depth = 1, widthSegments = 1, heightSegments = 1, depthSegments = 1, sidesToDraw = 6, segmentedWallArgs?: SegmentedWallArgs ) {
     this.vao = gl.createVertexArray()!;
     const indices: number[] = [];
     const uvs: number[] = [];
@@ -78,7 +80,13 @@ export class MoldableCubeGeometry {
           this.vertices.push(vector);
 
           uvs.push(ix / gridX);
-          uvs.push(1 - (iy / gridY));
+          let texVBase = (1 - (iy / gridY));
+          let texV = (1 - (iy / gridY)) * (height / (segmentedWallArgs?.wallHeight ?? height));
+          if (segmentedWallArgs?.isTop && segmentedWallArgs.wallHeight !== height) {
+            texV -= 0.3;
+          }
+          // uvs.push(texVBase * (height / (segmentedWallArgs?.wallHeight ?? height)));
+          uvs.push(texV);
         }
       }
 
@@ -275,9 +283,9 @@ export class MoldableCubeGeometry {
     gl.bindVertexArray(this.vao);
 
     let byteOffset = 0;
-    this.buffers.forEach((buffer, position) => {
-      gl.vertexAttribPointer(position, buffer.size, gl.FLOAT, false, 0, byteOffset);
-      gl.enableVertexAttribArray(position);
+    this.buffers.forEach((buffer, position_) => {
+      gl.vertexAttribPointer(position_, buffer.size, gl.FLOAT, false, 0, byteOffset);
+      gl.enableVertexAttribArray(position_);
       byteOffset += buffer.data.length * buffer.data.BYTES_PER_ELEMENT;
     });
 

@@ -4,18 +4,19 @@ export function segmentedWall(segmentWidth: number, segmentHeight: number, topSe
   let runningSide = 0;
   const depth = 3; // TODO: Add to args
 
-  const result = new MoldableCubeGeometry(segmentWidth, topSegments[0], depth).translate_(startingX, segmentHeight - topSegments[0] / 2 + startingY).done_();
+  const result = new MoldableCubeGeometry(segmentWidth, topSegments[0], depth, 1, 1, 1, 6, { isTop: true, wallHeight: segmentHeight}).translate_(startingX, segmentHeight - topSegments[0] / 2 + startingY).done_();
 
   topSegments.forEach((top, index) => {
     if (index > 0 && top > 0) {
-      result.merge(new MoldableCubeGeometry(segmentWidth, top, depth).translate_(startingX + runningSide, segmentHeight - top / 2 + startingY).done_());
+      result.merge(new MoldableCubeGeometry(segmentWidth, top, depth,1,1,1,6,{ isTop: true, wallHeight: segmentHeight}).translate_(startingX + runningSide, segmentHeight - top / 2 + startingY).done_());
     }
 
     if (bottomSegments[index] > 0) {
-      result.merge(new MoldableCubeGeometry(segmentWidth, bottomSegments[index], depth).translate_(startingX + runningSide, bottomSegments[index] / 2 + startingY).done_());
+      result.merge(new MoldableCubeGeometry(segmentWidth, bottomSegments[index], depth, 1, 1, 1, 6, { wallHeight: segmentHeight, isTop: false }).translate_(startingX + runningSide, bottomSegments[index] / 2 + startingY).done_());
     }
     runningSide+= segmentWidth;
   });
+
 
   return result.computeNormals().done_();
 }

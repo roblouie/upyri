@@ -8,6 +8,7 @@ import {
 import { toHeightmap } from '@/engine/svg-maker/converters';
 
 
+//TODO: Do a radial gradient overlay so the center is slightly sunken in and the outer edges are high
 export async function newNoiseLandscape(size: number,seed_: number, baseFrequency: number, numOctaves_: number, type_: NoiseType, scale_: number) {
   const s = svg({ width_: 256, height_: 256 },
     filter({ id_: 'noise' },
