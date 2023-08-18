@@ -12,7 +12,7 @@ function getTextureForSide(uDivisions: number, vDivisions: number, texture: Text
   return new Array((uDivisions + 1) * (vDivisions + 1)).fill().map(_ => texture.id);
 }
 
-type SegmentedWallArgs = { isTop?: boolean; wallHeight: number };
+type SegmentedWallArgs = { isTop?: boolean; wallHeight: number, runningLeft: number };
 
 
 export class MoldableCubeGeometry {
@@ -79,14 +79,19 @@ export class MoldableCubeGeometry {
           // now apply vector to vertex buffer
           this.vertices.push(vector);
 
-          uvs.push(ix / gridX);
-          let texV = (1 - (iy / gridY)) * (height / (segmentedWallArgs?.wallHeight ?? height));
-          // TODO: Handle texture width for segmented walls so segments can be made thin enough for narrow windows etc.
-          if (segmentedWallArgs?.isTop && segmentedWallArgs.wallHeight !== height) {
-            texV -= 0.3; // TODO: Fix to be dynamic by computing height/ wall height like above and subtracting
+          let texS = ix / gridX;
+          if (segmentedWallArgs) {
+            texS *= (width / 10); // 10 is a fixed texture size, needs updated
+            texS -= (segmentedWallArgs.runningLeft / 10);
           }
-          // uvs.push(texVBase * (height / (segmentedWallArgs?.wallHeight ?? height)));
-          uvs.push(texV);
+          uvs.push(texS);
+
+          const textureDifferenceT = height / (segmentedWallArgs?.wallHeight ?? height);
+          let texT = (1 - (iy / gridY)) * textureDifferenceT;
+          if (segmentedWallArgs?.isTop && segmentedWallArgs.wallHeight !== height) {
+            texT -= textureDifferenceT;
+          }
+          uvs.push(texT);
         }
       }
 
