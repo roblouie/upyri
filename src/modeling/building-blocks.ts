@@ -1,35 +1,39 @@
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
-import { AttributeLocation } from '@/engine/renderer/renderer';
 
-export function segmentedWall(segmentWidth: number[], segmentHeight: number, topSegments: number[], bottomSegments: number[], startingX = 0,startingY = 0) {
-  let runningSide = 0;
-  let runningLeft = 0;
-  const depth = 3; // TODO: Add to args
+const DEPTH = 1; // TODO: make argument instead of hard coded
 
-  const result = new MoldableCubeGeometry(segmentWidth[0], topSegments[0], depth, 1, 1, 1, 6, { isTop: true, wallHeight: segmentHeight, runningLeft }).translate_(startingX, segmentHeight - topSegments[0] / 2 + startingY).done_();
+export class SegmentedWall extends MoldableCubeGeometry {
+  totalWidth = 0;
+  constructor(segmentWidth: number[], segmentHeight: number, topSegments: number[], bottomSegments: number[], startingX = 0,startingY = 0) {
+    let runningSide = 0;
+    let runningLeft = 0;
 
-  topSegments.forEach((top, index) => {
-    const currentWidth = segmentWidth.length === 1 ? segmentWidth[0] : segmentWidth[index];
-    // TODO: Horizontal shift the texture coordinates for the individual cubes before merging in, at least for testing purposes
-    // This way there's direct control over individual cubes and more experimenting can be done to match up back faces.
-    // Possibly move vertical shift here too if doing on a per-cube basis. If we are accessing the per-cube coords anyway for horizontal shift it should
-    // actually be easier/shorter to just do it here.
-    if (index > 0 && top > 0) {
-      result.merge(new MoldableCubeGeometry(currentWidth, top, depth,1,1,1,6,{ isTop: true, wallHeight: segmentHeight, runningLeft}).translate_(startingX + runningSide + (currentWidth / 2), segmentHeight - top / 2 + startingY).done_());
-    }
+    super(segmentWidth[0], topSegments[0], DEPTH, 1, 1, 1, 6, { isTop: true, wallHeight: segmentHeight, runningLeft });
+    this.translate_(0, segmentHeight - topSegments[0] / 2).done_();
 
-    if (bottomSegments[index] > 0) {
-      result.merge(new MoldableCubeGeometry(currentWidth, bottomSegments[index], depth, 1, 1, 1, 6, { wallHeight: segmentHeight, isTop: false, runningLeft }).translate_(startingX + runningSide + (currentWidth / 2), bottomSegments[index] / 2 + startingY).done_());
-    }
-    runningSide+= (index === 0 ? currentWidth / 2 : currentWidth);
-    runningLeft += currentWidth;
-  });
+    topSegments.forEach((top, index) => {
+      const currentWidth = segmentWidth.length === 1 ? segmentWidth[0] : segmentWidth[index];
+      if (index > 0 && top > 0) {
+        this.merge(new MoldableCubeGeometry(currentWidth, top, DEPTH,1,1,1,6,{ isTop: true, wallHeight: segmentHeight, runningLeft}).translate_(startingX + runningSide + (currentWidth / 2), segmentHeight - top / 2).done_());
+      }
 
-  const textureCoords = result.getAttribute_(AttributeLocation.TextureCoords).data;
-  console.log(textureCoords);
-  // textureCoords.set([0,0.1, 0.1,0.1, 0,0, 0.1,0], 31);
-  // result.setAttribute_(AttributeLocation.TextureCoords, textureCoords, 2);
+      if (bottomSegments[index] > 0) {
+        this.merge(new MoldableCubeGeometry(currentWidth, bottomSegments[index], DEPTH, 1, 1, 1, 6, { wallHeight: segmentHeight, isTop: false, runningLeft }).translate_(startingX + runningSide + (currentWidth / 2), bottomSegments[index] / 2).done_());
+      }
+      runningSide+= (index === 0 ? currentWidth / 2 : currentWidth);
+      runningLeft += currentWidth;
+    });
 
+    this.totalWidth = runningLeft;
+    this.all_().translate_((segmentWidth[0] - runningLeft) / 2, startingY).computeNormals().done_();
+  }
+}
 
-  return result.computeNormals().done_();
+export function createHallway(frontWall: SegmentedWall, backWall: SegmentedWall, spacing: number) {
+  return frontWall.translate_(0, 0, spacing).merge(backWall.translate_(0, 0, -spacing)).done_();
+}
+
+export function createBox(frontWall: SegmentedWall, backWall: SegmentedWall, leftWall: SegmentedWall, rightWall: SegmentedWall) {
+  return createHallway(frontWall, backWall, (leftWall.totalWidth + DEPTH) / 2)
+    .merge(createHallway(leftWall, rightWall, (frontWall.totalWidth - DEPTH) / 2).rotate_(0, Math.PI / 2)).computeNormals().done_();
 }
