@@ -30,45 +30,45 @@ export function castleTopper(length: number, startingHeight: number, zPos: numbe
 }
 
 export function solidCastleWall(z: number, hasDoor?: boolean) {
-  return new SegmentedWall([30, 12, 30], 12, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, BaseLevel, 6)
-    .merge(castleTopper(72, 12, 3))
-    .merge(castleTopper(72, 12, -3))
+  return new SegmentedWall([26, 12, 26], 12, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, BaseLevel, 6)
+    .merge(castleTopper(63, 12, 3))
+    .merge(castleTopper(63, 12, -3))
     .translate_(0,0, z)
     .done_();
 }
 
 export function hollowCastleWall(x: number) {
-  const testWall = new SegmentedWall(patternFill([3, 1], 24), 12, patternFill([12, 5], 24), patternFill([0, 4], 24), 0, 0);
-  const testWall2 = new SegmentedWall(patternFill([3, 1], 24), 12, patternFill([12, 5], 24), patternFill([0, 4], 24), 0, 0);
+  const testWall = new SegmentedWall(patternFill([3, 1], 19), 12, patternFill([12, 5], 19), patternFill([0, 4], 19), 0, 0);
+  const testWall2 = new SegmentedWall(patternFill([3, 1], 19), 12, patternFill([12, 5], 19), patternFill([0, 4], 19), 0, 0);
   return createHallway(testWall, testWall2, 5)
-    .merge(castleTopper(80, 12, 6))
-    .merge(castleTopper(80, 12, -6))
+    .merge(castleTopper(75, 12, 6))
+    .merge(castleTopper(75, 12, -6))
     .rotate_(0, Math.PI / 2, 0)
     .translate_(x)
     .computeNormals();
 }
 
 export function corner(isRounded?: boolean) {
-  const testWall = new SegmentedWall([5, 2, 5], 12, [12, 3, 12], [0, 4, 0], 0, 0);
-  const testWall2 = new SegmentedWall([4, 4, 4], 12, [12, 5, 12], [0, 0, 0], 0, 0);
-  const testWall3 = new SegmentedWall([4, 2, 4], 12, [12, 3, 12], [0, 4, 0], 0, 0);
-  const testWall4 = new SegmentedWall([4, 2, 4], 12, [12, 3, 12], [0, 4, 0], 0, 0);
+  const testWall = new SegmentedWall([10, 2, 10], 12, [12, 3, 12], [0, 4, 0], 0, 0);
+  const testWall2 = new SegmentedWall([9, 4, 9], 12, [12, 5, 12], [0, 0, 0], 0, 0);
+  const testWall3 = new SegmentedWall([9, 2, 9], 12, [12, 3, 12], [0, 4, 0], 0, 0);
+  const testWall4 = new SegmentedWall([9, 2, 9], 12, [12, 3, 12], [0, 4, 0], 0, 0);
 
-  const testWall5 = new SegmentedWall([5, 2, 5], 12, [12, 3, 12], [0, 4, 0], 0, 12);
-  const testWall6 = new SegmentedWall([4, 4, 4], 12, [12, 5, 12], [0, 0, 0], 0, 12);
-  const testWall7 = new SegmentedWall([4, 2, 4], 12, [12, 3, 12], [0, 4, 0], 0, 12);
-  const testWall8 = new SegmentedWall([4, 2, 4], 12, [12, 3, 12], [0, 4, 0], 0, 12);
+  const testWall5 = new SegmentedWall([10, 2, 10], 12, [12, 3, 12], [0, 4, 0], 0, 12);
+  const testWall6 = new SegmentedWall([9, 4, 9], 12, [12, 5, 12], [0, 0, 0], 0, 12);
+  const testWall7 = new SegmentedWall([9, 2, 9], 12, [12, 3, 12], [0, 4, 0], 0, 12);
+  const testWall8 = new SegmentedWall([9, 2, 9], 12, [12, 3, 12], [0, 4, 0], 0, 12);
 
   const top = createBox(
-    castleTopper(14, 24, 0),
-    castleTopper(14, 24, 0),
-    castleTopper(10, 24, 0),
-    castleTopper(10, 24, 0),
+    castleTopper(24, 24, 0),
+    castleTopper(24, 24, 0),
+    castleTopper(20, 24, 0),
+    castleTopper(20, 24, 0),
   );
 
-  return (isRounded ? tubify(createBox(testWall, testWall2, testWall3, testWall4), 5, 4.5, 6.5 ): createBox(testWall, testWall2, testWall3, testWall4))
-    .merge(isRounded ? tubify(createBox(testWall5, testWall6, testWall7, testWall8), 5, 4.5, 6.5 ): createBox(testWall5, testWall6, testWall7, testWall8))
-    .merge(isRounded ? tubify(top, 7, 5.5, 7.5) : top);
+  return (isRounded ? tubify(createBox(testWall, testWall2, testWall3, testWall4), 10, 10, 13  ): createBox(testWall, testWall2, testWall3, testWall4))
+    .merge(isRounded ? tubify(createBox(testWall5, testWall6, testWall7, testWall8), 10, 10, 13 ): createBox(testWall5, testWall6, testWall7, testWall8))
+    .merge(isRounded ? tubify(top, 11, 12, 14) : top);
 }
 
 function tubify(moldableCubeBox: MoldableCubeGeometry, selectSize: number, innerRadius: number, outerRadius: number) {
