@@ -18,7 +18,7 @@ import { clearTemplate } from '@/draw-helpers';
 import { Material } from '@/engine/renderer/material';
 import { createBox, createHallway, createTire, SegmentedWall, segmentedWall } from '@/modeling/building-blocks';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
-import { makeEntry } from '@/modeling/castle';
+import { castleTopper, frontWall, makeEntry } from '@/modeling/castle';
 
 export class GameState implements State {
   player: FirstPersonPlayer;
@@ -33,8 +33,8 @@ export class GameState implements State {
   }
 
   async onEnter() {
-    // const heightmap = await newNoiseLandscape(256, 5, 0.04, 1, NoiseType.Fractal, 90);
-    const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255), materials.grass);
+    const heightmap = await newNoiseLandscape(256, 5, 0.04, 1, NoiseType.Fractal, 90);
+    const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap), materials.grass);
 
     const testWall = new SegmentedWall([5, 2, 5], 12, [12, 3, 12], [0, 4, 0], 0, 21);
     const testWall2 = new SegmentedWall([4, 4, 4], 12, [12, 5, 12], [0, 0, 0], 0, 21);
@@ -50,7 +50,7 @@ export class GameState implements State {
       // .computeNormals(true)
       // .done_();
 
-    const boxTest = new Mesh(makeEntry(), materials.brickWall);
+    const boxTest = new Mesh(frontWall(), materials.brickWall);
     // const hall1 =  new Mesh(testHallway[0], materials.brickWall);
     // const hall2 =  new Mesh(testHallway[1], materials.brickWall);
 

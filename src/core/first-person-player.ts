@@ -24,7 +24,7 @@ export class FirstPersonPlayer {
 
   constructor(camera: Camera) {
     this.mesh = new Mesh(new MoldableCubeGeometry(0.3, 1, 0.3), new Material());
-    this.feetCenter.y = 5;
+    this.feetCenter.y = 22;
     this.camera = camera;
     this.listener = audioCtx.listener;
 
