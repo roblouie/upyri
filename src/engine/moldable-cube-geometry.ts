@@ -17,6 +17,8 @@ function getTextureForSide(uDivisions: number, vDivisions: number, texture: Text
 
 // In theory this results in properly tiling textures regardless of reshaping.
 
+// Would have to be done for each face. Could use same system as texture depth to get vertices for each face
+
 type SegmentedWallArgs = { isTop?: boolean; wallHeight: number, runningLeft: number };
 type MoldableCubeArgs = {
   width_?: number;

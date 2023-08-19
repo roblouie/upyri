@@ -15,7 +15,7 @@ export async function newNoiseLandscape(size: number,seed_: number, baseFrequenc
       feTurbulence({ seed_, baseFrequency, numOctaves_, type_ }),
     ),
     rect({ x: 0, y: 0, width_: '100%', height_: '100%', filter: 'noise' }),
-    rect({ x: 120, y: 120, width_: 60, height_: 60, fill: '#bbb' })
+    rect({ x: 100, y: 100, width_: 60, height_: 60, fill: '#bbb' })
   );
   return toHeightmap(s, scale_);
 }
