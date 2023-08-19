@@ -80,19 +80,23 @@ export class MoldableCubeGeometry {
           this.vertices.push(vector);
 
           let texS = ix / gridX;
+
+          if (uDir === -1) {
+            texS = 1 - texS;
+          }
+          texS *= (width / 6); // 10 is a fixed texture size, needs updated
           if (segmentedWallArgs) {
-            if (uDir === -1) {
-              texS = 1 - texS;
-            }
-            texS *= (width / 10); // 10 is a fixed texture size, needs updated
-            texS += (segmentedWallArgs.runningLeft / 10);
+            texS += (segmentedWallArgs.runningLeft / 6);
           }
           uvs.push(texS);
 
-          const textureDifferenceT = height / (segmentedWallArgs?.wallHeight ?? height);
-          let texT = (1 - (iy / gridY)) * textureDifferenceT;
-          if (segmentedWallArgs?.isTop && segmentedWallArgs.wallHeight !== height) {
-            texT -= textureDifferenceT;
+          let texT = (1 - (iy / gridY));
+          if (vDir === -1) {
+            texT = 1 - texT;
+          }
+          texT *= (height / 6);
+          if (segmentedWallArgs && !segmentedWallArgs?.isTop && segmentedWallArgs.wallHeight !== height) {
+            texT -= height / 6;
           }
           uvs.push(texT);
         }

@@ -16,8 +16,9 @@ import { newNoiseLandscape } from '@/engine/new-new-noise';
 import { NoiseType } from '@/engine/svg-maker/base';
 import { clearTemplate } from '@/draw-helpers';
 import { Material } from '@/engine/renderer/material';
-import { createBox, createHallway, SegmentedWall, segmentedWall } from '@/modeling/building-blocks';
+import { createBox, createHallway, createTire, SegmentedWall, segmentedWall } from '@/modeling/building-blocks';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
+import { makeEntry } from '@/modeling/castle';
 
 export class GameState implements State {
   player: FirstPersonPlayer;
@@ -35,13 +36,19 @@ export class GameState implements State {
     const heightmap = await newNoiseLandscape(256, 5, 0.04, 1, NoiseType.Fractal, 90);
     const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap), materials.grass);
 
-    const testWall = new SegmentedWall([3, 4, 2], 10, [10, 3, 10], [0, 4, 0], 0, 21);
-    const testWall2 = new SegmentedWall([3, 4, 2], 10, [10, 2, 10], [0, 0, 0], 0, 21);
-    const testWall3 = new SegmentedWall([6, 4, 6], 10, [10, 3, 10], [0, 4, 0], 0, 21);
-    const testWall4 = new SegmentedWall([6, 4, 6], 10, [10, 3, 10], [0, 4, 0], 0, 21);
-
+    const testWall = new SegmentedWall([5, 2, 5], 12, [12, 3, 12], [0, 4, 0], 0, 21);
+    const testWall2 = new SegmentedWall([4, 4, 4], 12, [12, 5, 12], [0, 0, 0], 0, 21);
+    const testWall3 = new SegmentedWall([4, 2, 4], 12, [12, 3, 12], [0, 4, 0], 0, 21);
+    const testWall4 = new SegmentedWall([4, 2, 4], 12, [12, 3, 12], [0, 4, 0], 0, 21);
     // const testHallway = createHallway(testWall, testWall2, 2);
-    const testBox = createBox(testWall, testWall2, testWall3, testWall4);
+
+    const testBox = createBox(testWall, testWall2, testWall3, testWall4)
+      // .selectBy(vertex => Math.abs(vertex.x) <= 3.5 && Math.abs(vertex.z) <= 3.5)
+      // .cylindrify(3, 'y')
+      // .invertSelection()
+      // .cylindrify(5, 'y')
+      // .computeNormals(true)
+      // .done_();
 
     const boxTest = new Mesh(testBox, materials.brickWall);
     // const hall1 =  new Mesh(testHallway[0], materials.brickWall);
@@ -50,15 +57,9 @@ export class GameState implements State {
     // const secondWall = new Mesh(segmentedWall([6], 2, [0,0,0,0,0,0,0], [3, 1, 3, 1, 3, 1, 3, 1], -3, 31), materials.brickWall);
 
     const testBlock = new MoldableCubeGeometry(1, 10, 1).translate_(2, 21).done_();
-    const testBlock2 = new MoldableCubeGeometry(1, 10, 1).translate_(-2, 21).done_();
 
-    const testBlock3 = new MoldableCubeGeometry(1, 10, 1).translate_(0, 21, 2).done_().merge(
-      new MoldableCubeGeometry(1, 10, 1).translate_(0, 21, -2).done_()
-    ).done_();
 
-    const testBlockMesh = new Mesh(testBlock, materials.brickWall);
-    const testBlockMesh2 = new Mesh(testBlock2, materials.brickWall);
-    const testBlockMesh3 = new Mesh(testBlock3, materials.brickWall);
+
 
     getGroupedFaces(meshToFaces([floor]), this.groupedFaces);
     this.scene.add_(floor, boxTest);

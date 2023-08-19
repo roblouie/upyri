@@ -35,10 +35,11 @@ export const skyboxes: {[key: string]: TexImageSource[]} = {};
 
 export async function initTextures() {
   materials.grass = new Material({texture: textureLoader.load_(await drawGrass())});
-  materials.grass.texture!.textureRepeat.x = 160;
-  materials.grass.texture!.textureRepeat.y = 160;
+  // materials.grass.texture!.textureRepeat.x = 160;
+  // materials.grass.texture!.textureRepeat.y = 10;
 
   materials.brickWall = new Material({ texture: textureLoader.load_(await tileTest())});
+  // materials.brickWall.texture!.textureRepeat.y = 2;
 
   const testSlicer = drawSkyboxHor();
   const horSlices = [await testSlicer(), await testSlicer(), await testSlicer(), await testSlicer()];
