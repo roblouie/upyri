@@ -33,8 +33,8 @@ export class GameState implements State {
   }
 
   async onEnter() {
-    const heightmap = await newNoiseLandscape(256, 5, 0.04, 1, NoiseType.Fractal, 90);
-    const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap), materials.grass);
+    // const heightmap = await newNoiseLandscape(256, 5, 0.04, 1, NoiseType.Fractal, 90);
+    const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255), materials.grass);
 
     const testWall = new SegmentedWall([5, 2, 5], 12, [12, 3, 12], [0, 4, 0], 0, 21);
     const testWall2 = new SegmentedWall([4, 4, 4], 12, [12, 5, 12], [0, 0, 0], 0, 21);
@@ -50,16 +50,13 @@ export class GameState implements State {
       // .computeNormals(true)
       // .done_();
 
-    const boxTest = new Mesh(testBox, materials.brickWall);
+    const boxTest = new Mesh(makeEntry(), materials.brickWall);
     // const hall1 =  new Mesh(testHallway[0], materials.brickWall);
     // const hall2 =  new Mesh(testHallway[1], materials.brickWall);
 
     // const secondWall = new Mesh(segmentedWall([6], 2, [0,0,0,0,0,0,0], [3, 1, 3, 1, 3, 1, 3, 1], -3, 31), materials.brickWall);
 
-    const testBlock = new MoldableCubeGeometry(1, 10, 1).translate_(2, 21).done_();
-
-
-
+    const testBlock = new MoldableCubeGeometry({ height_: 10 }).translate_(2, 21).done_();
 
     getGroupedFaces(meshToFaces([floor]), this.groupedFaces);
     this.scene.add_(floor, boxTest);

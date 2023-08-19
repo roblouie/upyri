@@ -13,6 +13,17 @@ function getTextureForSide(uDivisions: number, vDivisions: number, texture: Text
 }
 
 type SegmentedWallArgs = { isTop?: boolean; wallHeight: number, runningLeft: number };
+type MoldableCubeArgs = {
+  width_?: number;
+  height_?: number;
+  depth?: number;
+  widthSegments?: number;
+  heightSegments?: number;
+  depthSegments?: number;
+  sidesToDraw?: number;
+  segmentedWallArgs?: SegmentedWallArgs;
+  fixedTextureSize?: number;
+}
 
 
 export class MoldableCubeGeometry {
@@ -34,7 +45,7 @@ export class MoldableCubeGeometry {
     return [...topTexture, ...bottomTexture, ...leftTexture, ...rightTexture,  ...backTexture, ...frontTexture];
   }
 
-  constructor(width = 1, height = 1, depth = 1, widthSegments = 1, heightSegments = 1, depthSegments = 1, sidesToDraw = 6, segmentedWallArgs?: SegmentedWallArgs ) {
+  constructor(moldableCubeArgs: MoldableCubeArgs) {
     this.vao = gl.createVertexArray()!;
     const indices: number[] = [];
     const uvs: number[] = [];
@@ -47,17 +58,17 @@ export class MoldableCubeGeometry {
       w: 'x' | 'y' | 'z',
       uDir: number,
       vDir: number,
-      width: number,
-      height: number,
+      width_: number,
+      height_: number,
       depth: number,
       gridX: number,
       gridY: number,
     ) => {
-      const segmentWidth = width / gridX;
-      const segmentHeight = height / gridY;
+      const segmentWidth = width_ / gridX;
+      const segmentHeight = height_ / gridY;
 
-      const widthHalf = width / 2;
-      const heightHalf = height / 2;
+      const widthHalf = width_ / 2;
+      const heightHalf = height_ / 2;
       const depthHalf = depth / 2;
 
       const gridX1 = gridX + 1;
@@ -79,24 +90,31 @@ export class MoldableCubeGeometry {
           // now apply vector to vertex buffer
           this.vertices.push(vector);
 
+          // Texture S coord
           let texS = ix / gridX;
-
-          if (uDir === -1) {
-            texS = 1 - texS;
+          if (moldableCubeArgs.fixedTextureSize) {
+            if (uDir === -1) {
+              texS = 1 - texS;
+            }
+            texS *= (width_ / moldableCubeArgs.fixedTextureSize);
           }
-          texS *= (width / 6); // 10 is a fixed texture size, needs updated
-          if (segmentedWallArgs) {
-            texS += (segmentedWallArgs.runningLeft / 6);
+
+          if (moldableCubeArgs.segmentedWallArgs) {
+            texS += (moldableCubeArgs.segmentedWallArgs.runningLeft / 6);
           }
           uvs.push(texS);
 
+          // Texture T coord
           let texT = (1 - (iy / gridY));
-          if (vDir === -1) {
-            texT = 1 - texT;
+          if (moldableCubeArgs.fixedTextureSize) {
+            if (vDir === -1) {
+              texT = 1 - texT;
+            }
+            texT *= (height_ / moldableCubeArgs.fixedTextureSize);
           }
-          texT *= (height / 6);
-          if (segmentedWallArgs && !segmentedWallArgs?.isTop && segmentedWallArgs.wallHeight !== height) {
-            texT -= height / 6;
+
+          if (moldableCubeArgs.segmentedWallArgs && !moldableCubeArgs.segmentedWallArgs.isTop && moldableCubeArgs.segmentedWallArgs.wallHeight !== height_) {
+            texT -= height_ / moldableCubeArgs.fixedTextureSize!;
           }
           uvs.push(texT);
         }
@@ -116,16 +134,17 @@ export class MoldableCubeGeometry {
       }
 
       vertexCount += (gridX1 * gridY1);
-    }
+    };
 
+    const { width_ = 1, height_ = 1, depth = 1, widthSegments = 1, depthSegments = 1, heightSegments = 1, sidesToDraw = 6 } = moldableCubeArgs;
     const sides = [
-      ['x', 'z', 'y', 1, 1, width, depth, height, widthSegments, depthSegments], // top
-      ['x', 'z', 'y', 1, -1, width, depth, -height, widthSegments, depthSegments], // bottom
-      ['z', 'y', 'x', -1, -1, depth, height, width, depthSegments, heightSegments], // left
-      ['z', 'y', 'x', 1, -1, depth, height, -width, depthSegments, heightSegments], // right
-      ['x', 'y', 'z', 1, -1, width, height, depth, widthSegments, heightSegments], // front
-      ['x', 'y', 'z', -1, -1, width, height, -depth, widthSegments, heightSegments], // back
-    ]
+      ['x', 'z', 'y', 1, 1, width_, depth, height_, widthSegments, depthSegments], // top
+      ['x', 'z', 'y', 1, -1, width_, depth, -height_, widthSegments, depthSegments], // bottom
+      ['z', 'y', 'x', -1, -1, depth, height_, width_, depthSegments, heightSegments], // left
+      ['z', 'y', 'x', 1, -1, depth, height_, -width_, depthSegments, heightSegments], // right
+      ['x', 'y', 'z', 1, -1, width_, height_, depth, widthSegments, heightSegments], // front
+      ['x', 'y', 'z', -1, -1, width_, height_, -depth, widthSegments, heightSegments], // back
+    ];
 
     // @ts-ignore
     doTimes(sidesToDraw, index => buildPlane(...sides[index]));
