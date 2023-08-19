@@ -12,6 +12,11 @@ function getTextureForSide(uDivisions: number, vDivisions: number, texture: Text
   return new Array((uDivisions + 1) * (vDivisions + 1)).fill().map(_ => texture.id);
 }
 
+// TODO: Experiment with finding the smallest x and treating that as texture S 0 and the smallest Y and treating that as texture T 0
+// THen finding largest and treating that as width, divide width by texture size and assign it, then change all vertices as percentages.
+
+// In theory this results in properly tiling textures regardless of reshaping.
+
 type SegmentedWallArgs = { isTop?: boolean; wallHeight: number, runningLeft: number };
 type MoldableCubeArgs = {
   width_?: number;
