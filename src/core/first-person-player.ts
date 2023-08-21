@@ -99,8 +99,6 @@ export class FirstPersonPlayer {
     this.velocity.z = depthMovementZ + sidestepZ;
     this.velocity.x = depthMovementX + sidestepX;
 
-    // debugElement.textContent = `${this.velocity.x}, ${this.velocity.z}`;
-
     this.mesh.setRotation_(0, this.cameraRotation.y, 0);
 
     if (controls.isJump) {

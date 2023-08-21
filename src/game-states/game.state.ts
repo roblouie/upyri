@@ -32,7 +32,7 @@ export class GameState implements State {
 
   async onEnter() {
     const heightmap = await newNoiseLandscape(256, 5, 0.04, 1, NoiseType.Fractal, 90);
-    const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap), materials.grass);
+    const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap).spreadTextureCoords(), materials.grass);
 
     const castle = new Mesh(createCastle().translate_(0, 21).done_(), materials.brickWall);
 
@@ -53,7 +53,7 @@ export class GameState implements State {
     this.player.update(this.groupedFaces);
     this.scene.updateWorldMatrix();
     render(this.player.camera, this.scene);
-    debug.innerHTML = `${this.player.feetCenter.x}, ${this.player.feetCenter.z}`;
+    // debug.innerHTML = `${this.player.feetCenter.x}, ${this.player.feetCenter.z}`;
 
     if (controls.isEscape) {
       gameStateMachine.setState(gameStates.menuState);

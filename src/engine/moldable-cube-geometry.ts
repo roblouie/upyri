@@ -40,6 +40,9 @@ export class MoldableCubeGeometry {
   buffers: Map<AttributeLocation, BufferInfo> = new Map<AttributeLocation, BufferInfo>();
   private indices: Uint16Array;
   vao: WebGLVertexArrayObject;
+  widthSegments: number;
+  heightSegments: number;
+  depthSegments: number;
 
   static TexturePerSide(widthDivisions: number, heightDivisions: number, depthDivisions: number,
                         left: Texture, right: Texture, top: Texture, bottom: Texture, back: Texture, front: Texture) {
@@ -53,6 +56,10 @@ export class MoldableCubeGeometry {
   }
 
   constructor(moldableCubeArgs: MoldableCubeArgs) {
+    this.widthSegments = moldableCubeArgs.widthSegments ?? 1;
+    this.depthSegments = moldableCubeArgs.depthSegments ?? 1;
+    this.heightSegments = moldableCubeArgs.heightSegments ?? 1;
+
     this.vao = gl.createVertexArray()!;
     const indices: number[] = [];
     const uvs: number[] = [];
@@ -97,33 +104,8 @@ export class MoldableCubeGeometry {
           // now apply vector to vertex buffer
           this.vertices.push(vector);
 
-          // Texture S coord
-          let texS = ix / gridX;
-          if (moldableCubeArgs.fixedTextureSize) {
-            if (uDir === -1) {
-              texS = 1 - texS;
-            }
-            texS *= (width_ / moldableCubeArgs.fixedTextureSize);
-          }
-
-          if (moldableCubeArgs.segmentedWallArgs) {
-            texS += (moldableCubeArgs.segmentedWallArgs.runningLeft / 6);
-          }
-          uvs.push(texS);
-
-          // Texture T coord
-          let texT = (1 - (iy / gridY));
-          if (moldableCubeArgs.fixedTextureSize) {
-            if (vDir === -1) {
-              texT = 1 - texT;
-            }
-            texT *= (height_ / moldableCubeArgs.fixedTextureSize);
-          }
-
-          if (moldableCubeArgs.segmentedWallArgs && !moldableCubeArgs.segmentedWallArgs.isTop && moldableCubeArgs.segmentedWallArgs.wallHeight !== height_) {
-            texT -= height_ / moldableCubeArgs.fixedTextureSize!;
-          }
-          uvs.push(texT);
+          uvs.push(ix / gridX);
+          uvs.push(1 - (iy / gridY));
         }
       }
 
@@ -250,6 +232,31 @@ export class MoldableCubeGeometry {
     });
     return this;
   }
+
+  spreadTextureCoords() {
+    const texCoordSideCount = (u: number, v: number) => (2 + (u - 1)) * (2 + (v - 1)) * 2;
+    const xzCount = texCoordSideCount(this.widthSegments, this.depthSegments);
+    const zyCount = xzCount + texCoordSideCount(this.depthSegments, this.heightSegments);
+    const testTextureSize = 12;
+
+    const textureCoords = this.getAttribute_(AttributeLocation.TextureCoords).data;
+    let u,v;
+    this.vertices.forEach((vert, index) => {
+      if (index < xzCount) {
+        u = vert.x; v = vert.z;
+      } else if (index < zyCount) {
+        u = vert.z; v = vert.y;
+      } else {
+        u = vert.x; v = vert.y;
+      }
+      const pointInTextureGrid = [u / testTextureSize, v / testTextureSize];
+      textureCoords.set(pointInTextureGrid, index * 2);
+    });
+    this.setAttribute_(AttributeLocation.TextureCoords, textureCoords, 2);
+
+    return this;
+  }
+
 
   /**
    * Computes normals. By default it uses faces on a single plane. Use this on moldable planes or for moldable cube

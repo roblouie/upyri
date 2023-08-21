@@ -15,7 +15,7 @@ export class SegmentedWall extends MoldableCubeGeometry {
       widthSegments: 6,
       segmentedWallArgs: { isTop: true, wallHeight: segmentHeight, runningLeft }
     });
-    this.translate_(0, segmentHeight - topSegments[0] / 2).done_();
+    this.translate_(0, segmentHeight - topSegments[0] / 2 + startingY).spreadTextureCoords();
 
     topSegments.forEach((top, index) => {
       const currentWidth = segmentWidth.length === 1 ? segmentWidth[0] : segmentWidth[index];
@@ -28,8 +28,8 @@ export class SegmentedWall extends MoldableCubeGeometry {
           widthSegments: 6,
           segmentedWallArgs: { isTop: true, wallHeight: segmentHeight, runningLeft}
         })
-          .translate_(startingX + runningSide + (currentWidth / 2), segmentHeight - top / 2)
-          .done_()
+          .translate_(startingX + runningSide + (currentWidth / 2), segmentHeight - top / 2 + startingY)
+          .spreadTextureCoords()
         );
       }
 
@@ -42,8 +42,8 @@ export class SegmentedWall extends MoldableCubeGeometry {
           widthSegments: 6,
           segmentedWallArgs: { wallHeight: segmentHeight, isTop: false, runningLeft }
         })
-          .translate_(startingX + runningSide + (currentWidth / 2), bottomSegments[index] / 2)
-          .done_()
+          .translate_(startingX + runningSide + (currentWidth / 2), bottomSegments[index] / 2 + startingY)
+          .spreadTextureCoords()
         );
       }
       runningSide+= (index === 0 ? currentWidth / 2 : currentWidth);
@@ -51,7 +51,7 @@ export class SegmentedWall extends MoldableCubeGeometry {
     });
 
     this.totalWidth = runningLeft;
-    this.all_().translate_((segmentWidth[0] - runningLeft) / 2, startingY).computeNormals().done_();
+    this.all_().translate_((segmentWidth[0] - runningLeft) / 2).computeNormals().done_();
   }
 }
 
