@@ -95,6 +95,7 @@ export function createCastle() {
 
     // front-right Corner
     .merge(corner(frontLeftCornerRoom, true)
+      .merge(cornerRamp())
       .translate_(42, 0, -48)
       .computeNormals()
     )
@@ -108,14 +109,23 @@ export function createCastle() {
         .translate_(-42, 0, -48)
     )
     .merge(corner(frontLeftCornerRoom, true, true).translate_(-42, 0, 48)) // rear-right Corner
-    .merge(corner(rearRightCornerRoom, true, true).merge(cornerRamp(true, true).rotate_(0, -Math.PI / 2)).rotate_(0, Math.PI / 4).computeNormals(true).translate_(42, 0, 48)) // rear-left Corner
+
+    // rear-right corner
+    .merge(
+      corner(rearRightCornerRoom, true, true).computeNormals(true)
+        .merge(
+          cornerRamp(true, true)
+            .rotate_(0, -Math.PI / 2)
+        )
+        .rotate_(0, Math.PI / 4)
+        .translate_(42, 0, 48)) // rear-left Corner
+
     .merge(solidCastleWall(48)) // back Wall
 
     // Left Wall
     .merge(hollowCastleWall(-42))
     .merge(hollowCastleWall(42))
-    // ramps
-    .merge(cornerRamp().translate_(42, 0, -56))
+
     .done_();
 }
 
@@ -137,9 +147,9 @@ export function castleTopper(length: number, startingHeight: number, zPos: numbe
 }
 
 export function solidCastleWall(z: number, hasDoor?: boolean) {
-  return new SegmentedWall([26, 12, 26], 12, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, BaseLevel, 6)
-    .merge(castleTopper(63, 12, 3))
-    .merge(castleTopper(63, 12, -3))
+  return new SegmentedWall([25, 12, 25], 12, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, BaseLevel, 6)
+    .merge(castleTopper(61, 12, 3))
+    .merge(castleTopper(61, 12, -3))
     .translate_(0,0, z)
     .done_();
 }
@@ -163,7 +173,7 @@ export function corner(floors: number[][][][], isTopped?: boolean, isRounded?: b
     });
 
     // @ts-ignore
-    return isRounded ? tubify(createBox(...segmentedWalls), 10, 10, 13.5) : createBox(...segmentedWalls);
+    return isRounded ? tubify(createBox(...segmentedWalls), 10, 11, 13.5) : createBox(...segmentedWalls);
   });
 
   if (isTopped) {
@@ -213,11 +223,11 @@ export function cornerRamp(isRounded?: boolean, isFlipped?: boolean) {
 
 
   // room are 22x20
-  const ramp = makeRamp(11, 0, 5, rampWidth, cube => cube.translate_(-5, 0, -7.5 * flip))
-    .merge(new MoldableCubeGeometry(rampWidth, 5, rampWidth, 3).translate_(8.5, 2.5, -7.5 * flip).spreadTextureCoords())
-    .merge(makeRamp(10, 5, 11.5, rampWidth, cube => cube).rotate_(0, -Math.PI / 2 * flip).translate_(8.5, 0, -5 * flip))
-    .merge(new MoldableCubeGeometry(22, 1, 5, 13).translate_(0, 11, 7.5 * flip).spreadTextureCoords())
-    .merge(new MoldableCubeGeometry(5, 1, 15, 1, 1, 6).translate_(-8.5, 11, -2.5 * flip).spreadTextureCoords());
+  const ramp = makeRamp(11, 0, 5, rampWidth, cube => cube.translate_(-7, 0, -7.5 * flip))
+    .merge(new MoldableCubeGeometry(rampWidth, 5, rampWidth, 3).translate_(6.5, 2.5, -7.5 * flip).spreadTextureCoords())
+    .merge(makeRamp(10, 5, 11.5, rampWidth, cube => cube).rotate_(0, -Math.PI / 2 * flip).translate_(6.5, 0, -5 * flip))
+    .merge(new MoldableCubeGeometry(18, 1, 5, 11).translate_(0, 11, 7.5 * flip).spreadTextureCoords())
+    .merge(new MoldableCubeGeometry(5, 1, 15, 1, 1, 6).translate_(-6.5, 11, -2.5 * flip).spreadTextureCoords());
 
-  return isRounded ? ramp.selectBy(vert => Math.abs(vert.x) <= 10 && Math.abs(vert.z) <= 5).invertSelection().cylindrify(12) : ramp;
+  return isRounded ? ramp.selectBy(vert => Math.abs(vert.x) <= 10 && Math.abs(vert.z) <= 5).invertSelection().cylindrify(12).all_() : ramp;
 }
