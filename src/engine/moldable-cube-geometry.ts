@@ -19,19 +19,6 @@ function getTextureForSide(uDivisions: number, vDivisions: number, texture: Text
 
 // Would have to be done for each face. Could use same system as texture depth to get vertices for each face
 
-type SegmentedWallArgs = { isTop?: boolean; wallHeight: number, runningLeft: number };
-type MoldableCubeArgs = {
-  width_?: number;
-  height_?: number;
-  depth?: number;
-  widthSegments?: number;
-  heightSegments?: number;
-  depthSegments?: number;
-  sidesToDraw?: number;
-  segmentedWallArgs?: SegmentedWallArgs;
-  fixedTextureSize?: number;
-}
-
 
 export class MoldableCubeGeometry {
   vertices: EnhancedDOMPoint[] = [];
@@ -55,10 +42,10 @@ export class MoldableCubeGeometry {
     return [...topTexture, ...bottomTexture, ...leftTexture, ...rightTexture,  ...backTexture, ...frontTexture];
   }
 
-  constructor(moldableCubeArgs: MoldableCubeArgs) {
-    this.widthSegments = moldableCubeArgs.widthSegments ?? 1;
-    this.depthSegments = moldableCubeArgs.depthSegments ?? 1;
-    this.heightSegments = moldableCubeArgs.heightSegments ?? 1;
+  constructor(width_ = 1, height_ = 1, depth = 1, widthSegments = 1, heightSegments = 1, depthSegments = 1, sidesToDraw = 6) {
+    this.widthSegments = widthSegments;
+    this.depthSegments = depthSegments;
+    this.heightSegments = heightSegments;
 
     this.vao = gl.createVertexArray()!;
     const indices: number[] = [];
@@ -125,7 +112,6 @@ export class MoldableCubeGeometry {
       vertexCount += (gridX1 * gridY1);
     };
 
-    const { width_ = 1, height_ = 1, depth = 1, widthSegments = 1, depthSegments = 1, heightSegments = 1, sidesToDraw = 6 } = moldableCubeArgs;
     const sides = [
       ['x', 'z', 'y', 1, 1, width_, depth, height_, widthSegments, depthSegments], // top
       ['x', 'z', 'y', 1, -1, width_, depth, -height_, widthSegments, depthSegments], // bottom

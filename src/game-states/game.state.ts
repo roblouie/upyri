@@ -17,6 +17,7 @@ import { NoiseType } from '@/engine/svg-maker/base';
 import { clearTemplate } from '@/draw-helpers';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 import { createCastle } from '@/modeling/castle';
+import { createStairs } from '@/modeling/building-blocks';
 
 export class GameState implements State {
   player: FirstPersonPlayer;
@@ -33,12 +34,11 @@ export class GameState implements State {
   async onEnter() {
     const heightmap = await newNoiseLandscape(256, 5, 0.04, 1, NoiseType.Fractal, 90);
     const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap).spreadTextureCoords(), materials.grass);
+    const floorCollision = new Mesh( new PlaneGeometry(1024, 1024, 4, 4).translate_(0, 21).done_(), materials.grass);
 
     const castle = new Mesh(createCastle().translate_(0, 21).done_(), materials.brickWall);
 
-    const testBlock = new MoldableCubeGeometry({ height_: 10 }).translate_(2, 21).done_();
-
-    getGroupedFaces(meshToFaces([floor]), this.groupedFaces);
+    getGroupedFaces(meshToFaces([floorCollision, castle]), this.groupedFaces);
     this.scene.add_(floor, castle);
 
     this.scene.skybox = new Skybox(...skyboxes.test);

@@ -11,8 +11,11 @@ export function getGridPosition(point: EnhancedDOMPoint) {
   return Math.floor((point.x + halfLevelSize) / cellSize) + (Math.floor((point.z + halfLevelSize) / cellSize) * cellsInOneDirection);
 }
 
+// TODO: simple optimization would be to sort floor faces first, as long as there are no moving floor pieces they
+// could be pre sorted
 export function findFloorHeightAtPosition(floorFaces: Face[], positionPoint: EnhancedDOMPoint) {
   let height: number;
+  const collisions = [];
 
   for (const floor of floorFaces) {
     const { x: x1, z: z1 } = floor.points[0];
@@ -38,11 +41,10 @@ export function findFloorHeightAtPosition(floorFaces: Face[], positionPoint: Enh
       continue;
     }
 
-    return {
-      height,
-      floor,
-    };
+    collisions.push({ height, floor });
   }
+
+  return collisions.sort((a, b) => b.height - a.height)[0];
 }
 
 export function findWallCollisionsFromList(walls: Face[], position: EnhancedDOMPoint, offsetY: number, radius: number) {

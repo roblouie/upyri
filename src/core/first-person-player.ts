@@ -59,9 +59,14 @@ export class FirstPersonPlayer {
   }
 
   collideWithLevel(groupedFaces: {floorFaces: Face[], wallFaces: Face[]}) {
-    const wallCollisions = findWallCollisionsFromList(groupedFaces.wallFaces, this.feetCenter, 0.4, 0.1);
+    const wallCollisions = findWallCollisionsFromList(groupedFaces.wallFaces, this.feetCenter, 1.5, 1.5);
     this.feetCenter.x += wallCollisions.xPush;
     this.feetCenter.z += wallCollisions.zPush;
+
+    if (wallCollisions.numberOfWallsHit > 0) {
+      this.velocity.x = 0;
+      this.velocity.z = 0;
+    }
 
     const floorData = findFloorHeightAtPosition(groupedFaces!.floorFaces, this.feetCenter);
     if (!floorData) {
@@ -78,7 +83,7 @@ export class FirstPersonPlayer {
   }
 
   protected updateVelocityFromControls() {
-    const speed = 0.1;
+    const speed = 0.2;
 
     const mag = controls.inputDirection.magnitude;
     // const inputAngle = Math.atan2(-controls.direction.x, -controls.direction.z);
