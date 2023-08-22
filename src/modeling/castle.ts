@@ -5,7 +5,7 @@ import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 // TODO: Build castle at 0, translate whole thing up to 21
 const BaseLevel = 0;
 
-const frontLeftCornerRoom = [
+export const frontLeftCornerRoom = [
   // First Floor
   [
     // Front Wall
@@ -46,7 +46,7 @@ const frontLeftCornerRoom = [
   ]
 ];
 
-const rearRightCornerRoom = [
+export const rearRightCornerRoom = [
   // First Floor
   [
     // Front Wall
@@ -87,7 +87,7 @@ const rearRightCornerRoom = [
   ]
 ];
 
-const getSize = (sizes: number[]) => sizes.reduce((acc, curr) => acc + curr);
+export const getSize = (sizes: number[]) => sizes.reduce((acc, curr) => acc + curr);
 
 export function createCastle() {
 
@@ -95,7 +95,6 @@ export function createCastle() {
 
     // front-right Corner
     .merge(corner(frontLeftCornerRoom, true)
-      .merge(cornerRamp())
       .translate_(42, 0, -48)
       .computeNormals()
     )
@@ -109,16 +108,14 @@ export function createCastle() {
         .translate_(-42, 0, -48)
     )
     .merge(corner(frontLeftCornerRoom, true, true).translate_(-42, 0, 48)) // rear-right Corner
-    .merge(corner(rearRightCornerRoom, true, true).rotate_(0, Math.PI / 4).computeNormals(true).translate_(42, 0, 48)) // rear-left Corner
+    .merge(corner(rearRightCornerRoom, true, true).merge(cornerRamp(true, true).rotate_(0, -Math.PI / 2)).rotate_(0, Math.PI / 4).computeNormals(true).translate_(42, 0, 48)) // rear-left Corner
     .merge(solidCastleWall(48)) // back Wall
 
     // Left Wall
     .merge(hollowCastleWall(-42))
     .merge(hollowCastleWall(42))
     // ramps
-
-    .computeNormals()
-
+    .merge(cornerRamp().translate_(42, 0, -56))
     .done_();
 }
 
@@ -193,22 +190,34 @@ function tubify(moldableCubeBox: MoldableCubeGeometry, selectSize: number, inner
     .done_();
 }
 
-export function cornerRamp(isRounded?: boolean) {
+export function cornerRamp(isRounded?: boolean, isFlipped?: boolean) {
   const rampWidth = 5;
+  const flip = isFlipped ? -1 : 1;
+
+  function makeRamp(length: number, baseHeight: number, endHeight: number, width: number, transformCallback: (cube: MoldableCubeGeometry) => MoldableCubeGeometry) {
+    const subdivisions = 2;
+    const stepCount =  Math.floor(length / subdivisions);
+    const stepWidth = length / stepCount;
+    const heightDifference = endHeight - baseHeight;
+    const stepHeight = heightDifference / stepCount;
+    return mergeCubes(doTimes(stepCount, index => {
+        const currentHeight = baseHeight + index * stepHeight + stepHeight;
+        return transformCallback(new MoldableCubeGeometry(stepWidth, currentHeight, width)
+          .selectBy(vert => vert.x < 0 && vert.y > 0)
+          .translate_(0, -stepHeight)
+          .all_()
+          .translate_(index * stepWidth + stepWidth / 2, currentHeight / 2)).spreadTextureCoords()
+      })
+    ).done_();
+  }
+
+
   // room are 22x20
-  const cornerRamp = makeRamp(9, 0, 5, rampWidth).translate_(-0.5, 0, -7.5)
-    .merge(new MoldableCubeGeometry(rampWidth, 5, rampWidth).translate_(6.5, 2.5, -7.5))
-    .merge(makeRamp(10, 5, 11.5, rampWidth).rotate_(0, -Math.PI / 2).translate_(6.5, 0, 0))
-    .merge(new MoldableCubeGeometry(20, 1, 6).translate_(0, 11, 8))
-    .merge(new MoldableCubeGeometry(5, 1, 15).translate_(-7.5, 11, -2.5));
+  const ramp = makeRamp(11, 0, 5, rampWidth, cube => cube.translate_(-5, 0, -7.5 * flip))
+    .merge(new MoldableCubeGeometry(rampWidth, 5, rampWidth, 3).translate_(8.5, 2.5, -7.5 * flip).spreadTextureCoords())
+    .merge(makeRamp(10, 5, 11.5, rampWidth, cube => cube).rotate_(0, -Math.PI / 2 * flip).translate_(8.5, 0, -5 * flip))
+    .merge(new MoldableCubeGeometry(22, 1, 5, 13).translate_(0, 11, 7.5 * flip).spreadTextureCoords())
+    .merge(new MoldableCubeGeometry(5, 1, 15, 1, 1, 6).translate_(-8.5, 11, -2.5 * flip).spreadTextureCoords());
 
-  return cornerRamp;
-}
-
-export function makeRamp(length: number, baseHeight: number, endHeight: number, width: number) {
-  return new MoldableCubeGeometry(length, endHeight, width).translate_(0, endHeight / 2)
-    .selectBy(vertex => vertex.x < 0 && vertex.y > 0)
-    .translate_(0, baseHeight - endHeight)
-    .all_()
-    .spreadTextureCoords();
+  return isRounded ? ramp.selectBy(vert => Math.abs(vert.x) <= 10 && Math.abs(vert.z) <= 5).invertSelection().cylindrify(12) : ramp;
 }
