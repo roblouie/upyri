@@ -42,7 +42,8 @@ export class GameState implements State {
     const castle = new Mesh(createCastle().translate_(0, 21).done_(), materials.brickWall);
 
     this.leverDoors.push(
-      new LeverDoorObject3d(new EnhancedDOMPoint(31, 36, -48), new EnhancedDOMPoint(42, 36.5, -37))
+      new LeverDoorObject3d(new EnhancedDOMPoint(31, 36, -48), new EnhancedDOMPoint(42, 36.5, -37), -90),
+      new LeverDoorObject3d(new EnhancedDOMPoint(48, 24, 43), new EnhancedDOMPoint(0, 24, 0), -90)
     );
     const doorsFromLeverDoors = this.leverDoors.map(leverDoor => leverDoor.door);
 

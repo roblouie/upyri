@@ -16,14 +16,14 @@ export class LeverDoorObject3d extends Object3d {
   closedDoorCollision: Face[];
   openDoorCollision: Face[];
 
-  constructor(switchPosition: EnhancedDOMPoint, doorPosition: EnhancedDOMPoint) {
+  constructor(switchPosition: EnhancedDOMPoint, doorPosition: EnhancedDOMPoint, switchRotationDegrees = 0, doorRotationDegrees = 0) {
     const base = new Mesh(new MoldableCubeGeometry(1, 2, 1), new Material({ color: 'green' }));
     const lever = new Mesh(new MoldableCubeGeometry(1, 1, 4, 3, 3).cylindrify(0.25, 'z').done_(), new Material({ color: 'red' }));
     super(base, lever);
 
     this.switchPosition = switchPosition;
     this.position_.set(switchPosition);
-    this.rotation_.y = -90;
+    this.rotation_.y = switchRotationDegrees;
 
     lever.rotation_.x = -45;
     this.door = new Object3d(new Mesh(new MoldableCubeGeometry(4, 7, 1), new Material({ color: 'blue' })));
