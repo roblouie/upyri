@@ -26,7 +26,6 @@ export class SegmentedWall extends MoldableCubeGeometry {
     });
 
     this.totalWidth = runningLeft;
-    //TODO: Refactor to do this per wall instead of all at once
     this.all_().translate_((segmentWidth[0] - runningLeft) / 2, 0).computeNormals().done_();
   }
 }

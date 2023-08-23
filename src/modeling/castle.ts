@@ -3,7 +3,7 @@ import { doTimes } from '@/engine/helpers';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 
 // TODO: Build castle at 0, translate whole thing up to 21
-const windowTopHeight = 7;
+const windowTopHeight = 6;
 const windowBottomHeight = 2;
 const doorTopHeight = 5;
 const windowWidth = 2;
@@ -59,41 +59,41 @@ export const otherCorners = [
   [
     // Front Wall
     [
-      [11,11], [12,12], [0,0]
+      [2, 2, 5, 4, 5, 2, 2], [12, windowTopHeight, 12, doorTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, 0, 0, windowBottomHeight, 0]
     ],
     // Back Wall
     [
-      [7, 4, 7, 4], [12, 5, 12, 5], [0, 0, 0]
+      [3, 2, 12, 2, 3], [12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0]
     ],
     // Left Wall
     [
-      [13, 3, 4], [12, 12, 5], [0, 0, 0]
+      [1, 2, 14, 2, 1], [12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0]
     ],
     // Right Wall
     [
-      [10, 10], [12, 12], [0, 0]
+      [1, 2, 14, 2, 1], [12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0]
     ]
   ],
   // Second Floor
   [
     // Front Wall
     [
-      [9, 4, 4, 2, 3], [12, 5, 12, 4, 12], [0, 0, 0, 3, 0]
+      [2, 2, 5, 4, 5, 2, 2], [12, windowTopHeight, 12, doorTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, 0, 0, windowBottomHeight, 0]
     ],
     // Back Wall
     [
-      [6, 2, 3, 2, 5, 4], [12, 4, 12, 4, 12, 5], [0, 3, 0, 3, 0, 0]
+      [3, 2, 12, 2, 3], [12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0]
     ],
     // Left Wall
     [
-      [13, 3, 4], [12, 12, 5], [0, 0, 0]
+      [1, 2, 14, 2, 1], [12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0]
     ],
     // Right Wall
     [
-      [9, 2, 9], [12, 3, 12], [0, 4, 0]
+      [3, 4, 6, 4, 3], [12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0]
     ]
   ]
-];
+]
 
 export const getSize = (sizes: number[]) => sizes.reduce((acc, curr) => acc + curr);
 
@@ -102,8 +102,9 @@ export function createCastle() {
   return solidCastleWall(-48, true) // front Wall
 
     // front-right Corner
-    .merge(corner(frontLeftCornerRoom, true)
+    .merge(corner(otherCorners, true)
       .merge(cornerRamp())
+      .merge(castleTopper(5, 0, 0).rotate_(Math.PI / 2, -1, 0).translate_(-20, 1, 10))
       .translate_(42, 0, -48)
       .computeNormals()
     )
@@ -118,7 +119,20 @@ export function createCastle() {
     )
 
     // rear-left Corner
-    .merge(corner(frontLeftCornerRoom, true, true).translate_(-42, 0, 48))
+    .merge(
+      corner(otherCorners, true, true)
+        .scale_(-1, 1, -1)
+        .computeNormals(true)
+        .merge(
+          cornerRamp(true, true)
+            .rotate_(0, -Math.PI / 2)
+        )
+        // floors
+        .merge(
+          createCastleFloors(getSize(otherCorners[0][2][0]), getSize(otherCorners[0][0][0]), true, true)
+        )
+        .translate_(-42, 0, 48)
+    )
 
     // rear-right corner
     .merge(
@@ -151,12 +165,12 @@ export function createCastleFloors(width_: number, depth: number, skipMiddle?: b
 }
 
 function patternFill(pattern: number[], times: number) {
-  return doTimes(times, () => pattern).flat();
+  return doTimes(times, (index) => pattern[index % pattern.length]);
 }
 
 export function castleTopper(length: number, startingHeight: number, zPos: number) {
-  const segmentWidths = patternFill([2, 1], Math.ceil(length / 3));
-  return new SegmentedWall(segmentWidths, 3, patternFill([3, 1], segmentWidths.length / 2), [0, 0, 0, 0], 0, 0)
+  const segmentWidths = patternFill([1, 2], length * 2);
+  return new SegmentedWall(segmentWidths, 3, patternFill([1, 3], segmentWidths.length / 3), [0, 0], 0, 0)
     .rotate_(0, 0, Math.PI)
     .translate_(0, startingHeight + 3, zPos)
     .computeNormals();
@@ -164,15 +178,15 @@ export function castleTopper(length: number, startingHeight: number, zPos: numbe
 
 export function solidCastleWall(z: number, hasDoor?: boolean) {
   return new SegmentedWall([25, 12, 25], 11.5, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, 0, 8)
-    .merge(castleTopper(61, 11.5, 4))
-    .merge(castleTopper(61, 11.5, -4))
+    .merge(castleTopper(hasDoor ? 54 : 58, 11.5, 4).translate_(hasDoor ? -4 : 0))
+    .merge(castleTopper(hasDoor ? 61 : 58, 11.5, -4))
     .translate_(0,0, z)
     .done_();
 }
 
 export function hollowCastleWall(x: number) {
   const walls = [
-    new SegmentedWall(patternFill([5, 2, 5], 6), 12, patternFill([12, 5, 12], 6), patternFill([0, 2, 0], 6), 0, 0),
+    new SegmentedWall(patternFill([5, 2, 5], 18), 12, patternFill([12, 5, 12], 18), patternFill([0, 2, 0], 18), 0, 0),
     new MoldableCubeGeometry(72, 24, 2).spreadTextureCoords()
   ];
   if (x > 0) {
@@ -180,8 +194,8 @@ export function hollowCastleWall(x: number) {
   }
   // @ts-ignore
   return createHallway(...walls, 5)
-    .merge(castleTopper(75, 12, 6))
-    .merge(castleTopper(75, 12, -6))
+    .merge(castleTopper(72, 12, 6))
+    .merge(castleTopper(72, 12, -6))
     .merge(createCastleFloors(74, 9))
     .rotate_(0, Math.PI / 2, 0)
     .translate_(x)
