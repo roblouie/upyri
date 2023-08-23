@@ -3,8 +3,6 @@ import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 
 export const mergeCubes = (cubes: MoldableCubeGeometry[]) => cubes.reduce((acc, curr) => acc.merge(curr));
 
-
-
 export class SegmentedWall extends MoldableCubeGeometry {
   totalWidth = 0;
   constructor(segmentWidth: number[], segmentHeight: number, topSegments: number[], bottomSegments: number[], startingX = 0,startingY = 0, depth = 2) {
@@ -33,7 +31,7 @@ export class SegmentedWall extends MoldableCubeGeometry {
   }
 }
 
-export function createHallway(frontWall: SegmentedWall, backWall: SegmentedWall, spacing: number) {
+export function createHallway(frontWall: SegmentedWall, backWall: MoldableCubeGeometry, spacing: number) {
   return frontWall.translate_(0, 0, spacing).merge(backWall.translate_(0, 0, -spacing)).done_();
 }
 
