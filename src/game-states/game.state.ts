@@ -24,14 +24,14 @@ import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 export class GameState implements State {
   player: FirstPersonPlayer;
   scene: Scene;
-  groupedFaces: {floorFaces: Face[], wallFaces: Face[], ceilingFaces: Face[]};
+  groupedFaces: {floorFaces: Face[], wallFaces: Face[] };
   leverDoors: LeverDoorObject3d[] =[];
 
   constructor() {
     const camera = new Camera(Math.PI / 3, 16 / 9, 1, 400);
     this.player = new FirstPersonPlayer(camera);
     this.scene = new Scene();
-    this.groupedFaces = { floorFaces: [], wallFaces: [], ceilingFaces: [] };
+    this.groupedFaces = { floorFaces: [], wallFaces: [] };
   }
 
   async onEnter() {
@@ -42,12 +42,12 @@ export class GameState implements State {
     const castle = new Mesh(createCastle().translate_(0, 21).done_(), materials.brickWall);
 
     this.leverDoors.push(
-      new LeverDoorObject3d(new EnhancedDOMPoint(31, 36, -48), new EnhancedDOMPoint(40, 36.5, -37.5))
+      new LeverDoorObject3d(new EnhancedDOMPoint(31, 36, -48), new EnhancedDOMPoint(42, 36.5, -37))
     );
     const doorsFromLeverDoors = this.leverDoors.map(leverDoor => leverDoor.door);
 
-    getGroupedFaces(meshToFaces([floorCollision, castle]), this.groupedFaces);
-    this.scene.add_(floor, castle, ...this.leverDoors, ...doorsFromLeverDoors);
+    this.groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle]));
+    this.scene.add_(floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.leverDoors[0].closedDoorCollisionM, this.leverDoors[0].openDoorCollisionM);
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
@@ -68,7 +68,11 @@ export class GameState implements State {
         if (distance < 7 && controls.isConfirm) {
           leverDoor.isPulled = true;
         }
+        this.player.wallCollision(leverDoor.closedDoorCollision);
+      } else {
+        this.player.wallCollision(leverDoor.openDoorCollision);
       }
+
       leverDoor.update();
     });
     this.scene.updateWorldMatrix();

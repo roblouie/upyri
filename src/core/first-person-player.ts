@@ -58,15 +58,18 @@ export class FirstPersonPlayer {
     this.updateAudio();
   }
 
-  collideWithLevel(groupedFaces: {floorFaces: Face[], wallFaces: Face[]}) {
-    const wallCollisions = findWallCollisionsFromList(groupedFaces.wallFaces, this.feetCenter, 1.5, 1.5);
+  wallCollision(wallFaces: Face[]) {
+    const wallCollisions = findWallCollisionsFromList(wallFaces, this.feetCenter, 1.5, 1.5);
     this.feetCenter.x += wallCollisions.xPush;
     this.feetCenter.z += wallCollisions.zPush;
-
     if (wallCollisions.numberOfWallsHit > 0) {
       this.velocity.x = 0;
       this.velocity.z = 0;
     }
+  }
+
+  collideWithLevel(groupedFaces: {floorFaces: Face[], wallFaces: Face[]}) {
+   this.wallCollision(groupedFaces.wallFaces);
 
     const floorData = findFloorHeightAtPosition(groupedFaces!.floorFaces, this.feetCenter);
     if (!floorData) {
