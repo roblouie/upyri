@@ -18,11 +18,14 @@ import { clearTemplate } from '@/draw-helpers';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 import { createCastle } from '@/modeling/castle';
 import { createStairs } from '@/modeling/building-blocks';
+import { LeverDoorObject3d } from '@/modeling/lever-door';
+import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 
 export class GameState implements State {
   player: FirstPersonPlayer;
   scene: Scene;
   groupedFaces: {floorFaces: Face[], wallFaces: Face[], ceilingFaces: Face[]};
+  leverDoors: LeverDoorObject3d[] =[];
 
   constructor() {
     const camera = new Camera(Math.PI / 3, 16 / 9, 1, 400);
@@ -38,8 +41,13 @@ export class GameState implements State {
 
     const castle = new Mesh(createCastle().translate_(0, 21).done_(), materials.brickWall);
 
+    this.leverDoors.push(
+      new LeverDoorObject3d(new EnhancedDOMPoint(31, 36, -48), new EnhancedDOMPoint(40, 36.5, -37.5))
+    );
+    const doorsFromLeverDoors = this.leverDoors.map(leverDoor => leverDoor.door);
+
     getGroupedFaces(meshToFaces([floorCollision, castle]), this.groupedFaces);
-    this.scene.add_(floor, castle);
+    this.scene.add_(floor, castle, ...this.leverDoors, ...doorsFromLeverDoors);
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
@@ -49,9 +57,22 @@ export class GameState implements State {
     });
   }
 
+  leverPlayerDistance = new EnhancedDOMPoint();
   onUpdate(): void {
     this.player.update(this.groupedFaces);
+
+    this.leverDoors.forEach(leverDoor => {
+      if (!leverDoor.isPulled) {
+        const distance = this.leverPlayerDistance.subtractVectors(this.player.camera.position_, leverDoor.switchPosition).magnitude;
+        debug.innerHTML = distance;
+        if (distance < 7 && controls.isConfirm) {
+          leverDoor.isPulled = true;
+        }
+      }
+      leverDoor.update();
+    });
     this.scene.updateWorldMatrix();
+
     render(this.player.camera, this.scene);
     // debug.innerHTML = `${this.player.feetCenter.x}, ${this.player.feetCenter.z}`;
 
