@@ -39,6 +39,8 @@ export async function initTextures() {
   // materials.grass.texture!.textureRepeat.y = 10;
 
   materials.brickWall = new Material({ texture: textureLoader.load_(await tileTest())});
+  materials.castleWriting = new Material({ texture: textureLoader.load_(await castleSign()), isTransparent: true });
+  materials.handprint = new Material({ texture: textureLoader.load_(await handprint()), isTransparent: true });
   // materials.brickWall.texture!.textureRepeat.y = 2;
 
   const testSlicer = drawSkyboxHor();
@@ -56,6 +58,22 @@ export async function initTextures() {
 }
 
 const night = 'black';
+
+function castleSign() {
+  return toImage(
+    svg({ width_: textureSize, height_: textureSize },
+      drawBloodText({ x: 10, y: '-40%', style: 'font-size: 120px; transform: scaleY(-1.5); font-family: sans-serif' }, 'CASTLE', 50)
+    )
+  )
+}
+
+function handprint() {
+  return toImage(
+    svg({ width_: textureSize, height_: textureSize },
+      drawBloodText({ x: 10, y: '-40%', style: 'font-size: 120px; transform: scaleY(-1.5); font-family: sans-serif' }, '🖐️', 50)
+    )
+  )
+}
 
 function stars() {
   return filter(fullSize({id_: 's'}),
@@ -210,10 +228,10 @@ function tileTest() {
   ));
 }
 
-export function drawBloodText(attributes: SvgTextAttributes, textToDisplay?: any) {
+export function drawBloodText(attributes: SvgTextAttributes, textToDisplay: string, scale_ = 70) {
     return filter({ id_: 'd' },
       feTurbulence({ baseFrequency: [0.13, 0.02], numOctaves_: 1, type_: NoiseType.Fractal, result: 'd' }),
-      feDisplacementMap({ in: 'SourceGraphic', in2: 'd', scale_: 70 }),
+      feDisplacementMap({ in: 'SourceGraphic', in2: 'd', scale_ }),
     ) +
     filter({ id_: 'b' },
       feTurbulence({ baseFrequency: 0.04, numOctaves_: 1, type_: NoiseType.Fractal }),
@@ -226,6 +244,6 @@ export function drawBloodText(attributes: SvgTextAttributes, textToDisplay?: any
       feComposite({ in2: 'SourceGraphic', operator: 'in' }),
     ) +
     group({ filter: 'b' },
-      text({ ...attributes, filter: 'd', style: 'font-size: 360px; transform: scaleY(1.5);' }, textToDisplay)
+      text({ style: 'font-size: 360px; transform: scaleY(1.5);', ...attributes, filter: 'd' }, textToDisplay)
     );
 }

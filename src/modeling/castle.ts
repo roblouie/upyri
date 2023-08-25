@@ -51,7 +51,7 @@ export const frontLeftCornerRoom = [
 ];
 
 export const rearRightCornerRoom = structuredClone(frontLeftCornerRoom);
-rearRightCornerRoom[0][0] = [[9, doorWidth, 6, 3], [12, 5, 12, 5], [0]];
+rearRightCornerRoom[0][0] = [[9, doorWidth - 0.5, 6, 3], [12, 5.5, 12, 5], [0]];
 rearRightCornerRoom[1][0] = [[9, 4, 4, 2, 3], [12, 5, 12, 4, 12], [0, 0, 0, 2, 0]];
 
 export const otherCorners = [

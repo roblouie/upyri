@@ -7,20 +7,20 @@ import { Face } from '@/engine/physics/face';
 import { getGroupedFaces, meshToFaces } from '@/engine/physics/parse-faces';
 
 export class DoorData extends Object3d {
-  swapHingeSide: -1 | 1;
-  originalRotation: number;
+  swapHingeSideX: -1 | 1;
+  swapHingeSideZ: -1 | 1;
   closedDoorCollisionM: Mesh;
   openDoorCollisionM: Mesh;
   closedDoorCollision: Face[];
   openDoorCollision: Face[];
 
-  constructor(doorMesh: Mesh, position_: EnhancedDOMPoint, rotation_ = 0, swapHingeSide: 1 | -1 = 1) {
+  constructor(doorMesh: Mesh, position_: EnhancedDOMPoint, swapHingeSideX: 1 | -1 = 1, swapHingeSideZ: 1 | -1 = 1) {
     super(doorMesh);
-    this.swapHingeSide = swapHingeSide;
-    this.originalRotation = rotation_;
-    this.position_.set(position_.x - 2 * swapHingeSide, position_.y, position_.z);
-    this.children_[0].position_.x = 2 * swapHingeSide;
-    this.rotation_.y = rotation_;
+    this.swapHingeSideX = swapHingeSideX;
+    this.swapHingeSideZ = swapHingeSideZ;
+
+    this.position_.set(position_.x - 2 * swapHingeSideX, position_.y, position_.z);
+    this.children_[0].position_.x = 2 * swapHingeSideX;
 
     this.closedDoorCollisionM = new Mesh(
       new MoldableCubeGeometry(4, 7, 1)
@@ -31,7 +31,7 @@ export class DoorData extends Object3d {
     this.openDoorCollisionM = new Mesh(
       new MoldableCubeGeometry(4, 7, 1)
         .rotate_(0, Math.PI / 2)
-        .translate_(position_.x - 2 * swapHingeSide, position_.y, position_.z - 2)
+        .translate_(position_.x - 2 * swapHingeSideX, position_.y, position_.z - 2 * swapHingeSideZ)
         .done_()
       , new Material({ color: [0, 1, 1, 1]}));
   }
@@ -69,9 +69,9 @@ export class LeverDoorObject3d extends Object3d {
   update(){
     if (this.isPulled && !this.isFinished) {
       this.doorDatas.forEach(door => {
-        door.rotation_.y += 0.6 * door.swapHingeSide;
+        door.rotation_.y += 0.6 * door.swapHingeSideX * door.swapHingeSideZ;
         this.children_[1].rotation_.x += 0.6;
-        if (Math.abs(door.originalRotation - door.rotation_.y) >= 90) {
+        if (Math.abs(door.rotation_.y) >= 90) {
           this.isFinished = true;
         }
       });
