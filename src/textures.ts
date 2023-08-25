@@ -58,7 +58,7 @@ export async function initTextures() {
 const night = 'black';
 
 function stars() {
-  return filter(fullSize({id_: 'stars'}),
+  return filter(fullSize({id_: 's'}),
     feTurbulence({ baseFrequency: 0.2, stitchTiles_: 'stitch' }),
     feColorMatrix({ values: [
         0, 0, 0, 9, -5.5,
@@ -71,7 +71,7 @@ function stars() {
 }
 
 function drawClouds() {
-  return stars() + filter(fullSize({ id_: 'filter' }),
+  return stars() + filter(fullSize({ id_: 'f' }),
       feTurbulence({ seed_: 2, type_: NoiseType.Fractal, numOctaves_: 6, baseFrequency: 0.003, stitchTiles_: 'stitch' }),
       feComponentTransfer({},
         feFunc('R',  'table', [0.8, 0.8]),
@@ -81,20 +81,20 @@ function drawClouds() {
       )
     ) +
     mask({ id_: 'mask' },
-      radialGradient({ id_: 'gradient' },
-        svgStop({ offset: '20%', stopColor: 'white' }),
-        svgStop({ offset: '30%', stopColor: '#666' }),
-        svgStop({ offset: '100%', stopColor: 'black' })
+      radialGradient({ id_: 'g' },
+        svgStop({ offset_: '20%', stopColor: 'white' }),
+        svgStop({ offset_: '30%', stopColor: '#666' }),
+        svgStop({ offset_: '100%', stopColor: 'black' })
       ),
-      ellipse({ cx: 1000, cy: 1000, rx: '50%', ry: '50%', fill: 'url(#gradient)'})
+      ellipse({ cx: 1000, cy: 1000, rx: '50%', ry: '50%', fill: 'url(#g)'})
     )
-    + radialGradient({ id_: 'sun' },
-      svgStop({ offset: '10%', stopColor: '#fff' }),
-      svgStop({ offset: '30%', stopColor: '#0000' })
+    + radialGradient({ id_: 'l' },
+      svgStop({ offset_: '10%', stopColor: '#fff' }),
+      svgStop({ offset_: '30%', stopColor: '#0000' })
     )
-    + rect(fullSize({ filter: 'stars' }))
-    + ellipse({cx: 1000, cy: 1000, rx: 200, ry: 200, fill: 'url(#sun)' })
-    + rect(fullSize({ filter: 'filter', mask: 'url(#mask)' }));
+    + rect(fullSize({ filter: 's' }))
+    + ellipse({cx: 1000, cy: 1000, rx: 200, ry: 200, fill: 'url(#l)' })
+    + rect(fullSize({ filter: 'f', mask: 'url(#mask)' }));
 }
 
 function drawBetterClouds(width_: number) {
@@ -109,7 +109,7 @@ function drawBetterClouds(width_: number) {
   ];
 
   const clouds = doTimes(2, index => {
-    return filter(fullSize({ id_: `filter${index}` }),
+    return filter(fullSize({ id_: `f${index}` }),
       feTurbulence({ seed_: seeds[index], type_: NoiseType.Fractal, numOctaves_: numOctaves[index], baseFrequency: baseFrequencies[index], stitchTiles_: 'stitch' }),
       feComponentTransfer({},
         feFunc('R',  'table', [0.2, 0.2]),
@@ -118,38 +118,36 @@ function drawBetterClouds(width_: number) {
         feFunc('A',  'table', alphaTableValues[index])
       )
     ) +
-      linearGradient({ id_: `gradient${index}`, gradientTransform: 'rotate(90)'},
-        svgStop({ offset: 0, stopColor: 'black'}),
-        svgStop({ offset: 0.3, stopColor: 'white'}),
-        svgStop({ offset: 0.7, stopColor: 'white'}),
-        svgStop({ offset: 1, stopColor: 'black'}),
+      linearGradient({ id_: `g${index}`, gradientTransform: 'rotate(90)'},
+        svgStop({ offset_: 0, stopColor: 'black'}),
+        svgStop({ offset_: 0.3, stopColor: 'white'}),
+        svgStop({ offset_: 0.7, stopColor: 'white'}),
+        svgStop({ offset_: 1, stopColor: 'black'}),
       ) +
-      mask({ id_: `mask${index}`},
-        rect({ x: 0, y: yPositions[index], width_, height_: heights[index], fill: `url(#gradient${index})`})
+      mask({ id_: `m${index}`},
+        rect({ x: 0, y: yPositions[index], width_, height_: heights[index], fill: `url(#g${index})`})
       ) +
-      rect({ filter: `filter${index}`, height_: heights[index], width_, x: 0, y: yPositions[index], mask: `url(#mask${index})`});
+      rect({ filter: `f${index}`, height_: heights[index], width_, x: 0, y: yPositions[index], mask: `url(#m${index})`});
   }).join('');
 
-  const done = stars() + rect(fullSize({ filter: 'stars' })) + clouds;
-  console.log(done);
-  return done;
+  return stars() + rect(fullSize({ filter: 's' })) + clouds;
 }
 
 
 function landPattern(y: number, color: string, seed_: number, numOctaves: number) {
-  return filter({ id_: `filter${y}`, x: 0, width_: '100%', height_: '150%' },
+  return filter({ id_: `f${y}`, x: 0, width_: '100%', height_: '150%' },
       feTurbulence({ type_: NoiseType.Fractal, baseFrequency: [0.008, 0], numOctaves_: numOctaves, seed_, stitchTiles_: 'stitch' }),
       feDisplacementMap({ in: 'SourceGraphic', scale_: 100 }),
     ) +
-    filter({ id_: `groundPattern${y}`, x: 0, width_: '100%' },
-      feTurbulence({ id_: 'test', baseFrequency: [0.02, 0.01], numOctaves_: numOctaves, type_: NoiseType.Fractal, result: `noise${y}`, seed_, stitchTiles_: 'stitch' }),
-      feDiffuseLighting({ in: `noise${y}`, lightingColor: color, surfaceScale: 22 },
+    filter({ id_: `g${y}`, x: 0, width_: '100%' },
+      feTurbulence({ id_: 'test', baseFrequency: [0.02, 0.01], numOctaves_: numOctaves, type_: NoiseType.Fractal, result: `n${y}`, seed_, stitchTiles_: 'stitch' }),
+      feDiffuseLighting({ in: `n${y}`, lightingColor: color, surfaceScale: 22 },
         feDistantLight(45, 60)
       ),
       feComposite({ in2: 'SourceGraphic', operator: 'in' }),
     ) +
-    group({ filter: `groundPattern${y}` },
-      rect({ x: 0, y, width_: skyboxSize * 4, height_: '50%', filter: `filter${y}`})
+    group({ filter: `g${y}` },
+      rect({ x: 0, y, width_: skyboxSize * 4, height_: '50%', filter: `f${y}`})
     );
 }
 
@@ -179,7 +177,7 @@ function horizontalSkyboxSlice(svgSetting: SvgAttributes, ...elements: string[])
 
 export function drawGrass() {
   return toImage(svg({ width_: textureSize, height_: textureSize },
-    filter(fullSize({ id_: 'noise' }),
+    filter(fullSize({ id_: 'n' }),
       feTurbulence({ seed_: 3, type_: NoiseType.Fractal, baseFrequency: 0.04, numOctaves_: 4, stitchTiles_: 'stitch' }),
       feMorphology({ operator: 'dilate', radius: 3 }),
       feComponentTransfer({},
@@ -190,7 +188,7 @@ export function drawGrass() {
       )
     ),
     rect(fullSize({ fill: '#171717' })),
-    rect(fullSize({ filter: 'noise' })),
+    rect(fullSize({ filter: 'n' })),
   ));
 }
 
@@ -213,11 +211,11 @@ function tileTest() {
 }
 
 export function drawBloodText(attributes: SvgTextAttributes, textToDisplay?: any) {
-    return filter({ id_: 'circleDistort' },
-      feTurbulence({ baseFrequency: [0.13, 0.02], numOctaves_: 1, type_: NoiseType.Fractal, result: 'circleDistortNoise' }),
-      feDisplacementMap({ in: 'SourceGraphic', in2: 'circleDistortNoise', scale_: 70 }),
+    return filter({ id_: 'd' },
+      feTurbulence({ baseFrequency: [0.13, 0.02], numOctaves_: 1, type_: NoiseType.Fractal, result: 'd' }),
+      feDisplacementMap({ in: 'SourceGraphic', in2: 'd', scale_: 70 }),
     ) +
-    filter({ id_: 'bloodPattern' },
+    filter({ id_: 'b' },
       feTurbulence({ baseFrequency: 0.04, numOctaves_: 1, type_: NoiseType.Fractal }),
       feColorMatrix({ values: [
           0.4, 0.2, 0.2, 0, -0.1,
@@ -227,7 +225,7 @@ export function drawBloodText(attributes: SvgTextAttributes, textToDisplay?: any
         ] }),
       feComposite({ in2: 'SourceGraphic', operator: 'in' }),
     ) +
-    group({ filter: 'bloodPattern' },
-      text({ ...attributes, filter: 'circleDistort', style: 'font-size: 360px; transform: scaleY(1.5);' }, textToDisplay)
+    group({ filter: 'b' },
+      text({ ...attributes, filter: 'd', style: 'font-size: 360px; transform: scaleY(1.5);' }, textToDisplay)
     );
 }

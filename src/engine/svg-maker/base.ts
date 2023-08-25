@@ -98,7 +98,7 @@ interface SvgRadialGradientAttributes extends HasId, HasGradientTransform {
 }
 
 interface SvgStopAttributes {
-  offset: LengthOrPercentage;
+  offset_: LengthOrPercentage;
   stopColor: string;
 }
 
@@ -221,7 +221,7 @@ export function attributesToString(object: Partial<AllSvgAttributes>) {
     'mask': object.mask,
     'mode': object.mode,
     'numOctaves': object.numOctaves_,
-    'offset': object.offset,
+    'offset': object.offset_,
     'operator': object.operator,
     'radius': object.radius,
     'result': object.result,

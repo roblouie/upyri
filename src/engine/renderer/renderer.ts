@@ -4,7 +4,6 @@ import { Skybox } from '@/engine/skybox';
 
 import { Scene } from '@/engine/renderer/scene';
 import { Mesh } from '@/engine/renderer/mesh';
-import { InstancedMesh } from '@/engine/renderer/instanced-mesh';
 import {
   color,
   emissive,
@@ -12,8 +11,6 @@ import {
   normalMatrix,
   textureRepeat, u_skybox, u_viewDirectionProjectionInverse, viewProjection
 } from '@/engine/shaders/shaders';
-import { Object3d } from '@/engine/renderer/object-3d';
-import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 
 // IMPORTANT! The index of a given buffer in the buffer array must match it's respective data location in the shader.
 // This allows us to use the index while looping through buffers to bind the attributes. So setting a buffer
@@ -38,34 +35,7 @@ const emissiveLocation = gl.getUniformLocation(lilgl.program, emissive)!;
 const textureRepeatLocation = gl.getUniformLocation(lilgl.program, textureRepeat)!;
 const skyboxLocation = gl.getUniformLocation(lilgl.skyboxProgram, u_skybox)!;
 const viewDirectionProjectionInverseLocation = gl.getUniformLocation(lilgl.skyboxProgram, u_viewDirectionProjectionInverse)!;
-const viewProjectionLocation = gl.getUniformLocation(lilgl.instancedProgram, viewProjection)!;
-const instancedColorLocation = gl.getUniformLocation(lilgl.instancedProgram, color)!;
-const instancedEmissiveLocation = gl.getUniformLocation(lilgl.instancedProgram, emissive)!;
-const instancedTextureRepeatLocation = gl.getUniformLocation(lilgl.instancedProgram, textureRepeat);
 
-// SHADOW SETUP
-const light = new Camera(Math.PI / 6, 16 / 9, 1, 400);
-light.position_.set(100, 50, 0);
-light.isUsingLookAt = true;
-light.lookAt(new EnhancedDOMPoint(0, 0, 0));
-light.updateWorldMatrix();
-const lightMatrix = light.worldMatrix.inverse();
-const lightMatrixCopy = lightMatrix.scale(1, 1, 1);
-const lightProjectionMatrix = light.projection.multiply(lightMatrix);
-
-const depthTexture = gl.createTexture();
-gl.bindTexture(gl.TEXTURE_2D, depthTexture);
-gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT32F, 512, 512, 0, gl.DEPTH_COMPONENT, gl.FLOAT, null);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-const depthFramebuffer = gl.createFramebuffer();
-gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer);
-gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, depthTexture, 0);
-
-// END SHADOW SETUP
 
 export function render(camera: Camera, scene: Scene) {
   const viewMatrix = camera.worldMatrix.inverse();
@@ -82,38 +52,27 @@ export function render(camera: Camera, scene: Scene) {
     gl.uniformMatrix4fv(viewDirectionProjectionInverseLocation, false, inverseViewProjection.toFloat32Array());
     gl.bindVertexArray(skybox.vao);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
-  }
+  };
 
-  const renderMesh = (mesh: Mesh | InstancedMesh, projection: DOMMatrix) => {
+  const renderMesh = (mesh: Mesh, projection: DOMMatrix) => {
     // @ts-ignore
-    const isInstancedMesh = mesh.count !== undefined;
-    gl.useProgram(isInstancedMesh ? lilgl.instancedProgram : lilgl.program);
+    gl.useProgram(lilgl.program);
     gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
     const modelViewProjectionMatrix = projection.multiply(mesh.worldMatrix);
 
-    gl.uniform4fv(isInstancedMesh ? instancedColorLocation : colorLocation, mesh.material.color);
-    gl.uniform4fv(isInstancedMesh ? instancedEmissiveLocation : emissiveLocation, mesh.material.emissive);
+    gl.uniform4fv(colorLocation, mesh.material.color);
+    gl.uniform4fv(emissiveLocation, mesh.material.emissive);
     gl.vertexAttrib1f(AttributeLocation.TextureDepth, mesh.material.texture?.id ?? -1.0);
     const textureRepeat = [mesh.material.texture?.textureRepeat.x ?? 1, mesh.material.texture?.textureRepeat.y ?? 1];
-    gl.uniform2fv(isInstancedMesh ? instancedTextureRepeatLocation : textureRepeatLocation, textureRepeat);
+    gl.uniform2fv(textureRepeatLocation, textureRepeat);
 
     gl.bindVertexArray(mesh.geometry.vao!);
 
-    if (isInstancedMesh) {
-      gl.uniformMatrix4fv(viewProjectionLocation, false, projection.toFloat32Array());
-      // @ts-ignore
-      gl.drawElementsInstanced(gl.TRIANGLES, mesh.geometry.getIndices()!.length, gl.UNSIGNED_SHORT, 0, mesh.count);
-    } else {
-      // @ts-ignore
-      gl.uniformMatrix4fv(normalMatrixLocation, true, mesh.color ? mesh.cachedMatrixData : mesh.worldMatrix.inverse().toFloat32Array());
-      gl.uniformMatrix4fv(modelviewProjectionLocation, false, modelViewProjectionMatrix.toFloat32Array());
-      gl.drawElements(gl.TRIANGLES, mesh.geometry.getIndices()!.length, gl.UNSIGNED_SHORT, 0);
-    }
-  }
-  // Render to depth texture
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer);
-  scene.solidMeshes.forEach(mesh => renderMesh(mesh, lightProjectionMatrix));
+    // @ts-ignore
+    gl.uniformMatrix4fv(normalMatrixLocation, true, mesh.color ? mesh.cachedMatrixData : mesh.worldMatrix.inverse().toFloat32Array());
+    gl.uniformMatrix4fv(modelviewProjectionLocation, false, modelViewProjectionMatrix.toFloat32Array());
+    gl.drawElements(gl.TRIANGLES, mesh.geometry.getIndices()!.length, gl.UNSIGNED_SHORT, 0);
+  };
 
   // Render solid meshes first
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);

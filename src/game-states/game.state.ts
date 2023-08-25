@@ -18,8 +18,10 @@ import { clearTemplate } from '@/draw-helpers';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 import { createCastle } from '@/modeling/castle';
 import { createStairs } from '@/modeling/building-blocks';
-import { LeverDoorObject3d } from '@/modeling/lever-door';
+import { DoorData, LeverDoorObject3d } from '@/modeling/lever-door';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
+import { Object3d } from '@/engine/renderer/object-3d';
+import { Material } from '@/engine/renderer/material';
 
 export class GameState implements State {
   player: FirstPersonPlayer;
@@ -41,14 +43,22 @@ export class GameState implements State {
 
     const castle = new Mesh(createCastle().translate_(0, 21).done_(), materials.brickWall);
 
+    const door = () => new Mesh(new MoldableCubeGeometry(4, 7, 1), new Material({ color: [0, 0, 1, 1] }));
+
     this.leverDoors.push(
-      new LeverDoorObject3d(new EnhancedDOMPoint(31, 36, -48), new EnhancedDOMPoint(42, 36.5, -37), -90),
-      new LeverDoorObject3d(new EnhancedDOMPoint(48, 24, 43), new EnhancedDOMPoint(0, 24, 0), -90)
+      new LeverDoorObject3d(new EnhancedDOMPoint(31, 36, -48), [
+        new DoorData(door(), new EnhancedDOMPoint(42, 36.5, -37))
+      ], -90),
+
+      new LeverDoorObject3d(new EnhancedDOMPoint(46, 24, 30), [
+        new DoorData(door(), new EnhancedDOMPoint(0, 24, 3)),
+        new DoorData(door(), new EnhancedDOMPoint(4, 24, 3), 0, -1)
+      ], -90)
     );
-    const doorsFromLeverDoors = this.leverDoors.map(leverDoor => leverDoor.door);
+    const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
 
     this.groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle]));
-    this.scene.add_(floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.leverDoors[0].closedDoorCollisionM, this.leverDoors[0].openDoorCollisionM);
+    this.scene.add_(floor, castle, ...this.leverDoors, ...doorsFromLeverDoors);
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
@@ -65,7 +75,6 @@ export class GameState implements State {
     this.leverDoors.forEach(leverDoor => {
       if (!leverDoor.isPulled) {
         const distance = this.leverPlayerDistance.subtractVectors(this.player.camera.position_, leverDoor.switchPosition).magnitude;
-        debug.innerHTML = distance;
         if (distance < 7 && controls.isConfirm) {
           leverDoor.isPulled = true;
         }

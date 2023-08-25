@@ -7,7 +7,6 @@ import { rect, text } from '@/engine/svg-maker/base';
 import { drawBloodText } from '@/textures';
 
 export class MenuState implements State {
-  private isStartSelected = true;
 
   onEnter() {
     const nextRow = createColumn('50%', 280, 60);
@@ -24,35 +23,15 @@ export class MenuState implements State {
         dur="40s"
         repeatCount="indefinite" />`;
     });
-  }
 
-  onUpdate() {
-    this.updateControls();
-    try {
-      if (this.isStartSelected) {
-        start.style.fill = 'red';
-        fullscreen.style.fill = '#333';
-      } else {
-        start.style.fill = '#333';
-        fullscreen.style.fill = 'red';
-      }
-    } catch(e) {}
-  }
+    start.onclick = () => {
+      drawLoadingScreen();
+      setTimeout(() => gameStateMachine.setState(gameStates.gameState), 10);
+    };
 
-  updateControls() {
-    if ((controls.isUp && !controls.previousState.isUp)
-      || (controls.isDown && !controls.previousState.isDown)) {
-      this.isStartSelected = !this.isStartSelected;
-    }
-
-    if (controls.isConfirm && !controls.previousState.isConfirm) {
-      if (this.isStartSelected) {
-        drawLoadingScreen();
-        setTimeout(() => gameStateMachine.setState(gameStates.gameState));
-      } else {
-        this.toggleFullscreen();
-      }
-    }
+    fullscreen.onclick = () => {
+      this.toggleFullscreen();
+    };
   }
 
   toggleFullscreen() {
@@ -62,4 +41,6 @@ export class MenuState implements State {
       document.exitFullscreen();
     }
   }
+
+  onUpdate(): void {}
 }

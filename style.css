@@ -18,3 +18,12 @@ svg {
     font-size: 80px;
     font-weight: bold;
 }
+
+#fullscreen,#start {
+    fill: #333;
+    cursor: pointer;
+}
+
+#fullscreen:hover,#start:hover {
+    fill: red;
+}
