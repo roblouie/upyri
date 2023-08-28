@@ -5,28 +5,28 @@ export const mergeCubes = (cubes: MoldableCubeGeometry[]) => cubes.reduce((acc, 
 
 export class SegmentedWall extends MoldableCubeGeometry {
   totalWidth = 0;
-  constructor(segmentWidth: number[], segmentHeight: number, topSegments: number[], bottomSegments: number[], startingX = 0,startingY = 0, depth = 2) {
+  constructor(segmentWidths: number[], segmentHeight: number, topSegments: number[], bottomSegments: number[], startingX = 0,startingY = 0, depth = 2, segmentTop = false, segmentBottom = false) {
     let runningSide = 0;
     let runningLeft = 0;
 
-    super(segmentWidth[0], topSegments[0], depth, 6, 1, 1, 6);
+    super(segmentWidths[0], topSegments[0], depth, segmentTop ? 6 : 1, 1, 1, 6);
     this.translate_(0, segmentHeight - topSegments[0] / 2 + startingY).spreadTextureCoords();
 
     topSegments.forEach((top, index) => {
-      const currentWidth = segmentWidth.length === 1 ? segmentWidth[0] : segmentWidth[index];
+      const currentWidth = segmentWidths.length === 1 ? segmentWidths[0] : segmentWidths[index];
       if (index > 0 && top > 0) {
-        this.merge(new MoldableCubeGeometry(currentWidth, top, depth,6,1,1,6).translate_(startingX + runningSide + (currentWidth / 2), segmentHeight - top / 2 + startingY).spreadTextureCoords());
+        this.merge(new MoldableCubeGeometry(currentWidth, top, depth,segmentTop ? 6 : 1,1,1,6).translate_(startingX + runningSide + (currentWidth / 2), segmentHeight - top / 2 + startingY).spreadTextureCoords());
       }
 
       if (bottomSegments[index] > 0) {
-        this.merge(new MoldableCubeGeometry(currentWidth, bottomSegments[index], depth, 6, 1, 1, 6).translate_(startingX + runningSide + (currentWidth / 2), bottomSegments[index] / 2 + startingY).spreadTextureCoords());
+        this.merge(new MoldableCubeGeometry(currentWidth, bottomSegments[index], depth, segmentBottom ? 6 : 1, 1, 1, 6).translate_(startingX + runningSide + (currentWidth / 2), bottomSegments[index] / 2 + startingY).spreadTextureCoords());
       }
       runningSide+= (index === 0 ? currentWidth / 2 : currentWidth);
       runningLeft += currentWidth;
     });
 
     this.totalWidth = runningLeft;
-    this.all_().translate_((segmentWidth[0] - runningLeft) / 2, 0).computeNormals().done_();
+    this.all_().translate_((segmentWidths[0] - runningLeft) / 2, 0).computeNormals().done_();
   }
 }
 

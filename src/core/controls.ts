@@ -13,7 +13,6 @@ class Controls {
   private onMouseMoveCallback?: (mouseMovement: EnhancedDOMPoint) => void;
 
   keyMap: Map<string, boolean> = new Map();
-  previousState = { isUp: this.isUp, isDown: this.isDown, isConfirm: this.isConfirm, isEscape: this.isEscape };
 
   constructor() {
     document.addEventListener('keydown', event => this.toggleKey(event, true));
@@ -31,11 +30,6 @@ class Controls {
   }
 
   queryController() {
-    this.previousState.isUp = this.isUp;
-    this.previousState.isDown = this.isDown;
-    this.previousState.isConfirm = this.isConfirm;
-    this.previousState.isEscape = this.isEscape;
-
     const leftVal = (this.keyMap.get('KeyA') || this.keyMap.get('ArrowLeft')) ? -1 : 0;
     const rightVal = (this.keyMap.get('KeyD') || this.keyMap.get('ArrowRight')) ? 1 : 0;
     const upVal = (this.keyMap.get('KeyW') || this.keyMap.get('ArrowUp')) ? -1 : 0;

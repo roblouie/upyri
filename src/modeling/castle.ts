@@ -155,8 +155,83 @@ export function createCastle() {
     // Left Wall
     .merge(hollowCastleWall(-42))
     .merge(hollowCastleWall(42))
+    .merge(castleKeep())
     .done_();
 }
+
+function castleKeep() {
+  return corner([
+    [
+      [
+        [38], [12], [0],
+      ],
+      [
+        [15, 8, 15], [12, 5, 12], [0],
+      ],
+      [
+        [50], [12], [0],
+      ],
+      [
+        [50], [12], [0],
+      ],
+    ],
+    [
+      [
+        [8, 1, 6, 1, 6, 1, 6, 1, 8], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0],
+      ],
+      [
+        [8, 1, 6, 1, 6, 1, 6, 1, 8], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0],
+      ],
+      [
+        [9, 1, 9, 1, 10, 1, 9, 1, 9], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0]
+      ],
+      [
+        [9, 1, 9, 1, 10, 1, 9, 1, 9], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0]
+      ],
+    ]
+  ], true)
+    .merge(
+      new SegmentedWall([12, 14, 12], 54, [54, 3, 54], [0, 35, 0], 0, 0, 1)
+        .rotate_(Math.PI / 2)
+        .translate_(0, 23, -27)
+    )
+    .merge(corner([
+        // first floor
+        [
+          [
+            [6, 4, 6], [12, 5, 12], [0],
+          ],
+          [
+            [16], [12], [0],
+          ],
+          [
+            [13], [12], [0],
+          ],
+          [
+            [13], [12], [0],
+          ]
+        ],
+        // second floor
+        [
+          [
+            [6, 4, 6], [12, 5, 12], [0],
+          ],
+          [
+            [6, 4, 6], [12, 5, 12], [0],
+          ],
+          [
+            [13], [12], [0],
+          ],
+          [
+            [13], [12], [0],
+          ]
+        ],
+      ], true)
+        .translate_(0, 12, 16.5)
+    )
+    .translate_(0, 0, 8);
+}
+
 
 export function createCastleFloors(width_: number, depth: number, skipMiddle?: boolean, cylindrify?: boolean) {
   const cyli = (cube: MoldableCubeGeometry) => cylindrify ? cube.cylindrify(12) : cube;
@@ -168,9 +243,9 @@ function patternFill(pattern: number[], times: number) {
   return doTimes(times, (index) => pattern[index % pattern.length]);
 }
 
-export function castleTopper(length: number, startingHeight: number, zPos: number) {
+export function castleTopper(length: number, startingHeight: number, zPos: number, isRounded = false) {
   const segmentWidths = patternFill([1, 2], length * 2);
-  return new SegmentedWall(segmentWidths, 3, patternFill([1, 3], segmentWidths.length / 3), [0, 0], 0, 0)
+  return new SegmentedWall(segmentWidths, 3, patternFill([1, 3], segmentWidths.length / 3), [0, 0], 0, 0, 2, isRounded, isRounded)
     .rotate_(0, 0, Math.PI)
     .translate_(0, startingHeight + 3, zPos)
     .computeNormals();
@@ -178,8 +253,8 @@ export function castleTopper(length: number, startingHeight: number, zPos: numbe
 
 export function solidCastleWall(z: number, hasDoor?: boolean) {
   return new SegmentedWall([25, 12, 25], 11.5, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, 0, 8)
-    .merge(castleTopper(hasDoor ? 54 : 58, 11.5, 4).translate_(hasDoor ? -4 : 0))
-    .merge(castleTopper(hasDoor ? 61 : 58, 11.5, -4))
+    .merge(castleTopper(hasDoor ? 54 : 58, 12, 4).translate_(hasDoor ? -4 : 0))
+    .merge(castleTopper(hasDoor ? 61 : 58, 12, -4))
     .translate_(0,0, z)
     .done_();
 }
@@ -205,7 +280,7 @@ export function hollowCastleWall(x: number) {
 export function corner(floors: number[][][][], isTopped?: boolean, isRounded?: boolean) {
   const rooms = floors.map((walls, floorNumber) => {
     const segmentedWalls = walls.map(wall => {
-      return new SegmentedWall(wall[0], 12, wall[1], wall[2], 0, floorNumber * 12);
+      return new SegmentedWall(wall[0], 12, wall[1], wall[2], 0, floorNumber * 12, 2, isRounded, isRounded);
     });
 
     // @ts-ignore
@@ -214,10 +289,10 @@ export function corner(floors: number[][][][], isTopped?: boolean, isRounded?: b
 
   if (isTopped) {
     const top = createBox(
-      castleTopper(24, 24, 0),
-      castleTopper(24, 24, 0),
-      castleTopper(20, 24, 0),
-      castleTopper(20, 24, 0),
+      castleTopper(getSize(floors[0][0][0]) + 2, 24, 0, isRounded),
+      castleTopper(getSize(floors[0][0][0]) + 2, 24, 0, isRounded),
+      castleTopper(getSize(floors[0][2][0]), 24, 0, isRounded),
+      castleTopper(getSize(floors[0][2][0]), 24, 0, isRounded),
     );
     rooms.push(isRounded ? tubify(top,  11, 12, 14) : top);
   }
