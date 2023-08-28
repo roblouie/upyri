@@ -39,7 +39,7 @@ export class GameState implements State {
   async onEnter() {
     const heightmap = await newNoiseLandscape(256, 5, 0.04, 1, NoiseType.Fractal, 90);
     const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap).spreadTextureCoords(), materials.grass);
-    const floorCollision = new Mesh( new PlaneGeometry(1024, 1024, 4, 4).translate_(0, 21).done_(), materials.grass);
+    const floorCollision = new Mesh( new PlaneGeometry(1024, 1024, 4, 4).translate_(0, 20.5).done_(), materials.grass);
 
     const castle = new Mesh(createCastle().translate_(0, 21).done_(), materials.brickWall);
 

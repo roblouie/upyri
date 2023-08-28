@@ -5,6 +5,7 @@ import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 import { Face } from '@/engine/physics/face';
 import { getGroupedFaces, meshToFaces } from '@/engine/physics/parse-faces';
+import { sadGhostAudio2 } from '@/sound-effects';
 
 export class DoorData extends Object3d {
   swapHingeSideX: -1 | 1;
@@ -46,6 +47,8 @@ export class LeverDoorObject3d extends Object3d {
   openDoorCollisionMs: Mesh[];
   closedDoorCollision: Face[];
   openDoorCollision: Face[];
+  audioPlayer: AudioBufferSourceNode;
+
 
   constructor(switchPosition: EnhancedDOMPoint, doorDatas: DoorData[], switchRotationDegrees = 0) {
     const base = new Mesh(new MoldableCubeGeometry(1, 2, 1), new Material({ color: [0, 1, 0, 1] }));
@@ -64,6 +67,10 @@ export class LeverDoorObject3d extends Object3d {
 
     this.closedDoorCollision = getGroupedFaces(meshToFaces(this.closedDoorCollisionMs)).wallFaces;
     this.openDoorCollision = getGroupedFaces(meshToFaces(this.openDoorCollisionMs)).wallFaces;
+
+    this.audioPlayer = sadGhostAudio2(switchPosition);
+    // this.audioPlayer.loop = true;
+    // this.audioPlayer.start();
   }
 
   update(){

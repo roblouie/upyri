@@ -2,31 +2,33 @@ import { Camera } from '@/engine/renderer/camera';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { Face } from '@/engine/physics/face';
 import { controls } from '@/core/controls';
-import { Mesh } from '@/engine/renderer/mesh';
-import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
-import { Material } from '@/engine/renderer/material';
 import { findFloorHeightAtPosition, findWallCollisionsFromList } from '@/engine/physics/surface-collision';
 import { audioCtx } from '@/engine/audio/audio-player';
 import { clamp } from '@/engine/helpers';
+import { indoorFootsteps, outsideFootsteps } from '@/sound-effects';
 
 
 export class FirstPersonPlayer {
   isJumping = false;
   feetCenter = new EnhancedDOMPoint(0, 0, 0);
   velocity = new EnhancedDOMPoint(0, 0, 0);
-  angle = 0;
 
-  mesh: Mesh;
+  // mesh: Mesh;
   camera: Camera;
   private cameraRotation = new EnhancedDOMPoint(0, 0, 0);
-
   listener: AudioListener;
+  footstepsPlayer;
+  isOnDirt = true;
 
   constructor(camera: Camera) {
-    this.mesh = new Mesh(new MoldableCubeGeometry(0.3, 1, 0.3), new Material());
     this.feetCenter.y = 45;
     this.camera = camera;
     this.listener = audioCtx.listener;
+
+    this.footstepsPlayer = outsideFootsteps();
+    this.footstepsPlayer.loop = true;
+    this.footstepsPlayer.start();
+    this.footstepsPlayer.playbackRate.value = 0;
 
     const rotationSpeed = 0.005;
     controls.onMouseMove(mouseMovement => {
@@ -39,14 +41,29 @@ export class FirstPersonPlayer {
   update(groupedFaces: { floorFaces: Face[]; wallFaces: Face[] }) {
     // debug.innerHTML = this.feetCenter.y;
     this.updateVelocityFromControls();
+
+    if (!this.isJumping && this.velocity.magnitude > 0) {
+      this.footstepsPlayer.playbackRate.value = 1;
+      // if (!this.footstepsPlayer.loop) {
+      //   this.footstepsPlayer.start();
+      // }
+      // this.footstepsPlayer.loop = true;
+    } else {
+      this.footstepsPlayer.playbackRate.value = 0;
+      // this.footstepsPlayer.loop = false;
+    }
+
+    debug.innerHTML = `${ this.footstepsPlayer.playbackRate.value} / ${this.velocity.magnitude}`;
+
+
+
     this.velocity.y -= 0.003; // gravity
     this.feetCenter.add_(this.velocity);
+
+
     this.collideWithLevel(groupedFaces);
 
-    this.mesh.position_.set(this.feetCenter);
-    this.mesh.position_.y += 0.5; // move up by half height so mesh ends at feet position
-
-    this.camera.position_ = this.mesh.position_;
+    this.camera.position_.set(this.feetCenter);
     this.camera.position_.y += 3.5;
 
 
@@ -73,6 +90,7 @@ export class FirstPersonPlayer {
 
     const floorData = findFloorHeightAtPosition(groupedFaces!.floorFaces, this.feetCenter);
     if (!floorData) {
+      this.isJumping = true;
       return;
     }
 
@@ -81,22 +99,31 @@ export class FirstPersonPlayer {
     if (collisionDepth > 0) {
       this.feetCenter.y += collisionDepth;
       this.velocity.y = 0;
+
+      if (this.isOnDirt && floorData.height > 21) {
+        this.footstepsPlayer.stop();
+        this.footstepsPlayer = indoorFootsteps();
+        this.footstepsPlayer.loop = true;
+        this.footstepsPlayer.start();
+        this.isOnDirt = false;
+      }
+
+      if (!this.isOnDirt && floorData.height === 21) {
+        this.footstepsPlayer.stop();
+        this.footstepsPlayer = outsideFootsteps();
+        this.footstepsPlayer.loop = true;
+        this.footstepsPlayer.start();
+        this.isOnDirt = true;
+      }
+
       this.isJumping = false;
+    } else {
+      this.isJumping = true;
     }
   }
 
   protected updateVelocityFromControls() {
     const speed = 0.2;
-
-    const mag = controls.inputDirection.magnitude;
-    // const inputAngle = Math.atan2(-controls.direction.x, -controls.direction.z);
-    // const playerCameraDiff = this.mesh.position.clone().subtract(this.camera.position);
-    // const playerCameraAngle = Math.atan2(playerCameraDiff.x, playerCameraDiff.z);
-    //
-    // if (controls.direction.x !== 0 || controls.direction.z !== 0) {
-    //   this.angle = inputAngle + playerCameraAngle;
-    // }
-
 
     const depthMovementZ = Math.cos(this.cameraRotation.y) * controls.inputDirection.y * speed;
     const depthMovementX = Math.sin(this.cameraRotation.y) * controls.inputDirection.y * speed;
@@ -107,8 +134,6 @@ export class FirstPersonPlayer {
     this.velocity.z = depthMovementZ + sidestepZ;
     this.velocity.x = depthMovementX + sidestepX;
 
-    this.mesh.setRotation_(0, this.cameraRotation.y, 0);
-
     if (controls.isJump) {
       if (!this.isJumping) {
         this.velocity.y = 0.15;
@@ -118,19 +143,15 @@ export class FirstPersonPlayer {
   }
 
   private updateAudio() {
-    this.listener.positionX.value = this.mesh.position_.x;
-    this.listener.positionY.value = this.mesh.position_.y;
-    this.listener.positionZ.value = this.mesh.position_.z;
+    this.listener.positionX.value = this.camera.position_.x;
+    this.listener.positionY.value = this.camera.position_.y;
+    this.listener.positionZ.value = this.camera.position_.z;
 
-    // const cameraDireciton = new EnhancedDOMPoint();
-    // cameraDireciton.setFromRotationMatrix(this.camera.rotationMatrix);
+    const lookingDirection = new EnhancedDOMPoint(0, 0, -1);
+    const result = this.camera.rotationMatrix.transformPoint(lookingDirection);
 
-    const {x, z} = this.mesh.position_.clone_()
-      .subtract(this.camera.position_) // distance from camera to player
-      .normalize_(); // direction of camera to player
-
-    this.listener.forwardX.value = x;
-    // this.listener.forwardY.value = cameraDireciton.y;
-    this.listener.forwardZ.value = z;
+    this.listener.forwardX.value = result.x;
+    this.listener.forwardY.value = result.y;
+    this.listener.forwardZ.value = result.z;
   }
 }
