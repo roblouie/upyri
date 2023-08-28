@@ -38,24 +38,24 @@ export class FirstPersonPlayer {
     });
   }
 
+  private isFootstepsStopped = true;
+
   update(groupedFaces: { floorFaces: Face[]; wallFaces: Face[] }) {
     // debug.innerHTML = this.feetCenter.y;
     this.updateVelocityFromControls();
 
     if (!this.isJumping && this.velocity.magnitude > 0) {
-      this.footstepsPlayer.playbackRate.value = 1;
-      // if (!this.footstepsPlayer.loop) {
-      //   this.footstepsPlayer.start();
-      // }
-      // this.footstepsPlayer.loop = true;
+      if (this.isFootstepsStopped) {
+        this.footstepsPlayer.stop();
+        this.footstepsPlayer = this.determineFootstepPlayer(this.feetCenter.y);
+        this.footstepsPlayer.loop = true;
+        this.footstepsPlayer.start();
+        this.isFootstepsStopped = false;
+      }
     } else {
-      this.footstepsPlayer.playbackRate.value = 0;
-      // this.footstepsPlayer.loop = false;
+      this.isFootstepsStopped = true;
+      this.footstepsPlayer.loop = false;
     }
-
-    debug.innerHTML = `${ this.footstepsPlayer.playbackRate.value} / ${this.velocity.magnitude}`;
-
-
 
     this.velocity.y -= 0.003; // gravity
     this.feetCenter.add_(this.velocity);
@@ -102,7 +102,7 @@ export class FirstPersonPlayer {
 
       if (this.isOnDirt && floorData.height > 21) {
         this.footstepsPlayer.stop();
-        this.footstepsPlayer = indoorFootsteps();
+        this.footstepsPlayer = this.determineFootstepPlayer(floorData.height)
         this.footstepsPlayer.loop = true;
         this.footstepsPlayer.start();
         this.isOnDirt = false;
@@ -110,7 +110,7 @@ export class FirstPersonPlayer {
 
       if (!this.isOnDirt && floorData.height === 21) {
         this.footstepsPlayer.stop();
-        this.footstepsPlayer = outsideFootsteps();
+        this.footstepsPlayer = this.determineFootstepPlayer(floorData.height)
         this.footstepsPlayer.loop = true;
         this.footstepsPlayer.start();
         this.isOnDirt = true;
@@ -119,6 +119,14 @@ export class FirstPersonPlayer {
       this.isJumping = false;
     } else {
       this.isJumping = true;
+    }
+  }
+
+  determineFootstepPlayer(height: number) {
+    if (height === 21) {
+      return outsideFootsteps();
+    } else {
+      return indoorFootsteps();
     }
   }
 
@@ -148,10 +156,10 @@ export class FirstPersonPlayer {
     this.listener.positionZ.value = this.camera.position_.z;
 
     const lookingDirection = new EnhancedDOMPoint(0, 0, -1);
-    const result = this.camera.rotationMatrix.transformPoint(lookingDirection);
+    const result_ = this.camera.rotationMatrix.transformPoint(lookingDirection);
 
-    this.listener.forwardX.value = result.x;
-    this.listener.forwardY.value = result.y;
-    this.listener.forwardZ.value = result.z;
+    this.listener.forwardX.value = result_.x;
+    this.listener.forwardY.value = result_.y;
+    this.listener.forwardZ.value = result_.z;
   }
 }
