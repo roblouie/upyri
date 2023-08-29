@@ -5,15 +5,22 @@ import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 import { Face } from '@/engine/physics/face';
 import { getGroupedFaces, meshToFaces } from '@/engine/physics/parse-faces';
-import { sadGhostAudio2 } from '@/sound-effects';
+import {
+  doorCreak,
+  draggingSound,
+  draggingSound2,
+  draggingSound3,
+  draggingSound4,
+  sadGhostAudio2
+} from '@/sound-effects';
 
 export class DoorData extends Object3d {
   swapHingeSideX: -1 | 1;
   swapHingeSideZ: -1 | 1;
   closedDoorCollisionM: Mesh;
   openDoorCollisionM: Mesh;
-  closedDoorCollision: Face[];
-  openDoorCollision: Face[];
+  dragPlayer: AudioBufferSourceNode;
+  creakPlayer: AudioBufferSourceNode;
 
   constructor(doorMesh: Mesh, position_: EnhancedDOMPoint, swapHingeSideX: 1 | -1 = 1, swapHingeSideZ: 1 | -1 = 1) {
     super(doorMesh);
@@ -35,6 +42,9 @@ export class DoorData extends Object3d {
         .translate_(position_.x - 2 * swapHingeSideX, position_.y, position_.z - 2 * swapHingeSideZ)
         .done_()
       , new Material({ color: [0, 1, 1, 1]}));
+
+    this.dragPlayer = draggingSound4(position_);
+    this.creakPlayer = doorCreak(position_);
   }
 }
 
@@ -68,9 +78,16 @@ export class LeverDoorObject3d extends Object3d {
     this.closedDoorCollision = getGroupedFaces(meshToFaces(this.closedDoorCollisionMs)).wallFaces;
     this.openDoorCollision = getGroupedFaces(meshToFaces(this.openDoorCollisionMs)).wallFaces;
 
-    this.audioPlayer = sadGhostAudio2(switchPosition);
-    // this.audioPlayer.loop = true;
-    // this.audioPlayer.start();
+    this.audioPlayer = draggingSound2(switchPosition);
+  }
+
+  pullLever() {
+    this.isPulled = true;
+    this.audioPlayer.start();
+    this.doorDatas.forEach(door => {
+      door.dragPlayer.start();
+      door.creakPlayer.start();
+    });
   }
 
   update(){

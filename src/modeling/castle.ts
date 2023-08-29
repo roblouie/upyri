@@ -253,8 +253,8 @@ export function castleTopper(length: number, startingHeight: number, zPos: numbe
 
 export function solidCastleWall(z: number, hasDoor?: boolean) {
   return new SegmentedWall([25, 12, 25], 11.5, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, 0, 8)
-    .merge(castleTopper(hasDoor ? 54 : 58, 12, 4).translate_(hasDoor ? -4 : 0))
-    .merge(castleTopper(hasDoor ? 61 : 58, 12, -4))
+    .merge(castleTopper(hasDoor ? 54 : 58, 11.5, 4).translate_(hasDoor ? -4 : 0))
+    .merge(castleTopper(hasDoor ? 61 : 58, 11.5, -4))
     .translate_(0,0, z)
     .done_();
 }

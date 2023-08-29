@@ -4,7 +4,7 @@ import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 export const audioCtx = new AudioContext();
 
 // zzfxV - global volume
-const zzfxV=.3
+const zzfxV=.5
 
 // zzfxR - global sample rate
 const zzfxR=44100
@@ -31,7 +31,6 @@ export function createPannerNode(buffer: number[]) {
       coneOuterGain: 0.4
     });
     const node = zzfxP(buffer);
-    node.loop = true;
     node.connect(panner).connect(audioCtx.destination);
     return node;
   }
