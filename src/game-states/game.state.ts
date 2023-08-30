@@ -104,7 +104,7 @@ export class GameState implements State {
     this.scene.updateWorldMatrix();
 
     render(this.player.camera, this.scene);
-    debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
+    // debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
 
     if (controls.isEscape) {
       gameStateMachine.setState(gameStates.menuState);

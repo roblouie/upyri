@@ -62,7 +62,7 @@ const night = 'black';
 function castleSign() {
   return toImage(
     svg({ width_: textureSize, height_: textureSize },
-      drawBloodText({ x: 10, y: '-40%', style: 'font-size: 120px; transform: scaleY(-1.5); font-family: sans-serif' }, 'CASTLE', 50)
+      drawBloodText({ x: 10, y: '30%', style: 'font-size: 120px; transform: scaleY(1.5); font-family: sans-serif' }, 'CASTLE', 50)
     )
   )
 }
@@ -70,7 +70,7 @@ function castleSign() {
 function handprint() {
   return toImage(
     svg({ width_: textureSize, height_: textureSize },
-      drawBloodText({ x: 10, y: '-40%', style: 'font-size: 120px; transform: scaleY(-1.5); font-family: sans-serif' }, '🖐️', 50)
+      drawBloodText({ x: 10, y: '30%', style: 'font-size: 120px; transform: scaleY(1.5); font-family: sans-serif' }, '🖐️', 50)
     )
   )
 }
@@ -213,7 +213,7 @@ export function drawGrass() {
 function tileTest() {
   return toImage(svg({ width_: 512, height_: 512 },
     `<pattern id="pattern" width="160" height="256" patternUnits="userSpaceOnUse">
-        <path d="m 0 246 h 148 V 125 H 0 V112 h72 V0 h15 v112 h 74 V 0 H 0" stroke="red" stroke-width="1"/>
+        <path d="m 0 246 h 148 V 125 H 0 V112 h72 V0 h15 v112 h 74 V 0 H 0"/>
     </pattern>` +
     filter({ id_: 'rock', x: 0, y: 0, width_: '100%', height_: '100%' },
       `<feDropShadow dx="1" dy="1" result="s"/>` +

@@ -28,6 +28,7 @@ gl.enable(gl.CULL_FACE);
 gl.enable(gl.DEPTH_TEST);
 gl.enable(gl.BLEND);
 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 const modelviewProjectionLocation = gl.getUniformLocation(lilgl.program, modelviewProjection)!;
 const normalMatrixLocation =  gl.getUniformLocation(lilgl.program, normalMatrix)!;
 const colorLocation =  gl.getUniformLocation(lilgl.program, color)!;
