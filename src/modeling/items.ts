@@ -2,6 +2,7 @@ import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 import { Mesh } from '@/engine/renderer/mesh';
 import { Material } from '@/engine/renderer/material';
 import { SegmentedWall } from '@/modeling/building-blocks';
+import { materials } from "@/textures";
 
 export function stake() {
   return new Mesh(new MoldableCubeGeometry(0.5, 0.5, 2, 2, 2)
@@ -9,9 +10,10 @@ export function stake() {
     .translate_(0, 0, 1)
     .scale_(1, 0, 1)
     .all_()
+    .spreadTextureCoords()
     .rotate_(0, -1)
     .translate_(-40, 21.5, -53)
-    .done_(), new Material({ color: [1, 0, 0, 1] }));
+    .done_(), materials.wood);
 }
 
 export function key() {
@@ -23,5 +25,5 @@ export function key() {
       .rotate_(0, Math.PI / 2)
       .translate_(-24,36,48.5)
       .done_(),
-    new Material({ color: [1, 1, 0, 1] }));
+    materials.stone);
 }

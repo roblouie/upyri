@@ -38,10 +38,12 @@ export async function initTextures() {
   // materials.grass.texture!.textureRepeat.x = 160;
   // materials.grass.texture!.textureRepeat.y = 10;
 
-  materials.brickWall = new Material({ texture: textureLoader.load_(await tileTest())});
+  materials.brickWall = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(true, true))});
+  materials.stone = new Material({texture: textureLoader.load_(await bricksRocksPlanksWood(true, false))});
+  materials.wood = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(false, false))});
+  materials.planks = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(false, true))});
   materials.castleWriting = new Material({ texture: textureLoader.load_(await castleSign()), isTransparent: true });
   materials.handprint = new Material({ texture: textureLoader.load_(await handprint()), isTransparent: true });
-  // materials.brickWall.texture!.textureRepeat.y = 2;
 
   const testSlicer = drawSkyboxHor();
   const horSlices = [await testSlicer(), await testSlicer(), await testSlicer(), await testSlicer()];
@@ -210,21 +212,29 @@ export function drawGrass() {
   ));
 }
 
-function tileTest() {
-  return toImage(svg({ width_: 512, height_: 512 },
-    `<pattern id="pattern" width="160" height="256" patternUnits="userSpaceOnUse">
+function getPattern(width = 160, height = 256) {
+  return `<pattern id="pattern" width="${width}" height="${height}" patternUnits="userSpaceOnUse">
         <path d="m 0 246 h 148 V 125 H 0 V112 h72 V0 h15 v112 h 74 V 0 H 0"/>
-    </pattern>` +
-    filter({ id_: 'rock', x: 0, y: 0, width_: '100%', height_: '100%' },
-      `<feDropShadow dx="1" dy="1" result="s"/>` +
-      feTurbulence({ type_: NoiseType.Fractal, baseFrequency: 0.007, numOctaves_: 9, stitchTiles_: 'stitch' }),
-      feComposite({ in: 's', operator: 'arithmetic', k2: 0.5, k3: 0.5 }),
-      feComponentTransfer({}, feFunc('A', 'table', [0, .1, .2, .3, .4, .2, .4, .2, .4])),
-      feDiffuseLighting({ surfaceScale: 2.5, lightingColor: '#ffd'},
-        feDistantLight(265, 4),
-      ),
+    </pattern>`
+}
+
+function rockWoodFilter(isRock = true) {
+  return filter({ id_: 'rw', x: 0, y: 0, width_: '100%', height_: '100%' },
+    `<feDropShadow dx="${isRock ? 1 : 300}" dy="${isRock ? 1 : 930}" result="s"/>` +
+    feTurbulence({ type_: NoiseType.Fractal, baseFrequency: isRock ? 0.007 : [0.1, 0.007], numOctaves_: isRock ? 9 : 6, stitchTiles_: 'stitch' }),
+    feComposite({ in: 's', operator: 'arithmetic', k2: isRock ? 0.5 : 0.5, k3: 0.5 }),
+    feComponentTransfer({}, feFunc('A', 'table', [0, .1, .2, .3, .4, .2, .4, .2, .4])),
+    feDiffuseLighting({ surfaceScale: 2.5, lightingColor: isRock ? '#ffd' : '#6e5e42' },
+      feDistantLight(isRock ? 265 : 110, isRock ? 4 : 10),
     ),
-    rect({ x: 0, y: 0, width_: '100%', height_: '100%', fill: 'url(#pattern)', filter: 'rock' })
+  )
+}
+
+function bricksRocksPlanksWood(isRock = true, isPattern = true) {
+  return toImage(svg({ width_: 512, height_: 512 },
+    (isPattern ? getPattern( isRock ? 160 : 75, isRock ? 256 : 1) : '') +
+    rockWoodFilter(isRock),
+    rect({ x: 0, y: 0, width_: '100%', height_: '100%', fill: isPattern ? 'url(#pattern)' : undefined, filter: 'rw' })
   ));
 }
 

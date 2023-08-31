@@ -13,6 +13,7 @@ import {
   draggingSound4,
   sadGhostAudio2
 } from '@/sound-effects';
+import { materials } from "@/textures";
 
 export class DoorData extends Object3d {
   swapHingeSideX: -1 | 1;
@@ -61,8 +62,8 @@ export class LeverDoorObject3d extends Object3d {
 
 
   constructor(switchPosition: EnhancedDOMPoint, doorDatas: DoorData[], switchRotationDegrees = 0) {
-    const base = new Mesh(new MoldableCubeGeometry(1, 2, 1), new Material({ color: [0, 1, 0, 1] }));
-    const lever = new Mesh(new MoldableCubeGeometry(1, 1, 4, 3, 3).cylindrify(0.25, 'z').done_(), new Material({ color: [1, 0, 0, 1] }));
+    const base = new Mesh(new MoldableCubeGeometry(1, 2, 1).spreadTextureCoords(), materials.stone);
+    const lever = new Mesh(new MoldableCubeGeometry(1, 1, 4, 3, 3).cylindrify(0.25, 'z').spreadTextureCoords().done_(), materials.wood);
     super(base, lever);
 
     this.doorDatas = doorDatas;
@@ -93,8 +94,8 @@ export class LeverDoorObject3d extends Object3d {
   update(){
     if (this.isPulled && !this.isFinished) {
       this.doorDatas.forEach(door => {
-        door.rotation_.y += 0.6 * door.swapHingeSideX * door.swapHingeSideZ;
-        this.children_[1].rotation_.x += 0.6;
+        door.rotation_.y += door.swapHingeSideZ * door.swapHingeSideX;
+        this.children_[1].rotation_.x += 1 / this.doorDatas.length;
         if (Math.abs(door.rotation_.y) >= 90) {
           this.isFinished = true;
         }
