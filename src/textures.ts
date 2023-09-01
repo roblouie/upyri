@@ -7,7 +7,8 @@ import {
   feDiffuseLighting,
   feDisplacementMap,
   feDistantLight,
-  feFunc, feMorphology,
+  feFunc,
+  feMorphology,
   feTurbulence,
   filter,
   group,
@@ -18,7 +19,9 @@ import {
   rect,
   svg,
   SvgAttributes,
-  svgStop, SvgTextAttributes, text
+  svgStop,
+  SvgTextAttributes,
+  text
 } from '@/engine/svg-maker/base';
 import { toImage } from '@/engine/svg-maker/converters';
 import { doTimes } from '@/engine/helpers';
@@ -44,6 +47,7 @@ export async function initTextures() {
   materials.planks = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(false, true))});
   materials.castleWriting = new Material({ texture: textureLoader.load_(await castleSign()), isTransparent: true });
   materials.handprint = new Material({ texture: textureLoader.load_(await handprint()), isTransparent: true });
+  materials.face = new Material({ texture: textureLoader.load_(await face())})
 
   const testSlicer = drawSkyboxHor();
   const horSlices = [await testSlicer(), await testSlicer(), await testSlicer(), await testSlicer()];
@@ -219,7 +223,7 @@ function getPattern(width = 160, height = 256) {
 }
 
 function rockWoodFilter(isRock = true) {
-  return filter({ id_: 'rw', x: 0, y: 0, width_: '100%', height_: '100%' },
+  return filter(fullSize({ id_: 'rw' }),
     `<feDropShadow dx="${isRock ? 1 : 300}" dy="${isRock ? 1 : 930}" result="s"/>` +
     feTurbulence({ type_: NoiseType.Fractal, baseFrequency: isRock ? 0.007 : [0.1, 0.007], numOctaves_: isRock ? 9 : 6, stitchTiles_: 'stitch' }),
     feComposite({ in: 's', operator: 'arithmetic', k2: isRock ? 0.5 : 0.5, k3: 0.5 }),
@@ -256,4 +260,32 @@ export function drawBloodText(attributes: SvgTextAttributes, textToDisplay: stri
     group({ filter: 'b' },
       text({ style: 'font-size: 360px; transform: scaleY(1.5);', ...attributes, filter: 'd' }, textToDisplay)
     );
+}
+
+export function face() {
+    return toImage(svg({ width_: 512, height_: 512, style: 'filter: invert()', viewBox: '0 0 512 512' },
+      filter({ id_: 'filter', x: '-0.1%', primitiveUnits: 'objectBoundingBox', width_: '100%', height_: '100%'},
+          feTurbulence({ seed_: 7, type_: NoiseType.Fractal, baseFrequency: 0.005, numOctaves_: 5, result: 'n'}),
+          feComposite({ in: 'SourceAlpha', operator: 'in' }),
+          feDisplacementMap({ in2: 'n', scale_: 1 })
+        ),
+      rect(fullSize({ id_: 'l', filter: 'filter' })),
+      rect({ fill: '#fff', width_: '100%', height_: '100%' }),
+    `
+    <use href="#l" x="33%" y="15" transform="scale(1.5, 1.3)"></use>
+    <use href="#l" x="-33%" y="15" transform="rotate(.1) scale(-1.5 1.3)"></use>`
+    ));
+
+    return toImage(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512px" height="512px" style="filter: invert()">
+  <filter id="filter" x="-0.1%" width="100%" height="100%" primitiveUnits="objectBoundingBox">
+  <feTurbulence seed="7" type="fractalNoise" baseFrequency=".005" numOctaves="5" result="n"></feTurbulence>
+  <feComposite in="SourceAlpha" operator="in"></feComposite>
+    <feDisplacementMap in2="n" scale="1"></feDisplacementMap>
+    </filter>
+    <rect id="l" width="100%" height="100%" filter="url(#filter)"></rect>
+
+    <rect width="100%" height="100%" fill="#fff"></rect>
+    <use href="#l" x="33%" y="15" transform="scale(1.5, 1.3)"></use>
+    <use href="#l" x="-33%" y="15" transform="rotate(.1) scale(-1.5 1.3)"></use>
+    </svg>`)
 }

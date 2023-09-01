@@ -85,7 +85,9 @@ interface SvgEllipseAttributes extends Filterable, Drawable, Maskable {
   ry: LengthOrPercentage,
 }
 
-type SvgFilterAttributes = HasId & Placeable & Sizeable;
+interface SvgFilterAttributes extends HasId, Placeable, Sizeable {
+  primitiveUnits?: 'userSpaceOnUse' | 'objectBoundingBox';
+}
 
 type SvgLinearGradientAttributes = HasId & HasGradientTransform;
 
@@ -108,7 +110,7 @@ interface FeColorMatrixAttributes extends DoesColorTransformation {
   values?: number[] | string;
 }
 
-type SvgRectAttributes = Filterable & Placeable & Sizeable & Drawable & Maskable;
+type SvgRectAttributes = HasId & Filterable & Placeable & Sizeable & Drawable & Maskable;
 
 export type SvgTextAttributes = HasId & Filterable & Placeable & Sizeable & Drawable & Styleable & Maskable;
 
@@ -150,7 +152,8 @@ export type AllSvgAttributes = FeTurbulenceAttributes & SvgEllipseAttributes & H
   & FeColorMatrixAttributes & SvgRectAttributes & SvgTextAttributes
   & FeDisplacementMapAttributes & FeBlendAttributes & FeDiffuseLightingAttributes & SvgAttributes
   & SvgLinearGradientAttributes & SvgRadialGradientAttributes & SvgStopAttributes
-  & HasOperator & Pick<FeMorphologyAttributes, 'radius'> & Pick<FeCompositeAttributes, 'k2' | 'k3'>;
+  & HasOperator & Pick<FeMorphologyAttributes, 'radius'> & Pick<FeCompositeAttributes, 'k2' | 'k3'>
+  & Pick<SvgFilterAttributes, 'primitiveUnits'>;
 
 
 export function svg(attributes: SvgAttributes, ...elements: string[]): SvgString {
@@ -223,6 +226,7 @@ export function attributesToString(object: Partial<AllSvgAttributes>) {
     'numOctaves': object.numOctaves_,
     'offset': object.offset_,
     'operator': object.operator,
+    'primitiveUnits': object.primitiveUnits,
     'radius': object.radius,
     'result': object.result,
     'rx': object.rx,

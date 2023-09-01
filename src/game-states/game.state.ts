@@ -56,6 +56,7 @@ export class GameState implements State {
     const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(46.4, 26, 30).done_(), materials.castleWriting)
     const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(36.4, 24, 30).done_(), materials.handprint)
 
+    const face = new Mesh(new MoldableCubeGeometry(1, 1, 1).translate_(0, 26, 0).done_(), materials.face);
 
     this.leverDoors.push(
       new LeverDoorObject3d(new EnhancedDOMPoint(31, 36, -48), [
@@ -71,7 +72,7 @@ export class GameState implements State {
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
 
     this.groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle]));
-    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key);
+    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, face);
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
