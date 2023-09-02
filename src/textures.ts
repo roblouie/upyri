@@ -242,13 +242,17 @@ function bricksRocksPlanksWood(isRock = true, isPattern = true) {
   ));
 }
 
-export function drawBloodText(attributes: SvgTextAttributes, textToDisplay: string, scale_ = 70) {
+export function drawBloodText(attributes: SvgTextAttributes, textToDisplay: string, scale = 70) {
+  return bloodEffect(text({ style: 'font-size: 360px; transform: scaleY(1.5);', ...attributes, filter: 'd' }, textToDisplay), scale)
+}
+
+export function bloodEffect(component: string, scale_ = 70, freq1: [number, number] = [0.13, 0.02], freq2 = 0.04) {
     return filter({ id_: 'd' },
-      feTurbulence({ baseFrequency: [0.13, 0.02], numOctaves_: 1, type_: NoiseType.Fractal, result: 'd' }),
+      feTurbulence({ baseFrequency: freq1, numOctaves_: 1, type_: NoiseType.Fractal, result: 'd' }),
       feDisplacementMap({ in: 'SourceGraphic', in2: 'd', scale_ }),
     ) +
     filter({ id_: 'b' },
-      feTurbulence({ baseFrequency: 0.04, numOctaves_: 1, type_: NoiseType.Fractal }),
+      feTurbulence({ baseFrequency: freq2, numOctaves_: 1, type_: NoiseType.Fractal }),
       feColorMatrix({ values: [
           0.4, 0.2, 0.2, 0, -0.1,
           0, 2, 0, 0, -1.35,
@@ -257,9 +261,7 @@ export function drawBloodText(attributes: SvgTextAttributes, textToDisplay: stri
         ] }),
       feComposite({ in2: 'SourceGraphic', operator: 'in' }),
     ) +
-    group({ filter: 'b' },
-      text({ style: 'font-size: 360px; transform: scaleY(1.5);', ...attributes, filter: 'd' }, textToDisplay)
-    );
+    group({ filter: 'b' }, component);
 }
 
 export function face() {

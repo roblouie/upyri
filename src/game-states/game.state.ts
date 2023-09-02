@@ -23,7 +23,7 @@ import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { Object3d } from '@/engine/renderer/object-3d';
 import { Material } from '@/engine/renderer/material';
 import { ominousDiscovery1, ominousDiscovery2, pickup1 } from '@/sound-effects';
-import { key, stake, upyri } from '@/modeling/items';
+import { coffin, key, makeCoffin, makeCoffinBottomTop, stake, upyri } from '@/modeling/items';
 
 export class GameState implements State {
   player: FirstPersonPlayer;
@@ -58,21 +58,24 @@ export class GameState implements State {
     const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(46.4, 26, 30).done_(), materials.castleWriting)
     const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(36.4, 24, 30).done_(), materials.handprint)
 
+    const coffin = new Mesh(makeCoffin().translate_(0, 45).done_(), materials.wood);
+    const coffinTop = new Mesh(makeCoffinBottomTop().translate_(0, 46.35).done_(), materials.wood)
+
     this.leverDoors.push(
       new LeverDoorObject3d(new EnhancedDOMPoint(31, 36, -48), [
         new DoorData(door(), new EnhancedDOMPoint(42, 36.5, -37))
       ], -90),
 
       new LeverDoorObject3d(new EnhancedDOMPoint(46, 24, 30), [
-        new DoorData(door(), new EnhancedDOMPoint(0, 24, 3)),
-        new DoorData(door(), new EnhancedDOMPoint(4, 24, 3), -1, 1),
+        new DoorData(door(), new EnhancedDOMPoint(-2, 24.5, -18)),
+        new DoorData(door(), new EnhancedDOMPoint(2, 24.5, -18), -1, 1),
         new DoorData(door(), new EnhancedDOMPoint(42, 24, 36), -1, -1)
       ], -90)
     );
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
 
     this.groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle]));
-    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri);
+    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, coffin, coffinTop);
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
@@ -116,7 +119,7 @@ export class GameState implements State {
 
   gameEvents = [
     // see blood stain on wall
-    new GameEvent(new EnhancedDOMPoint(30, 21, 30), () => ominousDiscovery1().start(), new EnhancedDOMPoint(11, -90)),
+    new GameEvent(new EnhancedDOMPoint(30, 21, 30), () => { ominousDiscovery1().start(); return true }, new EnhancedDOMPoint(11, -90)),
 
     // Get stake
     new GameEvent(new EnhancedDOMPoint(-40, 24, -53),() => {
@@ -127,6 +130,7 @@ export class GameState implements State {
       this.hasStake = true;
       this.stake.position_.y = -50;
       setTimeout(() => tmpl.innerHTML = '', 3000);
+      return true;
     },undefined, 3),
 
     // Get key
@@ -138,6 +142,7 @@ export class GameState implements State {
       this.hasKey = true;
       this.key.position_.y = -50;
       setTimeout(() => tmpl.innerHTML = '', 3000);
+      return true;
     },undefined, 3),
   ];
 
@@ -149,15 +154,14 @@ export class GameState implements State {
 
 class GameEvent {
   isFired = false;
-  constructor(private targetPos: EnhancedDOMPoint, private actionCallback: () => void, private targetRot?: EnhancedDOMPoint, private posMargin = 6) {}
+  constructor(private targetPos: EnhancedDOMPoint, private actionCallback: () => boolean, private targetRot?: EnhancedDOMPoint, private posMargin = 6) {}
 
   check(currentPosition: EnhancedDOMPoint, currentRotation: EnhancedDOMPoint) {
     // debug.innerHTML = new EnhancedDOMPoint().subtractVectors(currentPosition, this.targetPos).magnitude + ' // ' + new EnhancedDOMPoint().subtractVectors(currentRotation, this.targetRot).magnitude % 360;
     if (!this.isFired && new EnhancedDOMPoint().subtractVectors(currentPosition, this.targetPos).magnitude < this.posMargin) {
       const lookMag = this.targetRot ? new EnhancedDOMPoint().subtractVectors(currentRotation, this.targetRot).magnitude % 360 : 0;
       if (lookMag < 20 || lookMag > 340) {
-        this.actionCallback();
-        this.isFired = true;
+        this.isFired = this.actionCallback();
       }
     }
   }

@@ -58,3 +58,41 @@ export function upyri() {
 
   return obj;
 }
+
+export function makeCoffinBottomTop() {
+  return new MoldableCubeGeometry(3, 0.5, 7.5, 1, 1, 2)
+    .selectBy(vertex => vertex.z === 0)
+    .translate_(0, 0, -1)
+    .scale_(1.5)
+    .all_()
+    .translate_(0, -0.2, 9)
+    .spreadTextureCoords();
+}
+
+export function makeCoffin() {
+  function makeCoffinSide(swap = 1) {
+    return new MoldableCubeGeometry(0.5, 2, 7.5, 1, 1, 2)
+      .selectBy(vertex => vertex.z === 0)
+      .translate_(1 * swap, 0, -1)
+      .all_()
+      .translate_(1.5 * swap, 0.4, 9)
+      .spreadTextureCoords();
+  }
+
+  function makeCoffinFrontBack(isSwap = false) {
+    return new MoldableCubeGeometry(3, 2, 0.5)
+      .selectBy(vertex => (isSwap ? -vertex.z : vertex.z) > 0)
+      .scale_(1.17)
+      .all_()
+      .translate_(0, 0.4, isSwap ? 13 : 5)
+      .spreadTextureCoords();
+  }
+
+  return makeCoffinSide(-1)
+    .merge(makeCoffinSide())
+    .merge(makeCoffinFrontBack())
+    .merge(makeCoffinFrontBack(true))
+    .merge(makeCoffinBottomTop())
+    .computeNormals()
+    .done_();
+}
