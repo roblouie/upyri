@@ -110,5 +110,18 @@ export class Object3d {
       this.lookAtZ.x, this.lookAtZ.y, this.lookAtZ.z, 0,
       0, 0, 0, 1,
     ]);
+
+    // const zAxis = normalize(subtractVectors(target, position));
+    // const xAxis = normalize(crossVectors(zAxis, up));
+    // const yAxis = crossVectors(xAxis, zAxis);
+    //
+    // const invertedZ = new DOMPoint(zAxis.x * -1, zAxis.y * -1, zAxis.z * -1);
+    //
+    // return new DOMMatrix([
+    //   xAxis.x, yAxis.x, invertedZ.x, 0,
+    //   xAxis.y, yAxis.y, invertedZ.y, 0,
+    //   xAxis.z, yAxis.z, invertedZ.z, 0,
+    //   -dotVectors(xAxis, position), -dotVectors(yAxis, position), -dotVectors(invertedZ, position), 1,
+    // ]);
   }
 }

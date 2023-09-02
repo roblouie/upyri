@@ -264,28 +264,16 @@ export function drawBloodText(attributes: SvgTextAttributes, textToDisplay: stri
 
 export function face() {
     return toImage(svg({ width_: 512, height_: 512, style: 'filter: invert()', viewBox: '0 0 512 512' },
-      filter({ id_: 'filter', x: '-0.1%', primitiveUnits: 'objectBoundingBox', width_: '100%', height_: '100%'},
+      filter({ id_: 'filter', x: '-0.01%', primitiveUnits: 'objectBoundingBox', width_: '100%', height_: '100%'},
           feTurbulence({ seed_: 7, type_: NoiseType.Fractal, baseFrequency: 0.005, numOctaves_: 5, result: 'n'}),
           feComposite({ in: 'SourceAlpha', operator: 'in' }),
-          feDisplacementMap({ in2: 'n', scale_: 1 })
+          feDisplacementMap({ in2: 'n', scale_: 0.9 })
         ),
-      rect(fullSize({ id_: 'l', filter: 'filter' })),
+      rect(fullSize({ id_: 'l', filter: 'filter', y: -37 })),
       rect({ fill: '#fff', width_: '100%', height_: '100%' }),
     `
-    <use href="#l" x="33%" y="15" transform="scale(1.5, 1.3)"></use>
-    <use href="#l" x="-33%" y="15" transform="rotate(.1) scale(-1.5 1.3)"></use>`
+    <use href="#l" x="22%" y="42" transform="scale(2.2, 1.2)"></use>
+    <use href="#l" x="-22%" y="42" transform="rotate(.1) scale(-2.2 1.2)"></use>`,
+      rect({ fill: '#777', x: 220, y: 230, width_: 50, height_: 50 })
     ));
-
-    return toImage(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512px" height="512px" style="filter: invert()">
-  <filter id="filter" x="-0.1%" width="100%" height="100%" primitiveUnits="objectBoundingBox">
-  <feTurbulence seed="7" type="fractalNoise" baseFrequency=".005" numOctaves="5" result="n"></feTurbulence>
-  <feComposite in="SourceAlpha" operator="in"></feComposite>
-    <feDisplacementMap in2="n" scale="1"></feDisplacementMap>
-    </filter>
-    <rect id="l" width="100%" height="100%" filter="url(#filter)"></rect>
-
-    <rect width="100%" height="100%" fill="#fff"></rect>
-    <use href="#l" x="33%" y="15" transform="scale(1.5, 1.3)"></use>
-    <use href="#l" x="-33%" y="15" transform="rotate(.1) scale(-1.5 1.3)"></use>
-    </svg>`)
 }

@@ -23,7 +23,7 @@ import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { Object3d } from '@/engine/renderer/object-3d';
 import { Material } from '@/engine/renderer/material';
 import { ominousDiscovery1, ominousDiscovery2, pickup1 } from '@/sound-effects';
-import { key, stake } from '@/modeling/items';
+import { key, stake, upyri } from '@/modeling/items';
 
 export class GameState implements State {
   player: FirstPersonPlayer;
@@ -36,6 +36,8 @@ export class GameState implements State {
 
   key = key();
   hasKey = false;
+
+  upyri = upyri();
 
   constructor() {
     const camera = new Camera(Math.PI / 3, 16 / 9, 1, 400);
@@ -56,8 +58,6 @@ export class GameState implements State {
     const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(46.4, 26, 30).done_(), materials.castleWriting)
     const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(36.4, 24, 30).done_(), materials.handprint)
 
-    const face = new Mesh(new MoldableCubeGeometry(1, 1, 1).translate_(0, 26, 0).done_(), materials.face);
-
     this.leverDoors.push(
       new LeverDoorObject3d(new EnhancedDOMPoint(31, 36, -48), [
         new DoorData(door(), new EnhancedDOMPoint(42, 36.5, -37))
@@ -72,7 +72,7 @@ export class GameState implements State {
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
 
     this.groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle]));
-    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, face);
+    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri);
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
@@ -102,6 +102,8 @@ export class GameState implements State {
 
       leverDoor.update();
     });
+
+    this.upyri.children_[0].lookAt(this.player.camera.position_);
     this.scene.updateWorldMatrix();
 
     render(this.player.camera, this.scene);
