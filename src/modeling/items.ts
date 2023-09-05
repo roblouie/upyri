@@ -52,7 +52,7 @@ export function upyri() {
     materials.face.texture!,
   )
 
-  obj.position_.y = 48;
+  obj.position_.y = 58;
 
   (obj.children_[0] as Mesh).geometry.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(textures), 1);
 

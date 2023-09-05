@@ -21,7 +21,7 @@ export class FirstPersonPlayer {
   isOnDirt = true;
 
   constructor(camera: Camera) {
-    this.feetCenter.y = 45;
+    this.feetCenter.y = 54;
     this.camera = camera;
     this.listener = audioCtx.listener;
 
@@ -76,7 +76,7 @@ export class FirstPersonPlayer {
   }
 
   wallCollision(wallFaces: Face[]) {
-    const wallCollisions = findWallCollisionsFromList(wallFaces, this.feetCenter, 1, 1.5);
+    const wallCollisions = findWallCollisionsFromList(wallFaces, this.feetCenter, 1.1, 1.5);
     this.feetCenter.x += wallCollisions.xPush;
     this.feetCenter.z += wallCollisions.zPush;
     if (wallCollisions.numberOfWallsHit > 0) {

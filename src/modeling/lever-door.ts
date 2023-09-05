@@ -95,7 +95,7 @@ export class LeverDoorObject3d extends Object3d {
     if (this.isPulled && !this.isFinished) {
       this.doorDatas.forEach(door => {
         door.rotation_.y += door.swapHingeSideZ * door.swapHingeSideX;
-        this.children_[1].rotation_.x += 1 / this.doorDatas.length;
+        this.children_[1].rotation_.x += this.doorDatas.length;
         if (Math.abs(door.rotation_.y) >= 90) {
           this.isFinished = true;
         }

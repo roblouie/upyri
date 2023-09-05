@@ -156,7 +156,6 @@ export function createCastle() {
     .merge(hollowCastleWall(-53))
     .merge(hollowCastleWall(53))
     .merge(castleKeep())
-    .merge(corner(rearRightCornerRoom).translate_(0, 24, -10))
     .done_();
 }
 
@@ -164,80 +163,143 @@ function castleKeep() {
   return corner([
     [
       [
-        [38], [12], [0],
+        [54], [12], [0],
       ],
       [
-        [15, 8, 15], [12, 5, 12], [0],
+        [23, 8, 23], [12, 5, 12], [0],
       ],
       [
-        [50], [12], [0],
+        [68], [12], [0],
       ],
       [
-        [50], [12], [0],
+        [68], [12], [0],
       ],
     ],
     [
       [
-        [8, 1, 6, 1, 6, 1, 6, 1, 8], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0],
+        [16, 1, 6, 1, 6, 1, 6, 1, 16], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0],
       ],
       [
-        [8, 1, 6, 1, 6, 1, 6, 1, 8], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0],
+        [16, 1, 6, 1, 6, 1, 6, 1, 16], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0],
       ],
       [
-        [9, 1, 9, 1, 10, 1, 9, 1, 9], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0]
+        [18, 1, 9, 1, 10, 1, 9, 1, 18], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0]
       ],
       [
-        [9, 1, 9, 1, 10, 1, 9, 1, 9], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0]
+        [18, 1, 9, 1, 10, 1, 9, 1, 18], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0]
       ],
     ]
   ], true)
+    // backdrop
+    .merge(new MoldableCubeGeometry(22, 12, 24).translate_(0, 6, 22).spreadTextureCoords())
+    // ceiling
     .merge(
-      new SegmentedWall([12, 14, 12], 54, [54, 3, 54], [0, 35, 0], 0, 0, 1)
+      new SegmentedWall([15.5, 19, 15.5], 69, [69, 7.5, 69], [0, 45, 0], 0, 0, 2)
         .rotate_(Math.PI / 2)
-        .translate_(0, 23, -27)
+        .translate_(0, 22.5, -34.5)
     )
-    .merge(corner([
-        // first floor
+    .merge(cornerRamp(false, false, false).rotate_(0, -Math.PI / 2).translate_(16, 0.5, 25))
+
+    // Transition to roof
+    .merge(
+      corner([
         [
           [
-            [6, 4, 6], [12, 5, 12], [0],
+            [2, 18, 2], [12, 1, 5], [0],
           ],
           [
-            [16], [12], [0],
+            [22], [12], [0],
           ],
           [
-            [13], [12], [0],
+            [4, 16], [5, 12], [0],
           ],
           [
-            [13], [12], [0],
-          ]
+            [20], [12], [0],
+          ],
         ],
-        // second floor
         [
           [
-            [6, 4, 6], [12, 5, 12], [0],
+            [22], [12], [0],
           ],
           [
-            [6, 4, 6], [12, 5, 12], [0],
+            [22], [12], [0],
           ],
           [
-            [13], [12], [0],
+            [1, 4, 15], [12, 5, 12], [0],
           ],
           [
-            [13], [12], [0],
-          ]
-        ],
+            [20], [12], [0],
+          ],
+        ]
       ], true)
-        .translate_(0, 12, 16.5)
+        .merge(cornerRamp(false, false, false))
+        .translate_(0, 12, 22)
     )
-    .translate_(0, 0, 8);
+
+    // Final Tower
+    .merge(corner([
+      [
+        [
+          [22], [12], [0],
+        ],
+        [
+          [10, 2, 10], [12, 12, 12], [0],
+        ],
+        [
+          [20], [12], [0],
+        ],
+        [
+          [20], [12], [0],
+        ],
+      ],
+      [
+        [
+          [9, 4, 9], [12, 5, 12], [0],
+        ],
+        [
+          [10, 2, 10], [12, 7, 12], [0, 0.6, 0],
+        ],
+        [
+          [20], [12], [0],
+        ],
+        [
+          [20], [12], [0],
+        ],
+      ]
+    ]).selectBy(vert => vert.z < -10 && Math.abs(vert.x) <= 2 && vert.y > 11 && vert.y < 13)
+      .translate_(0, -0.5, 0.5)
+      .all_()
+      .merge(createCastleFloors(21, 20))
+      .translate_(0, 22.5, -22))
+
+    // Ramp to final tower
+    .merge(cornerRamp(false, true, false).translate_(-6.5, 23, -5))
+
+    // Corner separator for ramp
+    .merge(new MoldableCubeGeometry(10, 24, 12).translate_(16, 10, 23).spreadTextureCoords())
+
+
+    // Floor
+    .merge(new MoldableCubeGeometry(54, 0.5, 68).spreadTextureCoords())
+
+    .translate_(0, 0, 20)
+    .computeNormals();
 }
 
 
-export function createCastleFloors(width_: number, depth: number, skipMiddle?: boolean, cylindrify?: boolean) {
+export function createCastleFloors(width_: number, depth: number, skipMiddle?: boolean, cylindrify?: boolean, skipTop?: boolean) {
   const cyli = (cube: MoldableCubeGeometry) => cylindrify ? cube.cylindrify(12) : cube;
-  return cyli(new MoldableCubeGeometry(width_, 1, depth, cylindrify ? 4 : 1, 1, cylindrify ? 4 : 1).translate_(0, skipMiddle ? 23 : 11)).spreadTextureCoords()
-    .merge(cyli(new MoldableCubeGeometry(width_, 1, depth, cylindrify ? 4 : 1, 1, cylindrify ? 4 : 1).translate_(0,cylindrify ? -0.3 : -0.4)).spreadTextureCoords());
+  const floors = cyli(new MoldableCubeGeometry(width_, 1, depth, cylindrify ? 4 : 1, 1, cylindrify ? 4 : 1).translate_(0,cylindrify ? -0.3 : -0.4)).spreadTextureCoords();
+
+  if (!skipTop) {
+    floors.merge(cyli(new MoldableCubeGeometry(width_, 1, depth, cylindrify ? 4 : 1, 1, cylindrify ? 4 : 1).translate_(0, 23)).spreadTextureCoords());
+  }
+
+  if (!skipMiddle) {
+    floors.merge(cyli(new MoldableCubeGeometry(width_, 1, depth, cylindrify ? 4 : 1, 1, cylindrify ? 4 : 1).translate_(0, 11)).spreadTextureCoords());
+  }
+
+  return floors;
 }
 
 function patternFill(pattern: number[], times: number) {
@@ -246,14 +308,14 @@ function patternFill(pattern: number[], times: number) {
 
 export function castleTopper(length: number, startingHeight: number, zPos: number, isRounded = false) {
   const segmentWidths = patternFill([1, 2], length * 2);
-  return new SegmentedWall(segmentWidths, 3, patternFill([1, 3], segmentWidths.length / 3), [0, 0], 0, 0, 2, isRounded, isRounded)
+  return new SegmentedWall(segmentWidths, 3, patternFill([1.1, 3], segmentWidths.length / 3), [0, 0], 0, 0, 2, isRounded, isRounded)
     .rotate_(0, 0, Math.PI)
     .translate_(0, startingHeight + 3, zPos)
     .computeNormals();
 }
 
 export function solidCastleWall(z: number, hasDoor?: boolean) {
-  return new SegmentedWall([37, 12, 37], 11.5, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, 0, 8)
+  return new SegmentedWall([36, 12, 36], 11.5, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, 0, 8)
     .merge(castleTopper(hasDoor ? 70 : 82, 11.5, 4).translate_(hasDoor ? -4 : 0))
     .merge(castleTopper(hasDoor ? 85 : 82, 11.5, -4))
     .translate_(0,0, z)
@@ -272,7 +334,7 @@ export function hollowCastleWall(x: number) {
   return createHallway(...walls, 5)
     .merge(castleTopper(95, 12, 6))
     .merge(castleTopper(95, 12, -6))
-    .merge(createCastleFloors(74, 9))
+    .merge(createCastleFloors(80, 9, false, false, true))
     .rotate_(0, Math.PI / 2, 0)
     .translate_(x)
     .computeNormals();
@@ -312,7 +374,7 @@ function tubify(moldableCubeBox: MoldableCubeGeometry, selectSize: number, inner
     .done_();
 }
 
-export function cornerRamp(isRounded?: boolean, isFlipped?: boolean) {
+export function cornerRamp(isRounded?: boolean, isFlipped?: boolean, includeWalkway = true) {
   const rampWidth = 5;
   const flip = isFlipped ? -1 : 1;
 
@@ -338,8 +400,11 @@ export function cornerRamp(isRounded?: boolean, isFlipped?: boolean) {
   const ramp = makeRamp(11, 0, 5, rampWidth, cube => cube.translate_(-7, 0, -7.5 * flip))
     .merge(new MoldableCubeGeometry(rampWidth, 5, rampWidth, 3).translate_(6.5, 2.5, -7.5 * flip).spreadTextureCoords())
     .merge(makeRamp(10, 5, 11.5, rampWidth, cube => cube).rotate_(0, -Math.PI / 2 * flip).translate_(6.5, 0, -5 * flip))
-    .merge(new MoldableCubeGeometry(18, 1, 5, 4).translate_(0, 11, 7.5 * flip).spreadTextureCoords())
-    .merge(new MoldableCubeGeometry(5, 1, 15, 1, 1, 6).translate_(-6.5, 11, -2.5 * flip).spreadTextureCoords());
+
+  if (includeWalkway) {
+    ramp.merge(new MoldableCubeGeometry(18, 1, 5, 4).translate_(0, 11, 7.5 * flip).spreadTextureCoords())
+      .merge(new MoldableCubeGeometry(5, 1, 15, 1, 1, 6).translate_(-6.5, 11, -2.5 * flip).spreadTextureCoords());
+  }
 
   return isRounded ? ramp.selectBy(vert => Math.abs(vert.x) <= 8 && Math.abs(vert.z) <= 5).invertSelection().cylindrify(12).all_() : ramp;
 }
