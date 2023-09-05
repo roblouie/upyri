@@ -159,6 +159,10 @@ export function createCastle() {
 
     // Key pedestal
     .merge(new MoldableCubeGeometry(2, 3, 2, 2, 1, 2).cylindrify(1.2).translate_(-22,13.1,60).spreadTextureCoords())
+
+    // Key doorway
+    .merge(new SegmentedWall([1.5, 4, 1.5], 8, [8, 1, 8], [0]).rotate_(0, Math.PI / 2).translate_(-17, 11.5, 59.5))
+
     .done_();
 }
 

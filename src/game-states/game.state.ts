@@ -90,7 +90,7 @@ export class GameState implements State {
 
       // Door to key
       new LeverDoorObject3d(new EnhancedDOMPoint(-24, 35, 54), [
-        new DoorData(door(), new EnhancedDOMPoint(-15, 36, 62), 1, 1, true)
+        new DoorData(door(), new EnhancedDOMPoint(-15, 36, 61.5), 1, 1, true)
       ], 180)
     );
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
@@ -154,8 +154,7 @@ export class GameState implements State {
       return true;
     },undefined, 3),
 
-    // Get key
-    new GameEvent(new EnhancedDOMPoint(-35,36,60.5),() => {
+    new GameEvent(new EnhancedDOMPoint(-22,36,60.5),() => {
       tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'GOT KEY', 40),
       );
