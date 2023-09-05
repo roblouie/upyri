@@ -14,7 +14,7 @@ export function stake() {
     .all_()
     .spreadTextureCoords()
     .rotate_(0, -1)
-    .translate_(-40, 21.5, -53)
+    .translate_(-51, 21.5, -65)
     .done_(), materials.wood);
 }
 
@@ -25,7 +25,7 @@ export function key() {
       .merge(new SegmentedWall([1, 0.5, 0.5, 0.5], 1, [0.25, 1, 0.25, 1], [0], 0, 0, 0.5).translate_(2, -0.75))
       .scale_(0.5, 0.5, 0.5)
       .rotate_(0, Math.PI / 2)
-      .translate_(-24,36,48.5)
+      .translate_(-35,36,60.5)
       .done_(),
     materials.stone);
 }

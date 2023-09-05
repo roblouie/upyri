@@ -99,13 +99,13 @@ export const getSize = (sizes: number[]) => sizes.reduce((acc, curr) => acc + cu
 
 export function createCastle() {
 
-  return solidCastleWall(-48, true) // front Wall
+  return solidCastleWall(-60, true) // front Wall
 
     // front-right Corner
     .merge(corner(otherCorners, true)
       .merge(cornerRamp())
       .merge(castleTopper(5, 0, 0).rotate_(Math.PI / 2, -1, 0).translate_(-20, 1, 10))
-      .translate_(42, 0, -48)
+      .translate_(53, 0, -60)
       .computeNormals()
     )
 
@@ -115,7 +115,7 @@ export function createCastle() {
       corner(frontLeftCornerRoom, true)
         // floors
         .merge(createCastleFloors(getSize(frontLeftCornerRoom[0][2][0]), getSize(frontLeftCornerRoom[0][0][0])))
-        .translate_(-42, 0, -48)
+        .translate_(-53, 0, -60)
     )
 
     // rear-left Corner
@@ -131,7 +131,7 @@ export function createCastle() {
         .merge(
           createCastleFloors(getSize(otherCorners[0][2][0]), getSize(otherCorners[0][0][0]), true, true)
         )
-        .translate_(-42, 0, 48)
+        .translate_(-53, 0, 60)
     )
 
     // rear-right corner
@@ -147,15 +147,16 @@ export function createCastle() {
         .merge(
           createCastleFloors(getSize(rearRightCornerRoom[0][2][0]), getSize(rearRightCornerRoom[0][0][0]), true, true)
         )
-        .translate_(42, 0, 48)) // rear-left Corner
+        .translate_(53, 0, 60)) // rear-left Corner
 
 
-    .merge(solidCastleWall(48)) // back Wall
+    .merge(solidCastleWall(60)) // back Wall
 
     // Left Wall
-    .merge(hollowCastleWall(-42))
-    .merge(hollowCastleWall(42))
+    .merge(hollowCastleWall(-53))
+    .merge(hollowCastleWall(53))
     .merge(castleKeep())
+    .merge(corner(rearRightCornerRoom).translate_(0, 24, -10))
     .done_();
 }
 
@@ -235,8 +236,8 @@ function castleKeep() {
 
 export function createCastleFloors(width_: number, depth: number, skipMiddle?: boolean, cylindrify?: boolean) {
   const cyli = (cube: MoldableCubeGeometry) => cylindrify ? cube.cylindrify(12) : cube;
-  return cyli(new MoldableCubeGeometry(width_, 1, depth, 4, 1, 4).translate_(0, skipMiddle ? 23 : 11)).spreadTextureCoords()
-    .merge(cyli(new MoldableCubeGeometry(width_, 1, depth, 4, 1, 4).translate_(0,cylindrify ? -0.3 : -0.4)).spreadTextureCoords());
+  return cyli(new MoldableCubeGeometry(width_, 1, depth, cylindrify ? 4 : 1, 1, cylindrify ? 4 : 1).translate_(0, skipMiddle ? 23 : 11)).spreadTextureCoords()
+    .merge(cyli(new MoldableCubeGeometry(width_, 1, depth, cylindrify ? 4 : 1, 1, cylindrify ? 4 : 1).translate_(0,cylindrify ? -0.3 : -0.4)).spreadTextureCoords());
 }
 
 function patternFill(pattern: number[], times: number) {
@@ -252,25 +253,25 @@ export function castleTopper(length: number, startingHeight: number, zPos: numbe
 }
 
 export function solidCastleWall(z: number, hasDoor?: boolean) {
-  return new SegmentedWall([25, 12, 25], 11.5, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, 0, 8)
-    .merge(castleTopper(hasDoor ? 54 : 58, 11.5, 4).translate_(hasDoor ? -4 : 0))
-    .merge(castleTopper(hasDoor ? 61 : 58, 11.5, -4))
+  return new SegmentedWall([37, 12, 37], 11.5, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, 0, 8)
+    .merge(castleTopper(hasDoor ? 70 : 82, 11.5, 4).translate_(hasDoor ? -4 : 0))
+    .merge(castleTopper(hasDoor ? 85 : 82, 11.5, -4))
     .translate_(0,0, z)
     .done_();
 }
 
 export function hollowCastleWall(x: number) {
   const walls = [
-    new SegmentedWall(patternFill([5, 2, 5], 18), 12, patternFill([12, 5, 12], 18), patternFill([0, 2, 0], 18), 0, 0),
-    new MoldableCubeGeometry(72, 24, 2).spreadTextureCoords()
+    new SegmentedWall(patternFill([5, 2, 5], 24), 12, patternFill([12, 5, 12], 24), patternFill([0, 2, 0], 24), 0, 0),
+    new MoldableCubeGeometry(96, 24, 2).spreadTextureCoords()
   ];
   if (x > 0) {
     walls.reverse();
   }
   // @ts-ignore
   return createHallway(...walls, 5)
-    .merge(castleTopper(72, 12, 6))
-    .merge(castleTopper(72, 12, -6))
+    .merge(castleTopper(95, 12, 6))
+    .merge(castleTopper(95, 12, -6))
     .merge(createCastleFloors(74, 9))
     .rotate_(0, Math.PI / 2, 0)
     .translate_(x)

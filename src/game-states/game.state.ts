@@ -55,21 +55,21 @@ export class GameState implements State {
 
     const door = () => new Mesh(new MoldableCubeGeometry(4, 7, 1), materials.planks);
 
-    const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(46.4, 26, 30).done_(), materials.castleWriting)
-    const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(36.4, 24, 30).done_(), materials.handprint)
+    const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(57.4, 26, 42).done_(), materials.castleWriting)
+    const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(47.4, 24, 42).done_(), materials.handprint)
 
     const coffin = new Mesh(makeCoffin().translate_(0, 45).done_(), materials.wood);
     const coffinTop = new Mesh(makeCoffinBottomTop().translate_(0, 46.35).done_(), materials.wood)
 
     this.leverDoors.push(
-      new LeverDoorObject3d(new EnhancedDOMPoint(31, 36, -48), [
-        new DoorData(door(), new EnhancedDOMPoint(42, 36.5, -37))
+      new LeverDoorObject3d(new EnhancedDOMPoint(42, 36, -60), [
+        new DoorData(door(), new EnhancedDOMPoint(53, 36.5, -49))
       ], -90),
 
-      new LeverDoorObject3d(new EnhancedDOMPoint(46, 24, 30), [
+      new LeverDoorObject3d(new EnhancedDOMPoint(57, 24, 42), [
         new DoorData(door(), new EnhancedDOMPoint(-2, 24.5, -18)),
         new DoorData(door(), new EnhancedDOMPoint(2, 24.5, -18), -1, 1),
-        new DoorData(door(), new EnhancedDOMPoint(42, 24, 36), -1, -1)
+        new DoorData(door(), new EnhancedDOMPoint(53, 24, 47), -1, -1)
       ], -90)
     );
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
@@ -119,10 +119,10 @@ export class GameState implements State {
 
   gameEvents = [
     // see blood stain on wall
-    new GameEvent(new EnhancedDOMPoint(30, 21, 30), () => { ominousDiscovery1().start(); return true }, new EnhancedDOMPoint(11, -90)),
+    new GameEvent(new EnhancedDOMPoint(41, 21, 42), () => { ominousDiscovery1().start(); return true }, new EnhancedDOMPoint(11, -90)),
 
     // Get stake
-    new GameEvent(new EnhancedDOMPoint(-40, 24, -53),() => {
+    new GameEvent(new EnhancedDOMPoint(-51, 24, -65),() => {
       tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'GOT STAKE', 40),
       );
@@ -134,7 +134,7 @@ export class GameState implements State {
     },undefined, 3),
 
     // Get key
-    new GameEvent(new EnhancedDOMPoint(-24,36,48.5),() => {
+    new GameEvent(new EnhancedDOMPoint(-35,36,60.5),() => {
       tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'GOT KEY', 40),
       );
