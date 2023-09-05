@@ -21,7 +21,7 @@ export class FirstPersonPlayer {
   isOnDirt = true;
 
   constructor(camera: Camera) {
-    this.feetCenter.y = 54;
+    this.feetCenter.y = 24;
     this.camera = camera;
     this.listener = audioCtx.listener;
 

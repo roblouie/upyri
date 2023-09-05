@@ -156,6 +156,9 @@ export function createCastle() {
     .merge(hollowCastleWall(-53))
     .merge(hollowCastleWall(53))
     .merge(castleKeep())
+
+    // Key pedestal
+    .merge(new MoldableCubeGeometry(2, 3, 2, 2, 1, 2).cylindrify(1.2).translate_(-22,13.1,60).spreadTextureCoords())
     .done_();
 }
 
@@ -177,7 +180,7 @@ function castleKeep() {
     ],
     [
       [
-        [16, 1, 6, 1, 6, 1, 6, 1, 16], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0],
+        [4, 2, 10, 1, 6, 1, 6, 1, 6, 1, 16], [12, 6, 12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 1, 0, 4, 0, 4, 0, 4, 0, 4, 0],
       ],
       [
         [16, 1, 6, 1, 6, 1, 6, 1, 16], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0],
@@ -198,7 +201,12 @@ function castleKeep() {
         .rotate_(Math.PI / 2)
         .translate_(0, 22.5, -34.5)
     )
+
+    // Ramp to second level
     .merge(cornerRamp(false, false, false).rotate_(0, -Math.PI / 2).translate_(16, 0.5, 25))
+
+    // Ramp to lever
+    .merge(cornerRamp(false, false, false).rotate_(0, -Math.PI / 2).translate_(-20, 0.5, 25))
 
     // Transition to roof
     .merge(
@@ -317,7 +325,7 @@ export function castleTopper(length: number, startingHeight: number, zPos: numbe
 export function solidCastleWall(z: number, hasDoor?: boolean) {
   return new SegmentedWall([36, 12, 36], 11.5, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, 0, 8)
     .merge(castleTopper(hasDoor ? 70 : 82, 11.5, 4).translate_(hasDoor ? -4 : 0))
-    .merge(castleTopper(hasDoor ? 85 : 82, 11.5, -4))
+    .merge(castleTopper(hasDoor ? 85 : 13, 11.5, -4).translate_(hasDoor ? 0 : 33.5))
     .translate_(0,0, z)
     .done_();
 }

@@ -54,6 +54,7 @@ export class GameState implements State {
     const castle = new Mesh(createCastle().translate_(0, 21).done_(), materials.brickWall);
 
     const door = () => new Mesh(new MoldableCubeGeometry(4, 7, 1), materials.planks);
+    const gateDoor = () => new Mesh(new MoldableCubeGeometry(6, 15, 1), materials.planks);
 
     const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(57.4, 26, 42).done_(), materials.castleWriting)
     const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(47.4, 24, 42).done_(), materials.handprint)
@@ -61,20 +62,36 @@ export class GameState implements State {
     const coffin = new Mesh(makeCoffin().rotate_(0, Math.PI).translate_(0, 55, 8).done_(), materials.wood);
     const coffinTop = new Mesh(makeCoffinBottomTop().rotate_(0, Math.PI).translate_(0, 56.35, 8).done_(), materials.wood)
 
+    // Corner entrance
     this.leverDoors.push(
       new LeverDoorObject3d(new EnhancedDOMPoint(42, 36, -60), [
         new DoorData(door(), new EnhancedDOMPoint(53, 36.5, -49))
       ], -90),
 
+
+      // Keep entrance
       new LeverDoorObject3d(new EnhancedDOMPoint(57, 24, 42), [
-        new DoorData(door(), new EnhancedDOMPoint(-2, 24.5, -18)),
-        new DoorData(door(), new EnhancedDOMPoint(2, 24.5, -18), -1, 1),
+        new DoorData(door(), new EnhancedDOMPoint(-2, 24.5, -15)),
+        new DoorData(door(), new EnhancedDOMPoint(2, 24.5, -15), -1, 1),
         new DoorData(door(), new EnhancedDOMPoint(53, 24, 47), -1, -1)
       ], -90),
 
+      // Locked door to upper keep
       new LeverDoorObject3d(new EnhancedDOMPoint(23, 0, 37.5), [
         new DoorData(door(), new EnhancedDOMPoint(23, 24, 37.5), -1)
-      ])
+      ]),
+
+
+      // Front gate
+      new LeverDoorObject3d(new EnhancedDOMPoint(2, 58, -12), [
+        new DoorData(gateDoor(), new EnhancedDOMPoint(-3, 24, -60), 1, 1, false, true),
+        new DoorData(gateDoor(), new EnhancedDOMPoint(3, 24, -60), -1, 1, false, true)
+      ]),
+
+      // Door to key
+      new LeverDoorObject3d(new EnhancedDOMPoint(-24, 35, 54), [
+        new DoorData(door(), new EnhancedDOMPoint(-15, 36, 62), 1, 1, true)
+      ], 180)
     );
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
 
@@ -114,7 +131,7 @@ export class GameState implements State {
     this.scene.updateWorldMatrix();
 
     render(this.player.camera, this.scene);
-    // debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
+    debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
 
     if (controls.isEscape) {
       gameStateMachine.setState(gameStates.menuState);

@@ -22,8 +22,9 @@ export class DoorData extends Object3d {
   openDoorCollisionM: Mesh;
   dragPlayer: AudioBufferSourceNode;
   creakPlayer: AudioBufferSourceNode;
+  originalRot = 0;
 
-  constructor(doorMesh: Mesh, position_: EnhancedDOMPoint, swapHingeSideX: 1 | -1 = 1, swapHingeSideZ: 1 | -1 = 1) {
+  constructor(doorMesh: Mesh, position_: EnhancedDOMPoint, swapHingeSideX: 1 | -1 = 1, swapHingeSideZ: 1 | -1 = 1, swapOpenClosed?: boolean, isMainGate?: boolean) {
     super(doorMesh);
     this.swapHingeSideX = swapHingeSideX;
     this.swapHingeSideZ = swapHingeSideZ;
@@ -32,8 +33,8 @@ export class DoorData extends Object3d {
     this.children_[0].position_.x = 2 * swapHingeSideX;
 
     this.closedDoorCollisionM = new Mesh(
-      new MoldableCubeGeometry(4, 7, 1)
-        .translate_(position_.x, position_.y, position_.z)
+      new MoldableCubeGeometry(isMainGate ? 6 : 4, 7, 1)
+        .translate_(position_.x - (swapOpenClosed ? 4 : 0), position_.y, position_.z)
         .done_()
       , new Material({ color: [1, 0, 1, 1]}));
 
@@ -43,6 +44,14 @@ export class DoorData extends Object3d {
         .translate_(position_.x - 2 * swapHingeSideX, position_.y, position_.z - 2 * swapHingeSideZ)
         .done_()
       , new Material({ color: [0, 1, 1, 1]}));
+
+    if (swapOpenClosed) {
+      const temp = this.closedDoorCollisionM;
+      this.closedDoorCollisionM = this.openDoorCollisionM;
+      this.openDoorCollisionM = temp;
+      this.rotation_.y = 90;
+      this.originalRot = 90;
+    }
 
     this.dragPlayer = draggingSound4(position_);
     this.creakPlayer = doorCreak(position_);
@@ -94,9 +103,9 @@ export class LeverDoorObject3d extends Object3d {
   update(){
     if (this.isPulled && !this.isFinished) {
       this.doorDatas.forEach(door => {
-        door.rotation_.y += door.swapHingeSideZ * door.swapHingeSideX;
-        this.children_[1].rotation_.x += this.doorDatas.length;
-        if (Math.abs(door.rotation_.y) >= 90) {
+        door.rotation_.y += door.swapHingeSideZ * door.swapHingeSideX * 0.6;
+        this.children_[1].rotation_.x += (1/this.doorDatas.length) * 0.6;
+        if (Math.abs(door.rotation_.y) - door.originalRot >= 90) {
           this.isFinished = true;
         }
       });
