@@ -20,7 +20,7 @@ out vec4 outColor;
 
 vec3 light_direction = vec3(-1, 2, -1);
 
-float ambientLight = 0.1f;
+float ambientLight = 0.2f;
 float maxLit = 0.6f;
 
 vec2 adjacentPixels[5] = vec2[](
@@ -48,7 +48,7 @@ void main() {
 
     vec3 litColor = length(emissive) > 0.0 ? emissive.rgb : (litPercent * color.rgb);
 
-    vec4 vColor = vec4(litColor.r - 0.1f, litColor.g - 0.1f, litColor.b, color.a);
+    vec4 vColor = vec4(litColor.r, litColor.g, litColor.b, color.a);
 
     if (vDepth < 0.0) {
         outColor = vColor;

@@ -33,7 +33,7 @@ export const enum AttributeLocation {
 gl.enable(gl.CULL_FACE);
 gl.enable(gl.DEPTH_TEST);
 gl.enable(gl.BLEND);
-// gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 const modelviewProjectionLocation = gl.getUniformLocation(lilgl.program, modelviewProjection)!;
 const normalMatrixLocation =  gl.getUniformLocation(lilgl.program, normalMatrix)!;
@@ -139,26 +139,22 @@ export function render(camera: Camera, scene: Scene) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   gl.cullFace(gl.BACK);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  scene.solidMeshes.forEach(mesh => {
-    if (mesh.material.isTransparent) {
-      gl.depthMask(false);
-    }
-    renderMesh(mesh, viewProjectionMatrix);
-    gl.depthMask(true);
-  });
+  scene.solidMeshes.forEach(mesh => renderMesh(mesh, viewProjectionMatrix));
 
   // Set the depthFunc to less than or equal so the skybox can be drawn at the absolute farthest depth. Without
   // this the skybox will be at the draw distance and so not drawn. After drawing set this back.
-  // if (scene.skybox) {
-  //   gl.depthFunc(gl.LEQUAL);
-  //   renderSkybox(scene.skybox!);
-  //   gl.depthFunc(gl.LESS);
-  // }
+  if (scene.skybox) {
+    gl.depthFunc(gl.LEQUAL);
+    renderSkybox(scene.skybox!);
+    gl.depthFunc(gl.LESS);
+  }
 
   // Now render transparent items. For transparent items, stop writing to the depth mask. If we don't do this
   // the transparent portion of a transparent mesh will hide other transparent items. After rendering the
   // transparent items, set the depth mask back to writable.
-  // scene.transparentMeshes.forEach(mesh => renderMesh(mesh, viewProjectionMatrix));
+  gl.depthMask(false);
+  scene.transparentMeshes.forEach(mesh => renderMesh(mesh, viewProjectionMatrix));
+  gl.depthMask(true);
 
   // Unbinding the vertex array being used to make sure the last item drawn isn't still bound on the next draw call.
   // In theory this isn't necessary but avoids bugs.
