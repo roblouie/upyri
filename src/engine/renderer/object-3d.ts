@@ -112,3 +112,28 @@ export class Object3d {
     ]);
   }
 }
+
+export function createLookAt2(position: EnhancedDOMPoint, target: EnhancedDOMPoint, up = { x: 0, y: 1, z: 0}) {
+  const forward = new EnhancedDOMPoint().subtractVectors(target, position).normalize_();
+  const right = new EnhancedDOMPoint().crossVectors(forward, up).normalize_();
+  const lookAtUp = new EnhancedDOMPoint().crossVectors(right, forward);
+
+  const invertedZ = new EnhancedDOMPoint(forward.x * -1, forward.y * -1, forward.z * -1);
+
+  return new DOMMatrix([
+    right.x, lookAtUp.x, invertedZ.x, 0,
+    right.y, lookAtUp.y, invertedZ.y, 0,
+    right.z, lookAtUp.z, invertedZ.z, 0,
+    -right.dot(position), -lookAtUp.dot(position), -invertedZ.dot(position), 1,
+  ]);
+}
+
+export function createOrtho(bottom, top, left, right, near, far) {
+  return new DOMMatrix([
+    2 / (right - left), 0, 0, 0,
+    0, 2 / (top - bottom), 0, 0,
+    0, 0, -2 / (far - near), 0,
+    -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1,
+  ]);
+}
+

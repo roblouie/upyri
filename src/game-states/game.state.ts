@@ -47,6 +47,8 @@ export class GameState implements State {
   }
 
   async onEnter() {
+
+
     const heightmap = await newNoiseLandscape(256, 5, 0.04, 1, NoiseType.Fractal, 90);
     const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap).spreadTextureCoords(), materials.grass);
     const floorCollision = new Mesh( new PlaneGeometry(1024, 1024, 4, 4).translate_(0, 20.5).done_(), materials.grass);
@@ -115,6 +117,8 @@ export class GameState implements State {
 
   onUpdate(): void {
     this.player.update(this.groupedFaces);
+    render(this.player.camera, this.scene);
+
 
     this.handleEvents()
 
@@ -135,7 +139,6 @@ export class GameState implements State {
     this.upyri.lookAt(this.player.camera.position_);
     this.scene.updateWorldMatrix();
 
-    render(this.player.camera, this.scene);
     debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
 
     if (controls.isEscape) {

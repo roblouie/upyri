@@ -11,6 +11,7 @@ class TextureLoader {
   }
 
   bindTextures() {
+    gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D_ARRAY, gl.createTexture());
     gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 8, gl.RGBA8, 512, 512, this.textures.length);
 
