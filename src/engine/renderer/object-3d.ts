@@ -94,34 +94,21 @@ export class Object3d {
     return allChildren;
   }
 
-  private lookAtX = new EnhancedDOMPoint();
-  private lookAtY = new EnhancedDOMPoint();
-  private lookAtZ = new EnhancedDOMPoint();
+  private right = new EnhancedDOMPoint();
+  private lookatUp = new EnhancedDOMPoint();
+  private forward = new EnhancedDOMPoint();
 
   lookAt(target: EnhancedDOMPoint) {
     this.isUsingLookAt = true;
-    this.lookAtZ.subtractVectors(this.position_, target).normalize_();
-    this.lookAtX.crossVectors(this.up, this.lookAtZ).normalize_();
-    this.lookAtY.crossVectors(this.lookAtZ, this.lookAtX).normalize_();
+    this.forward.subtractVectors(target, this.position_).normalize_();
+    this.right.crossVectors(this.up, this.forward).normalize_();
+    this.lookatUp.crossVectors(this.forward, this.right).normalize_();
 
     this.rotationMatrix = new DOMMatrix([
-      this.lookAtX.x, this.lookAtX.y, this.lookAtX.z, 0,
-      this.lookAtY.x, this.lookAtY.y, this.lookAtY.z, 0,
-      this.lookAtZ.x, this.lookAtZ.y, this.lookAtZ.z, 0,
+      this.right.x, this.right.y, this.right.z, 0,
+      this.lookatUp.x, this.lookatUp.y, this.lookatUp.z, 0,
+      -this.forward.x, -this.forward.y, -this.forward.z, 0,
       0, 0, 0, 1,
     ]);
-
-    // const zAxis = normalize(subtractVectors(target, position));
-    // const xAxis = normalize(crossVectors(zAxis, up));
-    // const yAxis = crossVectors(xAxis, zAxis);
-    //
-    // const invertedZ = new DOMPoint(zAxis.x * -1, zAxis.y * -1, zAxis.z * -1);
-    //
-    // return new DOMMatrix([
-    //   xAxis.x, yAxis.x, invertedZ.x, 0,
-    //   xAxis.y, yAxis.y, invertedZ.y, 0,
-    //   xAxis.z, yAxis.z, invertedZ.z, 0,
-    //   -dotVectors(xAxis, position), -dotVectors(yAxis, position), -dotVectors(invertedZ, position), 1,
-    // ]);
   }
 }

@@ -15,13 +15,13 @@ export class FirstPersonPlayer {
 
   // mesh: Mesh;
   camera: Camera;
-  private cameraRotation = new EnhancedDOMPoint(0, 0, 0);
+  cameraRotation = new EnhancedDOMPoint(0, 0, 0);
   listener: AudioListener;
   footstepsPlayer;
   isOnDirt = true;
 
   constructor(camera: Camera) {
-    this.feetCenter.y = 24;
+    this.feetCenter.y = 54;
     this.camera = camera;
     this.listener = audioCtx.listener;
 
@@ -35,6 +35,7 @@ export class FirstPersonPlayer {
       this.cameraRotation.x += mouseMovement.y * -rotationSpeed;
       this.cameraRotation.y += mouseMovement.x * -rotationSpeed;
       this.cameraRotation.x = clamp(this.cameraRotation.x, -Math.PI / 2, Math.PI / 2);
+      this.cameraRotation.y = this.cameraRotation.y % (Math.PI * 2);
     });
   }
 

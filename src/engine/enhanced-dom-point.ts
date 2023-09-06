@@ -63,7 +63,7 @@ export class EnhancedDOMPoint extends DOMPoint {
     return this;
   }
 
-  dot(otherVector: EnhancedDOMPoint): number {
+  dot(otherVector: VectorLike): number {
     return this.x * otherVector.x + this.y * otherVector.y + this.z * otherVector.z;
   }
 

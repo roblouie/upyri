@@ -131,7 +131,7 @@ export class GameState implements State {
     this.scene.updateWorldMatrix();
 
     render(this.player.camera, this.scene);
-    debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
+    // debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
 
     if (controls.isEscape) {
       gameStateMachine.setState(gameStates.menuState);
@@ -142,7 +142,7 @@ export class GameState implements State {
     // see blood stain on wall
     new GameEvent(new EnhancedDOMPoint(41, 21, 42), () => { ominousDiscovery1().start(); return true }, new EnhancedDOMPoint(11, -90)),
 
-    // Get stake
+    // Got stake
     new GameEvent(new EnhancedDOMPoint(-51, 24, -65),() => {
       tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'GOT STAKE', 40),
@@ -154,6 +154,7 @@ export class GameState implements State {
       return true;
     },undefined, 3),
 
+    // Got Key
     new GameEvent(new EnhancedDOMPoint(-22,36,60.5),() => {
       tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'GOT KEY', 40),
@@ -165,7 +166,15 @@ export class GameState implements State {
       setTimeout(() => tmpl.innerHTML = '', 3000);
       return true;
     },undefined, 3),
+
+    // Kill Upyri
+    new GameEvent(new EnhancedDOMPoint(0, 58.5, -1), () => {
+      // const rotated2 = this.player.camera.rotationMatrix.transformPoint(rotated);
+      const cameraRot = this.player.cameraRotation.clone_();
+      debug.innerHTML = `${cameraRot.x}, ${cameraRot.y}, ${cameraRot.z}`;
+    }, undefined, 7)
   ];
+
 
 
   handleEvents() {

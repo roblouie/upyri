@@ -38,8 +38,8 @@ export function upyri() {
       // .scale_(0.8)
       .computeNormals(true)
       .all_()
-      .rotate_(Math.PI / 2)
-      .rotate_(0,Math.PI / 64)
+      .rotate_(Math.PI / 1.5)
+      // .rotate_(0,Math.PI / 64)
       .done_()
     , materials.face));
 
