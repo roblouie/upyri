@@ -68,7 +68,7 @@ const night = 'black';
 function castleSign() {
   return toImage(
     svg({ width_: textureSize, height_: textureSize },
-      drawBloodText({ x: 10, y: '30%', style: 'font-size: 120px; transform: scaleY(1.5); font-family: sans-serif' }, 'CASTLE', 50)
+      drawBloodText({ x: 10, y: '30%', style: 'font-size: 120px; transform: scaleY(1.5); font-family: sans-serif' }, 'KEEP', 30)
     )
   )
 }

@@ -56,7 +56,7 @@ export class GameState implements State {
     const door = () => new Mesh(new MoldableCubeGeometry(4, 7, 1), materials.planks);
     const gateDoor = () => new Mesh(new MoldableCubeGeometry(6, 15, 1), materials.planks);
 
-    const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(57.4, 26, 42).done_(), materials.castleWriting)
+    const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(57.4, 26, 43).done_(), materials.castleWriting)
     const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(47.4, 24, 42).done_(), materials.handprint)
 
     const coffin = new Mesh(makeCoffin().rotate_(0, Math.PI).translate_(0, 55, 8).done_(), materials.wood);
