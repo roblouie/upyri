@@ -16,7 +16,7 @@ uniform mediump sampler2DArray uSampler;
 
 out vec4 outColor;
 
-vec3 light_direction = vec3(-1, 2, 1);
+vec3 light_direction = vec3(-1, 2, -1);
 
 void main() {
     vec3 correctedNormals = normalize(mat3(vNormalMatrix) * vNormal);
