@@ -60,7 +60,12 @@ export class GameState implements State {
     const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(47.4, 24, 42).done_(), materials.handprint)
 
     const coffin = new Mesh(makeCoffin().rotate_(0, Math.PI).translate_(0, 55, 8).done_(), materials.wood);
-    const coffinTop = new Mesh(makeCoffinBottomTop().rotate_(0, Math.PI).translate_(0, 56.35, 8).done_(), materials.wood)
+    const coffinTop = new Mesh(makeCoffinBottomTop().rotate_(0, Math.PI).translate_(0, 56.35, 8).done_(), materials.wood);
+
+    // .rotate_(0, -1)
+    // .translate_(-51, 21.5, -65)
+    this.stake.position_.set(-51, 21.5, -65);
+    this.stake.setRotation_(0, -1, 0);
 
     // Corner entrance
     this.leverDoors.push(
@@ -127,11 +132,11 @@ export class GameState implements State {
       leverDoor.update();
     });
 
-    this.upyri.children_[0].lookAt(this.player.camera.position_);
+    this.upyri.lookAt(this.player.camera.position_);
     this.scene.updateWorldMatrix();
 
     render(this.player.camera, this.scene);
-    // debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
+    debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
 
     if (controls.isEscape) {
       gameStateMachine.setState(gameStates.menuState);
@@ -169,9 +174,28 @@ export class GameState implements State {
 
     // Kill Upyri
     new GameEvent(new EnhancedDOMPoint(0, 58.5, -1), () => {
-      // const rotated2 = this.player.camera.rotationMatrix.transformPoint(rotated);
-      const cameraRot = this.player.cameraRotation.clone_();
-      debug.innerHTML = `${cameraRot.x}, ${cameraRot.y}, ${cameraRot.z}`;
+      const point = new DOMPoint(0, 0, -1);
+      const cameraRot = new EnhancedDOMPoint().set(this.player.camera.rotationMatrix.transformPoint(point));
+      const upyriRot = new EnhancedDOMPoint().set(this.upyri.rotationMatrix.transformPoint(point));
+
+      if (cameraRot.dot(upyriRot) < -0.70) {
+        if (controls.isConfirm) {
+          if (this.hasStake) {
+            tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+              drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'UPYRI KILLED', 40),
+            );
+            this.stake.position_.set(0, 57, -1);
+            this.stake.setRotation_(Math.PI / 2 , 0, 0);
+            return true;
+          } else {
+            tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+              drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'NEED STAKE', 40),
+            );
+          }
+          setTimeout(() => tmpl.innerHTML = '', 3000);
+        }
+      }
+
     }, undefined, 7)
   ];
 

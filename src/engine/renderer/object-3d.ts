@@ -96,7 +96,7 @@ export class Object3d {
 
   private right = new EnhancedDOMPoint();
   private lookatUp = new EnhancedDOMPoint();
-  private forward = new EnhancedDOMPoint();
+  forward = new EnhancedDOMPoint();
 
   lookAt(target: EnhancedDOMPoint) {
     this.isUsingLookAt = true;

@@ -278,7 +278,7 @@ function castleKeep() {
           [20], [12], [0],
         ],
       ]
-    ]).selectBy(vert => vert.z < -10 && Math.abs(vert.x) <= 2 && vert.y > 11 && vert.y < 13)
+    ], true).selectBy(vert => vert.z < -10 && Math.abs(vert.x) <= 2 && vert.y > 11 && vert.y < 13)
       .translate_(0, -0.5, 0.5)
       .all_()
       .merge(createCastleFloors(21, 20))
