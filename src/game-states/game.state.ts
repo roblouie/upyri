@@ -140,10 +140,20 @@ export class GameState implements State {
     this.upyri.lookAt(this.player.camera.position_);
     this.scene.updateWorldMatrix();
 
+    if (this.winState) {
+      this.winCounter++;
+      if (this.winCounter > 1200) {
+        tmpl.style.backgroundColor = `rgba(0, 0, 0, ${this.backgroundFade})`;
+        this.backgroundFade += 0.004;
+      }
+    }
+
     debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
   }
 
   private backgroundFade = 0;
+  private winState = false;
+  private winCounter = 0;
 
   gameEvents = [
     // see blood stain on wall
@@ -216,16 +226,15 @@ export class GameState implements State {
       tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'ESCAPED', 40),
       );
-      tmpl.style.backgroundColor = `rgba(0, 0, 0, ${this.backgroundFade})`;
-      this.backgroundFade += 0.005;
+      this.winState = true;
       this.player.isFrozen = true;
-      this.player.velocity.set(0, 0, 0);
-      if (this.backgroundFade >= 1) {
+      this.player.velocity.set(0, 0, -0.1);
+      setTimeout(() => {
         tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
           drawBloodText({ x: '50%', y: '90%', style: 'font-size: 160px; text-shadow: 1px 1px 20px' }, 'THANKS FOR PLAYING', 40),
         );
+      }, 3000);
         return true;
-      }
     }, undefined, 6)
   ];
 
