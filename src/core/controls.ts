@@ -6,7 +6,6 @@ class Controls {
   isLeft?: boolean = false;
   isRight?: boolean = false;
   isConfirm? = false;
-  isEscape? = false;
   isJump? = false;
   inputDirection: EnhancedDOMPoint;
   private mouseMovement = new EnhancedDOMPoint();
@@ -41,8 +40,7 @@ class Controls {
     this.isDown = this.keyMap.get('KeyS');
     this.isLeft = this.keyMap.get('KeyA');
     this.isRight = this.keyMap.get('KeyD');
-    this.isConfirm = this.keyMap.get('Enter');
-    this.isEscape = this.keyMap.get('Escape');
+    this.isConfirm = this.keyMap.get('KeyE');
     this.isJump = this.keyMap.get('Space');
   }
 

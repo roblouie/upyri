@@ -4,7 +4,7 @@ import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 export const audioCtx = new AudioContext();
 
 // zzfxV - global volume
-const zzfxV=.5
+const zzfxV=.7;
 
 // zzfxR - global sample rate
 const zzfxR=44100
@@ -24,8 +24,8 @@ export function createPannerNode(buffer: number[]) {
       positionY: position.y,
       positionZ: position.z,
       refDistance: 1,
-      maxDistance: 80,
-      rolloffFactor: 30,
+      maxDistance: 60,
+      rolloffFactor: 40,
       coneInnerAngle: 360,
       coneOuterAngle: 360,
       coneOuterGain: 0.4

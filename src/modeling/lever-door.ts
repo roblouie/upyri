@@ -7,11 +7,8 @@ import { Face } from '@/engine/physics/face';
 import { getGroupedFaces, meshToFaces } from '@/engine/physics/parse-faces';
 import {
   doorCreak,
-  draggingSound,
   draggingSound2,
-  draggingSound3,
   draggingSound4,
-  sadGhostAudio2
 } from '@/sound-effects';
 import { materials } from "@/textures";
 

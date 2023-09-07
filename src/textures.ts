@@ -47,7 +47,8 @@ export async function initTextures() {
   materials.planks = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(false, true))});
   materials.castleWriting = new Material({ texture: textureLoader.load_(await castleSign()), isTransparent: true });
   materials.handprint = new Material({ texture: textureLoader.load_(await handprint()), isTransparent: true });
-  materials.face = new Material({ texture: textureLoader.load_(await face())})
+  materials.face = new Material({ texture: textureLoader.load_(await face())});
+  materials.bloodCircle = new Material({ texture: textureLoader.load_(await drawBloodCircle()), isTransparent: true });
 
   const testSlicer = drawSkyboxHor();
   const horSlices = [await testSlicer(), await testSlicer(), await testSlicer(), await testSlicer()];
@@ -240,6 +241,14 @@ function bricksRocksPlanksWood(isRock = true, isPattern = true) {
     rockWoodFilter(isRock),
     rect({ x: 0, y: 0, width_: '100%', height_: '100%', fill: isPattern ? 'url(#pattern)' : undefined, filter: 'rw' })
   ));
+}
+
+export function drawBloodCircle() {
+  return toImage(
+    svg({ width_: textureSize, height_: textureSize },
+      bloodEffect(ellipse({ cx: 256, cy: 256, rx: 220, ry: 220, filter: 'd' }), 250, [0.03, 0.03])
+    )
+  );
 }
 
 export function drawBloodText(attributes: SvgTextAttributes, textToDisplay: string, scale = 70) {

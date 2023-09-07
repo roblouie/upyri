@@ -22,7 +22,16 @@ import { DoorData, LeverDoorObject3d } from '@/modeling/lever-door';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { Object3d } from '@/engine/renderer/object-3d';
 import { Material } from '@/engine/renderer/material';
-import { ominousDiscovery1, ominousDiscovery2, pickup1 } from '@/sound-effects';
+import {
+  draggingSound2,
+  ominousDiscovery1,
+  ominousDiscovery2,
+  pickup1,
+  scaryNote1,
+  scaryNote2,
+  upyriAttack,
+  upyriAttack2, upyriHit
+} from '@/sound-effects';
 import { key, makeCoffin, makeCoffinBottomTop, stake, upyri } from '@/modeling/items';
 
 export class GameState implements State {
@@ -32,19 +41,61 @@ export class GameState implements State {
   leverDoors: LeverDoorObject3d[] =[];
 
   stake = stake();
-  hasStake = false;
+  hasStake = true;
 
   key = key();
   hasKey = false;
 
   upyri = upyri();
   isUpyriKilled = false;
+  isUpyriDying = false;
+  isUpyriAttacking = false;
+  upyriAttackingTimer = 0;
+  coffinTop = new Mesh(makeCoffinBottomTop().rotate_(0, Math.PI).translate_(0, 56.35, 8).done_(), materials.wood);
+  coffinTopBloodstain = new Mesh(new MoldableCubeGeometry(3, 1, 3).translate_(0, 55.95, -0.5).done_(), materials.bloodCircle);
+
+  door = () => new Mesh(new MoldableCubeGeometry(4, 7, 1), materials.planks);
+  gateDoor = () => new Mesh(new MoldableCubeGeometry(6, 15, 1), materials.planks);
 
   constructor() {
     const camera = new Camera(Math.PI / 3, 16 / 9, 1, 400);
     this.player = new FirstPersonPlayer(camera);
     this.scene = new Scene();
     this.groupedFaces = { floorFaces: [], wallFaces: [] };
+
+
+
+    // Corner entrance
+    this.leverDoors.push(
+      new LeverDoorObject3d(new EnhancedDOMPoint(42, 36, -60), [
+        new DoorData(this.door(), new EnhancedDOMPoint(53, 36.5, -49))
+      ], -90),
+
+
+      // Keep entrance
+      new LeverDoorObject3d(new EnhancedDOMPoint(57, 24, 42), [
+        new DoorData(this.door(), new EnhancedDOMPoint(-2, 24.5, -15)),
+        new DoorData(this.door(), new EnhancedDOMPoint(2, 24.5, -15), -1, 1),
+        new DoorData(this.door(), new EnhancedDOMPoint(53, 24, 47), -1, -1)
+      ], -90),
+
+      // Locked door to upper keep
+      new LeverDoorObject3d(new EnhancedDOMPoint(23, 0, 37.5), [
+        new DoorData(this.door(), new EnhancedDOMPoint(23, 24, 37.5), -1)
+      ]),
+
+
+      // Front gate
+      new LeverDoorObject3d(new EnhancedDOMPoint(2, 58, -12), [
+        new DoorData(this.gateDoor(), new EnhancedDOMPoint(-3, 24, -60), 1, 1, false, true),
+        new DoorData(this.gateDoor(), new EnhancedDOMPoint(3, 24, -60), -1, 1, false, true)
+      ]),
+
+      // Door to key
+      new LeverDoorObject3d(new EnhancedDOMPoint(-24, 35, 54), [
+        new DoorData(this.door(), new EnhancedDOMPoint(-15, 36, 61.5), 1, 1, true)
+      ], 180)
+    );
   }
 
   async onEnter() {
@@ -56,55 +107,22 @@ export class GameState implements State {
 
     const castle = new Mesh(createCastle().translate_(0, 21).done_(), materials.brickWall);
 
-    const door = () => new Mesh(new MoldableCubeGeometry(4, 7, 1), materials.planks);
-    const gateDoor = () => new Mesh(new MoldableCubeGeometry(6, 15, 1), materials.planks);
-
     const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(57.4, 26, 43).done_(), materials.castleWriting)
     const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(47.4, 24, 42).done_(), materials.handprint)
 
     const coffin = new Mesh(makeCoffin().rotate_(0, Math.PI).translate_(0, 55, 8).done_(), materials.wood);
-    const coffinTop = new Mesh(makeCoffinBottomTop().rotate_(0, Math.PI).translate_(0, 56.35, 8).done_(), materials.wood);
+
+    this.coffinTopBloodstain.scale_.set(0, 1, 0);
 
     // .rotate_(0, -1)
     // .translate_(-51, 21.5, -65)
     this.stake.position_.set(-51, 21.5, -65);
     this.stake.setRotation_(0, -1, 0);
 
-    // Corner entrance
-    this.leverDoors.push(
-      new LeverDoorObject3d(new EnhancedDOMPoint(42, 36, -60), [
-        new DoorData(door(), new EnhancedDOMPoint(53, 36.5, -49))
-      ], -90),
-
-
-      // Keep entrance
-      new LeverDoorObject3d(new EnhancedDOMPoint(57, 24, 42), [
-        new DoorData(door(), new EnhancedDOMPoint(-2, 24.5, -15)),
-        new DoorData(door(), new EnhancedDOMPoint(2, 24.5, -15), -1, 1),
-        new DoorData(door(), new EnhancedDOMPoint(53, 24, 47), -1, -1)
-      ], -90),
-
-      // Locked door to upper keep
-      new LeverDoorObject3d(new EnhancedDOMPoint(23, 0, 37.5), [
-        new DoorData(door(), new EnhancedDOMPoint(23, 24, 37.5), -1)
-      ]),
-
-
-      // Front gate
-      new LeverDoorObject3d(new EnhancedDOMPoint(2, 58, -12), [
-        new DoorData(gateDoor(), new EnhancedDOMPoint(-3, 24, -60), 1, 1, false, true),
-        new DoorData(gateDoor(), new EnhancedDOMPoint(3, 24, -60), -1, 1, false, true)
-      ]),
-
-      // Door to key
-      new LeverDoorObject3d(new EnhancedDOMPoint(-24, 35, 54), [
-        new DoorData(door(), new EnhancedDOMPoint(-15, 36, 61.5), 1, 1, true)
-      ], 180)
-    );
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
 
-    this.groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle, coffin, coffinTop]));
-    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, coffin, coffinTop);
+    this.groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle, coffin, this.coffinTop]));
+    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, coffin, this.coffinTop, this.coffinTopBloodstain);
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
@@ -115,6 +133,7 @@ export class GameState implements State {
   }
 
   leverPlayerDistance = new EnhancedDOMPoint();
+
 
   onUpdate(): void {
     this.player.update(this.groupedFaces);
@@ -148,8 +167,67 @@ export class GameState implements State {
       }
     }
 
-    debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
+    if (this.isUpyriDying) {
+      this.coffinTopBloodstain.scale_.x += 0.03;
+      this.coffinTopBloodstain.scale_.z += 0.03;
+
+      if (this.coffinTopBloodstain.scale_.x >= 1) {
+        this.isUpyriDying = false;
+      }
+    }
+
+    if (this.isUpyriAttacking) {
+      c3d.style.filter = 'blur(7px) brightness(0.8)';
+      this.upyri.position_.moveTowards(this.player.camera.position_, 0.5);
+      this.upyriAttackingTimer++;
+        if (this.upyriAttackingTimer > 40) {
+          tmpl.style.backgroundColor = `rgb(0, 0, 0)`;
+          this.isUpyriAttacking = false;
+          //TODO: Maybe add blood splatter here
+
+          // Reset
+          setTimeout(() => {
+            c3d.style.filter = '';
+            tmpl.style.backgroundColor = '';
+            this.upyri.position_.set(0, 54, 0);
+            this.isUpyriAttacking = false;
+            this.upyriTriggerCounter = 0;
+            this.upyriAttackingTimer = 0;
+            this.coffinTop.position_.set(0, 0, 0);
+            this.coffinTop.rotation_.y = 0;
+            this.isCoffinTopPlayed = false;
+            this.player.feetCenter.set(0, 51, 22);
+            this.gameEvents[5].isFired = false;
+            this.leverDoors[3].isPulled = false;
+            this.leverDoors[3].isFinished = false;
+            this.leverDoors[3].children_[1].rotation_.x = -45;
+            this.leverDoors[3].audioPlayer = draggingSound2(this.leverDoors[3].switchPosition);
+            this.leverDoors[3].doorDatas[0].rotation_.y = 0;
+            this.leverDoors[3].doorDatas[1].rotation_.y = 0;
+            // @ts-ignore
+            this.leverDoors[3].doorDatas[0].dragPlayer = { start: () => {} };
+            // @ts-ignore
+            this.leverDoors[3].doorDatas[0].creakPlayer = { start: () => {} };
+            // @ts-ignore
+            this.leverDoors[3].doorDatas[1].dragPlayer = { start: () => {} };
+            // @ts-ignore
+            this.leverDoors[3].doorDatas[1].creakPlayer = { start: () => {} };
+
+            tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+              drawBloodText({ x: '50%', y: '90%', style: 'font-size: 150px; text-shadow: 1px 1px 20px' }, 'KILL UPYRI TO ESCAPE', 40),
+            );
+
+            setTimeout(() => tmpl.innerHTML = '', 3000);
+
+          }, 4000);
+        }
+    }
+
+    //debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
   }
+
+  private upyriTriggerCounter = 0;
+  private upyriAttackCounter = 0;
 
   private backgroundFade = 0;
   private winState = false;
@@ -158,6 +236,13 @@ export class GameState implements State {
   gameEvents = [
     // see blood stain on wall
     new GameEvent(new EnhancedDOMPoint(41, 21, 42), () => { ominousDiscovery1().start(); return true }, new EnhancedDOMPoint(11, -90)),
+
+
+    // Enter coffin room
+    new GameEvent(new EnhancedDOMPoint(0, 58, 8), () => {
+      scaryNote2().start();
+      return true;
+    }, undefined),
 
     // Got stake
     new GameEvent(new EnhancedDOMPoint(-51, 24, -65),() => {
@@ -193,12 +278,14 @@ export class GameState implements State {
       if (cameraRot.dot(upyriRot) < -0.70) {
         if (controls.isConfirm) {
           if (this.hasStake) {
+            upyriHit(this.upyri.position_).start();
             tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
               drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'UPYRI KILLED', 40),
             );
-            this.stake.position_.set(0, 57, -1);
+            this.stake.position_.set(0, 57, -0.5);
             this.stake.setRotation_(Math.PI / 2 , 0, 0);
             this.isUpyriKilled = true;
+            this.isUpyriDying = true;
             setTimeout(() => tmpl.innerHTML = '', 3000);
             return true;
           } else {
@@ -212,13 +299,33 @@ export class GameState implements State {
     }, undefined, 7),
 
     // Die From Upyri
-    new GameEvent(new EnhancedDOMPoint(0, 58.5, -10.5), () => {
+    new GameEvent(new EnhancedDOMPoint(0, 58.5, 0), () => {
       if (!this.isUpyriKilled && this.leverDoors[3].isPulled) {
-        tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
-          drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'DEAD TIME', 40),
-        );
+        this.upyriTriggerCounter++;
+        this.upyri.position_.y = 58.5;
+        this.coffinTop.position_.y = -1;
+        this.coffinTop.position_.x = -5.5;
+        this.coffinTop.rotation_.y = 25;
+
+        if (!this.isCoffinTopPlayed) {
+          upyriHit(this.upyri.position_).start();
+          this.isCoffinTopPlayed = true;
+        }
+
+        const point = new DOMPoint(0, 0, -1);
+        const cameraRot = new EnhancedDOMPoint().set(this.player.camera.rotationMatrix.transformPoint(point));
+        const upyriRot = new EnhancedDOMPoint().set(this.upyri.rotationMatrix.transformPoint(point));
+
+        if (cameraRot.dot(upyriRot) < -0.70 || this.upyriTriggerCounter > 240) {
+          setTimeout(() =>  {
+            upyriAttack().start();
+            upyriAttack2().start();
+            this.isUpyriAttacking = true;
+          }, 500);
+          return true;
+        }
       }
-    }, undefined, 4),
+    }, undefined, 12),
 
 
     // Escape
@@ -237,6 +344,8 @@ export class GameState implements State {
         return true;
     }, undefined, 6)
   ];
+
+  isCoffinTopPlayed = false;
 
 
 

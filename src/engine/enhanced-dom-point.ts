@@ -86,10 +86,17 @@ export class EnhancedDOMPoint extends DOMPoint {
     return this;
   }
 
-  lerp(otherVector: EnhancedDOMPoint, alpha: number) {
-    this.x += ( otherVector.x - this.x ) * alpha;
-    this.y += ( otherVector.y - this.y ) * alpha;
-    this.z += ( otherVector.z - this.z ) * alpha;
+  moveTowards(otherVector: EnhancedDOMPoint, speed: number) {
+    const distance = new EnhancedDOMPoint().subtractVectors(otherVector, this);
+
+    if (distance.magnitude > 1) {
+      const direction = distance.normalize_().scale_(speed);
+      this.add_(direction);
+    }
+
+    // this.x += ( otherVector.x - this.x ) * alpha;
+    // this.y += ( otherVector.y - this.y ) * alpha;
+    // this.z += ( otherVector.z - this.z ) * alpha;
     return this;
   }
 
