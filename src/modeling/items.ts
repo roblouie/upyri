@@ -25,7 +25,7 @@ export function key() {
       .merge(new SegmentedWall([1, 0.5, 0.5, 0.5], 1, [0.25, 1, 0.25, 1], [0], 0, 0, 0.5).translate_(2, -0.75))
       .scale_(0.5, 0.5, 0.5)
       .rotate_(0, Math.PI / 2)
-      .translate_(-22,36,60.5)
+      .translate_(-32,36,60)
       .done_(),
     materials.stone);
 }
@@ -95,4 +95,12 @@ export function makeCoffin() {
     .merge(makeCoffinBottomTop())
     .computeNormals()
     .done_();
+}
+
+export function fenceDoor() {
+  return new Mesh(
+    new SegmentedWall([0.25, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.25], 7, [7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], 0, 0, 0.25)
+      .translate_(0, -3.5)
+      .done_(),
+    materials.stone);
 }

@@ -48,3 +48,7 @@ export function createStairs(stepCount: number, startingHeight = 0) {
     return new MoldableCubeGeometry(1, currentHeight, 3).translate_(index, currentHeight/2);
   })).done_();
 }
+
+export function patternFill(pattern: number[], times: number) {
+  return doTimes(times, (index) => pattern[index % pattern.length]);
+}

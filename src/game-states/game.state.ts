@@ -32,7 +32,7 @@ import {
   upyriAttack,
   upyriAttack2, upyriHit
 } from '@/sound-effects';
-import { key, makeCoffin, makeCoffinBottomTop, stake, upyri } from '@/modeling/items';
+import { fenceDoor, key, makeCoffin, makeCoffinBottomTop, stake, upyri } from '@/modeling/items';
 
 export class GameState implements State {
   player: FirstPersonPlayer;
@@ -68,7 +68,7 @@ export class GameState implements State {
     // Corner entrance
     this.leverDoors.push(
       new LeverDoorObject3d(new EnhancedDOMPoint(42, 36, -60), [
-        new DoorData(this.door(), new EnhancedDOMPoint(53, 36.5, -49))
+        new DoorData(fenceDoor(), new EnhancedDOMPoint(53, 36.5, -49))
       ], -90),
 
 
@@ -86,14 +86,14 @@ export class GameState implements State {
 
 
       // Front gate
-      new LeverDoorObject3d(new EnhancedDOMPoint(2, 58, -12), [
+      new LeverDoorObject3d(new EnhancedDOMPoint(3, 58, -12), [
         new DoorData(this.gateDoor(), new EnhancedDOMPoint(-3, 24, -60), 1, 1, false, true),
         new DoorData(this.gateDoor(), new EnhancedDOMPoint(3, 24, -60), -1, 1, false, true)
       ]),
 
       // Door to key
       new LeverDoorObject3d(new EnhancedDOMPoint(-24, 35, 54), [
-        new DoorData(this.door(), new EnhancedDOMPoint(-15, 36, 61.5), 1, 1, true)
+        new DoorData(fenceDoor(), new EnhancedDOMPoint(-25, 36, 61.5), 1, 1, true)
       ], 180)
     );
   }
@@ -227,7 +227,6 @@ export class GameState implements State {
   }
 
   private upyriTriggerCounter = 0;
-  private upyriAttackCounter = 0;
 
   private backgroundFade = 0;
   private winState = false;
@@ -257,7 +256,7 @@ export class GameState implements State {
     },undefined, 3),
 
     // Got Key
-    new GameEvent(new EnhancedDOMPoint(-22,36,60.5),() => {
+    new GameEvent(new EnhancedDOMPoint(-32,36,60.5),() => {
       tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'GOT KEY', 40),
       );
@@ -267,7 +266,7 @@ export class GameState implements State {
       this.leverDoors[2].switchPosition.y = 24;
       setTimeout(() => tmpl.innerHTML = '', 3000);
       return true;
-    },undefined, 3),
+    },undefined, 4),
 
     // Kill Upyri
     new GameEvent(new EnhancedDOMPoint(0, 58.5, -1), () => {

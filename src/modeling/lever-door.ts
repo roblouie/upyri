@@ -69,7 +69,12 @@ export class LeverDoorObject3d extends Object3d {
 
   constructor(switchPosition: EnhancedDOMPoint, doorDatas: DoorData[], switchRotationDegrees = 0) {
     const base = new Mesh(new MoldableCubeGeometry(1, 2, 1).spreadTextureCoords(), materials.stone);
-    const lever = new Mesh(new MoldableCubeGeometry(1, 1, 4, 3, 3).cylindrify(0.25, 'z').spreadTextureCoords().done_(), materials.wood);
+    const lever = new Mesh(
+      new MoldableCubeGeometry(1, 1, 4, 3, 3)
+        .cylindrify(0.25, 'z')
+        .spreadTextureCoords()
+        .merge(new MoldableCubeGeometry(3, 1, 1, 1, 3, 3).cylindrify(0.25, 'x').translate_(0, 0, 2))
+        .done_(), materials.wood);
     super(base, lever);
 
     this.doorDatas = doorDatas;

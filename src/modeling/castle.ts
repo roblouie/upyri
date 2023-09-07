@@ -1,4 +1,11 @@
-import { createBox, createHallway, createStairs, mergeCubes, SegmentedWall } from '@/modeling/building-blocks';
+import {
+  createBox,
+  createHallway,
+  createStairs,
+  mergeCubes,
+  patternFill,
+  SegmentedWall
+} from '@/modeling/building-blocks';
 import { doTimes } from '@/engine/helpers';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 
@@ -158,10 +165,10 @@ export function createCastle() {
     .merge(castleKeep())
 
     // Key pedestal
-    .merge(new MoldableCubeGeometry(2, 3, 2, 2, 1, 2).cylindrify(1.2).translate_(-22,13.1,60).spreadTextureCoords())
+    .merge(new MoldableCubeGeometry(2, 3, 2, 2, 1, 2).cylindrify(1.2).translate_(-32,13.1,59.5).spreadTextureCoords())
 
     // Key doorway
-    .merge(new SegmentedWall([1.5, 4, 1.5], 8, [8, 1, 8], [0]).rotate_(0, Math.PI / 2).translate_(-17, 11.5, 59.5))
+    .merge(new SegmentedWall([1.5, 4, 1.5], 8, [8, 1, 8], [0]).rotate_(0, Math.PI / 2).translate_(-27, 11.5, 59.5).computeNormals())
 
     .done_();
 }
@@ -314,9 +321,7 @@ export function createCastleFloors(width_: number, depth: number, skipMiddle?: b
   return floors;
 }
 
-function patternFill(pattern: number[], times: number) {
-  return doTimes(times, (index) => pattern[index % pattern.length]);
-}
+
 
 export function castleTopper(length: number, startingHeight: number, zPos: number, isRounded = false) {
   const segmentWidths = patternFill([1, 2], length * 2);

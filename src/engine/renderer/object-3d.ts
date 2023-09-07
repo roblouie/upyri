@@ -64,12 +64,6 @@ export class Object3d {
   }
 
   updateWorldMatrix() {
-    // Don't udpate spirits to save time on matrix multiplication. Bit of a hack but ya it works...
-    // @ts-ignore
-    if (this.color !== undefined) {
-      return;
-    }
-
     this.localMatrix = this.getMatrix();
 
     if (this.parent_) {

@@ -34,7 +34,7 @@ layout(location=0) in vec4 m;uniform mat4 f;void main(){gl_Position=f*m;}`;
 
 export const fragment_glsl = `#version 300 es
 precision highp float;
-in vec4 e;in vec2 i;in float n;in vec3 o;in mat4 l;in vec4 u;uniform vec2 h;uniform vec4 s,t;uniform mediump sampler2DArray z;uniform mediump sampler2DShadow d;out vec4 g;vec3 w=vec3(-1,2,-1);float A=.2f,C=.6f;vec2 D[5]=vec2[](vec2(0),vec2(-1,0),vec2(1,0),vec2(0,1),vec2(0,-1));float F=1.,I=5200.;void main(){for(int v=0;v<5;v++){vec3 m=vec3(u.xy+D[v]/I,u.z-.001);float f=texture(d,m);F*=max(f,.87);}vec3 v=normalize(mat3(l)*o),f=normalize(w);float m=max(dot(f,v)*F,A);vec3 e=length(t)>0.?t.xyz:m*s.xyz;vec4 C=vec4(e.xyz,s.w);g=n<0.?C:texture(z,vec3(i*h,n))*C;}`;
+in vec4 e;in vec2 i;in float n;in vec3 o;in mat4 l;in vec4 u;uniform vec2 h;uniform vec4 s,t;uniform mediump sampler2DArray z;uniform mediump sampler2DShadow d;out vec4 g;vec3 w=vec3(-1,2,-1);float A=.2f,C=.6f;vec2 D[5]=vec2[](vec2(0),vec2(-1,0),vec2(1,0),vec2(0,1),vec2(0,-1));float F=1.,I=4200.;void main(){for(int v=0;v<5;v++){vec3 m=vec3(u.xy+D[v]/I,u.z-.001);float f=texture(d,m);F*=max(f,.87);}vec3 v=normalize(mat3(l)*o),f=normalize(w);float m=max(dot(f,v)*F,A);vec3 e=length(t)>0.?t.xyz:m*s.xyz;vec4 C=vec4(e.xyz,s.w);g=n<0.?C:texture(z,vec3(i*h,n))*C;}`;
 
 export const skybox_fragment_glsl = `#version 300 es
 precision highp float;

@@ -115,20 +115,24 @@ export function render(camera: Camera, scene: Scene) {
     // @ts-ignore
     gl.uniformMatrix4fv(normalMatrixLocation, true, mesh.color ? mesh.cachedMatrixData : mesh.worldMatrix.inverse().toFloat32Array());
     gl.uniformMatrix4fv(modelviewProjectionLocation, false, modelViewProjectionMatrix.toFloat32Array());
+    if (!mesh.material.isTransparent) {
+      gl.uniformMatrix4fv(lightPovMvpRenderLocation, false, textureSpaceMvp.multiply(mesh.worldMatrix).toFloat32Array());
+    }
     gl.drawElements(gl.TRIANGLES, mesh.geometry.getIndices()!.length, gl.UNSIGNED_SHORT, 0);
   };
 
 
   // Render shadow map to depth texture
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.useProgram(lilgl.depthProgram);
   // gl.cullFace(gl.FRONT);
   gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.viewport(0, 0, depthTextureSize.x, depthTextureSize.y);
 
   scene.solidMeshes.forEach((mesh, index) => {
     if (index > 0) {
       gl.bindVertexArray(mesh.geometry.vao!);
+      gl.uniformMatrix4fv(lightPovMvpDepthLocation, false, lightPovMvpMatrix.multiply(mesh.worldMatrix).toFloat32Array());
       gl.drawElements(gl.TRIANGLES, mesh.geometry.getIndices()!.length, gl.UNSIGNED_SHORT, 0);
     }
   });
