@@ -346,7 +346,7 @@ export function hollowCastleWall(x: number) {
   return createHallway(...walls, 5)
     .merge(castleTopper(95, 12, 6))
     .merge(castleTopper(95, 12, -6))
-    .merge(createCastleFloors(80, 9, false, false, true))
+    .merge(createCastleFloors(97, 9, false, false, true))
     .rotate_(0, Math.PI / 2, 0)
     .translate_(x)
     .computeNormals();

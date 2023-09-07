@@ -12,6 +12,7 @@ export class FirstPersonPlayer {
   isJumping = false;
   feetCenter = new EnhancedDOMPoint(0, 0, 0);
   velocity = new EnhancedDOMPoint(0, 0, 0);
+  isFrozen = false;
 
   // mesh: Mesh;
   camera: Camera;
@@ -43,7 +44,9 @@ export class FirstPersonPlayer {
 
   update(groupedFaces: { floorFaces: Face[]; wallFaces: Face[] }) {
     // debug.innerHTML = this.feetCenter.y;
-    this.updateVelocityFromControls();
+    if (!this.isFrozen) {
+      this.updateVelocityFromControls();
+    }
 
     if (!this.isJumping && this.velocity.magnitude > 0) {
       if (this.isFootstepsStopped) {

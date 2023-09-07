@@ -38,6 +38,7 @@ export class GameState implements State {
   hasKey = false;
 
   upyri = upyri();
+  isUpyriKilled = false;
 
   constructor() {
     const camera = new Camera(Math.PI / 3, 16 / 9, 1, 400);
@@ -139,12 +140,10 @@ export class GameState implements State {
     this.upyri.lookAt(this.player.camera.position_);
     this.scene.updateWorldMatrix();
 
-    // debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
-
-    if (controls.isEscape) {
-      gameStateMachine.setState(gameStates.menuState);
-    }
+    debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
   }
+
+  private backgroundFade = 0;
 
   gameEvents = [
     // see blood stain on wall
@@ -189,17 +188,45 @@ export class GameState implements State {
             );
             this.stake.position_.set(0, 57, -1);
             this.stake.setRotation_(Math.PI / 2 , 0, 0);
+            this.isUpyriKilled = true;
+            setTimeout(() => tmpl.innerHTML = '', 3000);
             return true;
           } else {
             tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
               drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'NEED STAKE', 40),
             );
+            setTimeout(() => tmpl.innerHTML = '', 3000);
           }
-          setTimeout(() => tmpl.innerHTML = '', 3000);
         }
       }
+    }, undefined, 7),
 
-    }, undefined, 7)
+    // Die From Upyri
+    new GameEvent(new EnhancedDOMPoint(0, 58.5, -10.5), () => {
+      if (!this.isUpyriKilled && this.leverDoors[3].isPulled) {
+        tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+          drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'DEAD TIME', 40),
+        );
+      }
+    }, undefined, 4),
+
+
+    // Escape
+    new GameEvent(new EnhancedDOMPoint(0, 24.5, -72), () => {
+      tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+        drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'ESCAPED', 40),
+      );
+      tmpl.style.backgroundColor = `rgba(0, 0, 0, ${this.backgroundFade})`;
+      this.backgroundFade += 0.005;
+      this.player.isFrozen = true;
+      this.player.velocity.set(0, 0, 0);
+      if (this.backgroundFade >= 1) {
+        tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+          drawBloodText({ x: '50%', y: '90%', style: 'font-size: 160px; text-shadow: 1px 1px 20px' }, 'THANKS FOR PLAYING', 40),
+        );
+        return true;
+      }
+    }, undefined, 6)
   ];
 
 
