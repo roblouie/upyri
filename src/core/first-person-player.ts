@@ -155,15 +155,17 @@ export class FirstPersonPlayer {
   }
 
   private updateAudio() {
-    this.listener.positionX.value = this.camera.position_.x;
-    this.listener.positionY.value = this.camera.position_.y;
-    this.listener.positionZ.value = this.camera.position_.z;
+    if (this.listener.positionX) {
+      this.listener.positionX.value = this.camera.position_.x;
+      this.listener.positionY.value = this.camera.position_.y;
+      this.listener.positionZ.value = this.camera.position_.z;
 
-    const lookingDirection = new EnhancedDOMPoint(0, 0, -1);
-    const result_ = this.camera.rotationMatrix.transformPoint(lookingDirection);
+      const lookingDirection = new EnhancedDOMPoint(0, 0, -1);
+      const result_ = this.camera.rotationMatrix.transformPoint(lookingDirection);
 
-    this.listener.forwardX.value = result_.x;
-    this.listener.forwardY.value = result_.y;
-    this.listener.forwardZ.value = result_.z;
+      this.listener.forwardX.value = result_.x;
+      this.listener.forwardY.value = result_.y;
+      this.listener.forwardZ.value = result_.z;
+    }
   }
 }
