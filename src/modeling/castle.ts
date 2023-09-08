@@ -168,7 +168,7 @@ export function createCastle() {
     .merge(new MoldableCubeGeometry(2, 3, 2, 2, 1, 2).cylindrify(1.2).translate_(-32,13.1,59.5).spreadTextureCoords())
 
     // Key doorway
-    .merge(new SegmentedWall([1.5, 4, 1.5], 8, [8, 1, 8], [0]).rotate_(0, Math.PI / 2).translate_(-27, 11.5, 59.5).computeNormals())
+    .merge(new SegmentedWall([1.5, 4, 1.5], 8, [8, 1, 8], [0], 0, 0, 0.5).rotate_(0, Math.PI / 2).translate_(-27, 11.5, 59.5).computeNormals())
 
     .done_();
 }
@@ -333,7 +333,7 @@ export function castleTopper(length: number, startingHeight: number, zPos: numbe
 
 export function solidCastleWall(z: number, hasDoor?: boolean) {
   return new SegmentedWall([36, 12, 36], 11.5, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, 0, 8)
-    .merge(castleTopper(hasDoor ? 70 : 82, 11.5, 4).translate_(hasDoor ? -4 : 0))
+    .merge(castleTopper(hasDoor ? 76 : 82, 11.5, 4).translate_(hasDoor ? -4 : 0))
     .merge(castleTopper(hasDoor ? 85 : 13, 11.5, -4).translate_(hasDoor ? 0 : 33.5))
     .translate_(0,0, z)
     .done_();
@@ -341,7 +341,7 @@ export function solidCastleWall(z: number, hasDoor?: boolean) {
 
 export function hollowCastleWall(x: number) {
   const walls = [
-    new SegmentedWall(patternFill([5, 2, 5], 24), 12, patternFill([12, 5, 12], 24), patternFill([0, 2, 0], 24), 0, 0),
+    new SegmentedWall(patternFill([4.5, 3, 4.5], 24), 12, patternFill([12, 3, 12], 24), patternFill([0, 2, 0], 24), 0, 0),
     new MoldableCubeGeometry(96, 24, 2).spreadTextureCoords()
   ];
   if (x > 0) {
@@ -351,7 +351,7 @@ export function hollowCastleWall(x: number) {
   return createHallway(...walls, 5)
     .merge(castleTopper(95, 12, 6))
     .merge(castleTopper(95, 12, -6))
-    .merge(createCastleFloors(97, 9, false, false, true))
+    .merge(createCastleFloors(98, 9, false, false, true))
     .rotate_(0, Math.PI / 2, 0)
     .translate_(x)
     .computeNormals();

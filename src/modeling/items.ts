@@ -27,7 +27,7 @@ export function key() {
       .rotate_(0, Math.PI / 2)
       .translate_(-32,36,60)
       .done_(),
-    materials.stone);
+    materials.gold);
 }
 
 export function upyri() {
@@ -99,8 +99,8 @@ export function makeCoffin() {
 
 export function fenceDoor() {
   return new Mesh(
-    new SegmentedWall([0.25, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.25], 7, [7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], 0, 0, 0.25)
+    new SegmentedWall([0.25, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.25], 7, [7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], 0, 0, 0.15)
       .translate_(0, -3.5)
       .done_(),
-    materials.stone);
+    materials.silver);
 }

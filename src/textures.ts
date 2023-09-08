@@ -45,10 +45,13 @@ export async function initTextures() {
   materials.stone = new Material({texture: textureLoader.load_(await bricksRocksPlanksWood(true, false))});
   materials.wood = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(false, false))});
   materials.planks = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(false, true))});
-  materials.castleWriting = new Material({ texture: textureLoader.load_(await castleSign()), isTransparent: true });
-  materials.handprint = new Material({ texture: textureLoader.load_(await handprint()), isTransparent: true });
+  materials.castleWriting = new Material({ texture: textureLoader.load_(await castleSign()), isTransparent: true, emissive: [0.5, 0.5, 0.5, 0.5] });
+  materials.handprint = new Material({ texture: textureLoader.load_(await handprint()), isTransparent: true, emissive: [0.5, 0.5, 0.5, 0.5] });
   materials.face = new Material({ texture: textureLoader.load_(await face())});
   materials.bloodCircle = new Material({ texture: textureLoader.load_(await drawBloodCircle()), isTransparent: true });
+  materials.gold = new Material({ texture: textureLoader.load_(await metals(0)), emissive: [0.7, 0.7, 0.7, 0.7] });
+  materials.silver = new Material({ texture: textureLoader.load_(await metals(1)) });
+  materials.iron = new Material({ texture: textureLoader.load_(await metals(2)) });
 
   const testSlicer = drawSkyboxHor();
   const horSlices = [await testSlicer(), await testSlicer(), await testSlicer(), await testSlicer()];
@@ -287,4 +290,38 @@ export function face() {
     <use href="#l" x="-22%" y="42" transform="rotate(.1) scale(-2.2 1.2)"></use>`,
       rect({ fill: '#777', x: 220, y: 230, width_: 50, height_: 50 })
     ));
+}
+
+export function metals(goldSilverIron: number) {
+  const matrices = [
+  [
+    0.4, 0.5, 0.4, 0, 0.3,
+    0.2, 0.6, 0.2, 0, 0.3,
+    0, 0, 0.1, 0, 0,
+    1, 0, 0, 0, 1,
+  ],
+
+  [
+    0.1, 0.1, 0.1, 0, -0.05,
+    0.1, 0.1, 0.1, 0, -0.05,
+    0.1, 0.1, 0.1, 0, -0.05,
+    0, 0, 0, 0, 1,
+  ],
+
+  [
+    0.07, 0.05, 0.06, 0, -0.1,
+    0.07, 0.05, 0.06, 0, -0.1,
+    0.07, 0.05, 0.06, 0, -0.1,
+    0, 0, 0, 0, 1,
+  ]
+  ];
+
+
+  return toImage(svg({ width_: 512, height_: 512 },
+    filter({ id_: 'b' },
+      feTurbulence({ baseFrequency: (goldSilverIron < 2 ? [0.1, 0.004] : 0.4), numOctaves_: (goldSilverIron < 2 ? 1 : 5), type_: NoiseType.Fractal }),
+      feColorMatrix({ values: matrices[goldSilverIron] })
+    ),
+    rect(fullSize({ filter: 'b' })),
+  ));
 }
