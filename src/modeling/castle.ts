@@ -111,7 +111,7 @@ export function createCastle() {
     // front-right Corner
     .merge(corner(otherCorners, true)
       .merge(cornerRamp())
-      .merge(castleTopper(5, 0, 0).rotate_(Math.PI / 2, -1, 0).translate_(-20, 1, 10))
+      .merge(castleTopper(5, 0, 0).rotate_(Math.PI / 2, -1, 0).translate_(-20, 1, 13))
       .translate_(53, 0, -60)
       .computeNormals()
     )
@@ -180,13 +180,13 @@ function castleKeep() {
         [54], [12], [0],
       ],
       [
-        [23, 8, 23], [12, 5, 12], [0],
+        [19, 2, 2, 8, 2, 2, 19], [12, 2, 12, 5, 12, 3, 12], [0, 3, 0, 0, 0, 3, 0],
       ],
       [
-        [68], [12], [0],
+        [18, 2, 8, 2, 8, 2, 8, 2, 18], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 3, 0, 3, 0, 3, 0, 3, 0]
       ],
       [
-        [68], [12], [0],
+        [18, 2, 8, 2, 8, 2, 8, 2, 18], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 3, 0, 3, 0, 3, 0, 3, 0]
       ],
     ],
     [
@@ -194,13 +194,13 @@ function castleKeep() {
         [4, 2, 10, 1, 6, 1, 6, 1, 6, 1, 16], [12, 6, 12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 1, 0, 4, 0, 4, 0, 4, 0, 4, 0],
       ],
       [
-        [16, 1, 6, 1, 6, 1, 6, 1, 16], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0],
+        [15.5, 2, 5, 2, 5, 2, 5, 2, 15.5], [12, 3, 12, 3, 12, 3, 12, 3, 12], [0, 3, 0, 3, 0, 3, 0, 3, 0],
       ],
       [
-        [18, 1, 9, 1, 10, 1, 9, 1, 18], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0]
+        [18, 2, 8, 2, 8, 2, 8, 2, 18], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 3, 0, 3, 0, 3, 0, 3, 0]
       ],
       [
-        [18, 1, 9, 1, 10, 1, 9, 1, 18], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 4, 0, 4, 0, 4, 0, 4, 0]
+        [18, 2, 8, 2, 8, 2, 8, 2, 18], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 3, 0, 3, 0, 3, 0, 3, 0]
       ],
     ]
   ], true)
@@ -208,7 +208,7 @@ function castleKeep() {
     .merge(new MoldableCubeGeometry(22, 12, 24).translate_(0, 6, 22).spreadTextureCoords())
     // ceiling
     .merge(
-      new SegmentedWall([15.5, 19, 15.5], 69, [69, 7.5, 69], [0, 45, 0], 0, 0, 2)
+      new SegmentedWall([2.5, 9, 4, 19, 4, 9, 2.5], 69, [69, 50, 69, 7.5, 69, 50, 69], [0, 5, 0, 45, 0, 5, 0], 0, 0, 2)
         .rotate_(Math.PI / 2)
         .translate_(0, 22.5, -34.5)
     )
@@ -301,6 +301,11 @@ function castleKeep() {
     // Floor
     .merge(new MoldableCubeGeometry(54, 0.5, 68).spreadTextureCoords())
 
+    .merge(new MoldableCubeGeometry(2, 24, 2, 3, 1, 3).cylindrify(2).translate_(-10, 11).computeNormals(true).spreadTextureCoords())
+    .merge(new MoldableCubeGeometry(2, 24, 2, 3, 1, 3).cylindrify(2).translate_(-10, 11, -20).computeNormals(true).spreadTextureCoords())
+    .merge(new MoldableCubeGeometry(2, 24, 2, 3, 1, 3).cylindrify(2).translate_(10, 11).computeNormals(true).spreadTextureCoords())
+    .merge(new MoldableCubeGeometry(2, 24, 2, 3, 1, 3).cylindrify(2).translate_(10, 11, -20).computeNormals(true).spreadTextureCoords())
+
     .translate_(0, 0, 20)
     .computeNormals();
 }
@@ -341,7 +346,7 @@ export function solidCastleWall(z: number, hasDoor?: boolean) {
 
 export function hollowCastleWall(x: number) {
   const walls = [
-    new SegmentedWall(patternFill([4.5, 3, 4.5], 24), 12, patternFill([12, 3, 12], 24), patternFill([0, 2, 0], 24), 0, 0),
+    new SegmentedWall(patternFill([5, 2, 5], 24), 12, patternFill([12, 3, 12], 24), patternFill([0, 2, 0], 24), 0, 0),
     new MoldableCubeGeometry(96, 24, 2).spreadTextureCoords()
   ];
   if (x > 0) {

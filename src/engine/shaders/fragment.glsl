@@ -18,7 +18,7 @@ uniform mediump sampler2DShadow shadowMap;
 
 out vec4 outColor;
 
-vec3 light_direction = vec3(-1, 2, -1);
+vec3 light_direction = vec3(-1, 1.5, -1);
 
 float ambientLight = 0.2f;
 float maxLit = 0.6f;

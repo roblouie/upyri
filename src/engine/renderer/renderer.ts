@@ -46,7 +46,7 @@ const viewDirectionProjectionInverseLocation = gl.getUniformLocation(lilgl.skybo
 
 const origin = new EnhancedDOMPoint(0, 0, 0);
 
-const inverseLightDirection = new EnhancedDOMPoint(-1, 2, -1).normalize_()
+const inverseLightDirection = new EnhancedDOMPoint(-0.8, 1.5, -1).normalize_()
 const lightPovProjection = createOrtho(-105,105,-105,105,-400,400); // createOrtho(-75,105,-95,95,-90,30)
 const lightPovView = createLookAt2(inverseLightDirection, origin);
 const lightPovMvpMatrix = lightPovProjection.multiply(lightPovView);
