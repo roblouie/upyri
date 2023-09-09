@@ -92,9 +92,9 @@ export class GameState implements State {
       ]),
 
       // Door to key
-      new LeverDoorObject3d(new EnhancedDOMPoint(-24, 35, 53.5), [
+      new LeverDoorObject3d(new EnhancedDOMPoint(-11, 35, 50), [
         new DoorData(fenceDoor(), new EnhancedDOMPoint(-25, 36, 61.5), 1, 1, true)
-      ], 180)
+      ], -90)
     );
   }
 

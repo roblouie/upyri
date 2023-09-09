@@ -191,7 +191,7 @@ function castleKeep() {
     ],
     [
       [
-        [4, 2, 10, 1, 6, 1, 6, 1, 6, 1, 16], [12, 6, 12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 1, 0, 4, 0, 4, 0, 4, 0, 4, 0],
+        [3, 12, 1, 1, 6, 1, 6, 1, 6, 1, 16], [12, 6, 12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 2, 0, 4, 0, 4, 0, 4, 0, 4, 0],
       ],
       [
         [15.5, 2, 5, 2, 5, 2, 5, 2, 15.5], [12, 3, 12, 3, 12, 3, 12, 3, 12], [0, 3, 0, 3, 0, 3, 0, 3, 0],
@@ -217,7 +217,15 @@ function castleKeep() {
     .merge(cornerRamp(false, false, false).rotate_(0, -Math.PI / 2).translate_(16, 0.5, 25))
 
     // Ramp to lever
-    .merge(cornerRamp(false, false, false).rotate_(0, -Math.PI / 2).translate_(-20, 0.5, 25))
+    // .merge(cornerRamp(false, false, false).rotate_(0, -Math.PI / 2).translate_(-20, 0.5, 25))
+    .merge(
+      new MoldableCubeGeometry(4, 12, 20)
+        .selectBy(vert => vert.y > 0 && vert.z < 0)
+        .translate_(0, -12)
+        .all_()
+        .translate_(-18, 6, 16)
+        .merge(new MoldableCubeGeometry(14, 12, 8).translate_(-18, 6, 30))
+    )
 
     // Transition to roof
     .merge(
