@@ -43,7 +43,7 @@ export class FirstPersonPlayer {
   private isFootstepsStopped = true;
 
   update(groupedFaces: { floorFaces: Face[]; wallFaces: Face[] }) {
-    // debug.innerHTML = this.feetCenter.y;
+    //debug.innerHTML = this.feetCenter.y;
     if (!this.isFrozen) {
       this.updateVelocityFromControls();
     }

@@ -101,7 +101,7 @@ export class GameState implements State {
   async onEnter() {
 
 
-    const heightmap = await newNoiseLandscape(256, 5, 0.04, 1, NoiseType.Fractal, 90);
+    const heightmap = await newNoiseLandscape(256, 6, 0.05, 3, NoiseType.Fractal, 113);
     const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap).spreadTextureCoords(), materials.grass);
     const floorCollision = new Mesh( new PlaneGeometry(1024, 1024, 4, 4).translate_(0, 20.5).done_(), materials.grass);
 
@@ -111,6 +111,8 @@ export class GameState implements State {
     const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(47.4, 24, 42).done_(), materials.handprint)
 
     const coffin = new Mesh(makeCoffin().rotate_(0, Math.PI).translate_(0, 55, 8).done_(), materials.wood);
+
+    const bridge = new Mesh(new MoldableCubeGeometry(18, 1, 65).translate_(0, 20.5, -125).done_(), materials.planks);
 
     this.coffinTopBloodstain.scale_.set(0, 1, 0);
 
@@ -122,7 +124,7 @@ export class GameState implements State {
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
 
     this.groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle, coffin, this.coffinTop]));
-    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, coffin, this.coffinTop, this.coffinTopBloodstain);
+    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, coffin, this.coffinTop, this.coffinTopBloodstain, bridge);
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
@@ -230,7 +232,7 @@ export class GameState implements State {
         }
     }
 
-    // debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z} // ${this.player.camera.rotation_.x} ${this.player.camera.rotation_.y} ${this.player.camera.rotation_.z}`;
+    debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z} // ${this.player.camera.rotation_.x} ${this.player.camera.rotation_.y} ${this.player.camera.rotation_.z}`;
   }
 
   private upyriTriggerCounter = 0;
