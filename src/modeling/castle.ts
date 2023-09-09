@@ -208,23 +208,25 @@ function castleKeep() {
     .merge(new MoldableCubeGeometry(22, 12, 24).translate_(0, 6, 22).spreadTextureCoords())
     // ceiling
     .merge(
-      new SegmentedWall([2.5, 9, 4, 19, 4, 9, 2.5], 69, [69, 50, 69, 7.5, 69, 50, 69], [0, 5, 0, 45, 0, 5, 0], 0, 0, 2)
+      new SegmentedWall([2.5, 9, 4, 19, 4, 9, 2.5], 69, [69, 5, 69, 7.5, 69, 50, 69], [0, 5, 0, 45, 0, 5, 0], 0, 0, 2)
         .rotate_(Math.PI / 2)
         .translate_(0, 22.5, -34.5)
     )
+    .merge(new MoldableCubeGeometry(9, 2, 38).translate_(-18, 22.5, 0).spreadTextureCoords().translate_(0, 0, 1.5))
+
 
     // Ramp to second level
     .merge(cornerRamp(false, false, false).rotate_(0, -Math.PI / 2).translate_(16, 0.5, 25))
 
     // Ramp to lever
-    // .merge(cornerRamp(false, false, false).rotate_(0, -Math.PI / 2).translate_(-20, 0.5, 25))
     .merge(
       new MoldableCubeGeometry(4, 12, 20)
         .selectBy(vert => vert.y > 0 && vert.z < 0)
         .translate_(0, -12)
         .all_()
         .translate_(-18, 6, 16)
-        .merge(new MoldableCubeGeometry(14, 12, 8).translate_(-18, 6, 30))
+        .spreadTextureCoords()
+        .merge(new MoldableCubeGeometry(14, 12, 8).translate_(-18, 6, 30).spreadTextureCoords())
     )
 
     // Transition to roof

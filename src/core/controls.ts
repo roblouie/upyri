@@ -16,6 +16,9 @@ class Controls {
   constructor() {
     document.addEventListener('keydown', event => this.toggleKey(event, true));
     document.addEventListener('keyup', event => this.toggleKey(event, false));
+    document.addEventListener('mousedown', () => this.toggleKey({ code: 'KeyE' }, true));
+    document.addEventListener('mouseup', () => this.toggleKey({ code: 'KeyE' }, false));
+
     document.addEventListener('mousemove', event => {
       this.mouseMovement.x = event.movementX;
       this.mouseMovement.y = event.movementY;
@@ -44,7 +47,7 @@ class Controls {
     this.isJump = this.keyMap.get('Space');
   }
 
-  private toggleKey(event: KeyboardEvent, isPressed: boolean) {
+  private toggleKey(event: { code: string }, isPressed: boolean) {
     this.keyMap.set(event.code, isPressed);
   }
 }

@@ -92,7 +92,7 @@ export class GameState implements State {
       ]),
 
       // Door to key
-      new LeverDoorObject3d(new EnhancedDOMPoint(-11, 35, 50), [
+      new LeverDoorObject3d(new EnhancedDOMPoint(-11, 36, 50), [
         new DoorData(fenceDoor(), new EnhancedDOMPoint(-25, 36, 61.5), 1, 1, true)
       ], -90)
     );
@@ -322,7 +322,7 @@ export class GameState implements State {
         const cameraRot = new EnhancedDOMPoint().set(this.player.camera.rotationMatrix.transformPoint(point));
         const upyriRot = new EnhancedDOMPoint().set(this.upyri.rotationMatrix.transformPoint(point));
 
-        if (cameraRot.dot(upyriRot) < -0.70 || this.upyriTriggerCounter > 240) {
+        if (cameraRot.dot(upyriRot) < -0.70 || this.upyriTriggerCounter > 240 || this.player.camera.position_.z > 10) {
           setTimeout(() =>  {
             upyriAttack().start();
             upyriAttack2().start();
