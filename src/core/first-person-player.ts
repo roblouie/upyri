@@ -22,7 +22,7 @@ export class FirstPersonPlayer {
   isOnDirt = true;
 
   constructor(camera: Camera) {
-    this.feetCenter.y = 54;
+    this.feetCenter.set(44, 21, -26);
     this.camera = camera;
     this.listener = audioCtx.listener;
 
@@ -31,7 +31,7 @@ export class FirstPersonPlayer {
     this.footstepsPlayer.start();
     this.footstepsPlayer.playbackRate.value = 0;
 
-    const rotationSpeed = 0.005;
+    const rotationSpeed = 0.002;
     controls.onMouseMove(mouseMovement => {
       this.cameraRotation.x += mouseMovement.y * -rotationSpeed;
       this.cameraRotation.y += mouseMovement.x * -rotationSpeed;
@@ -135,7 +135,7 @@ export class FirstPersonPlayer {
   }
 
   protected updateVelocityFromControls() {
-    const speed = 0.2;
+    const speed = 0.18;
 
     const depthMovementZ = Math.cos(this.cameraRotation.y) * controls.inputDirection.y * speed;
     const depthMovementX = Math.sin(this.cameraRotation.y) * controls.inputDirection.y * speed;
@@ -146,12 +146,12 @@ export class FirstPersonPlayer {
     this.velocity.z = depthMovementZ + sidestepZ;
     this.velocity.x = depthMovementX + sidestepX;
 
-    if (controls.isJump) {
-      if (!this.isJumping) {
-        this.velocity.y = 0.15;
-        this.isJumping = true;
-      }
-    }
+    // if (controls.isJump) {
+    //   if (!this.isJumping) {
+    //     this.velocity.y = 0.15;
+    //     this.isJumping = true;
+    //   }
+    // }
   }
 
   private updateAudio() {

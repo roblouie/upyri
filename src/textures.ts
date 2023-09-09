@@ -52,6 +52,7 @@ export async function initTextures() {
   materials.gold = new Material({ texture: textureLoader.load_(await metals(0)), emissive: [0.7, 0.7, 0.7, 0.7] });
   materials.silver = new Material({ texture: textureLoader.load_(await metals(1)) });
   materials.iron = new Material({ texture: textureLoader.load_(await metals(2)) });
+  materials.keyLock = new Material({ texture: textureLoader.load_(await keyLock())});
 
   const testSlicer = drawSkyboxHor();
   const horSlices = [await testSlicer(), await testSlicer(), await testSlicer(), await testSlicer()];
@@ -292,8 +293,7 @@ export function face() {
     ));
 }
 
-export function metals(goldSilverIron: number) {
-  const matrices = [
+const matrices = [
   [
     0.4, 0.5, 0.4, 0, 0.3,
     0.2, 0.6, 0.2, 0, 0.3,
@@ -314,7 +314,10 @@ export function metals(goldSilverIron: number) {
     0.07, 0.05, 0.06, 0, -0.1,
     0, 0, 0, 0, 1,
   ]
-  ];
+];
+
+export function metals(goldSilverIron: number) {
+
 
 
   return toImage(svg({ width_: 512, height_: 512 },
@@ -323,5 +326,17 @@ export function metals(goldSilverIron: number) {
       feColorMatrix({ values: matrices[goldSilverIron] })
     ),
     rect(fullSize({ filter: 'b' })),
+  ));
+}
+
+function keyLock() {
+  return toImage(svg({ width_: 512, height_: 512 },
+    filter({ id_: 'b' },
+      feTurbulence({ baseFrequency: [0.1, 0.004], numOctaves_: 1, type_: NoiseType.Fractal }),
+      feColorMatrix({ values: matrices[0] })
+    ),
+    rect(fullSize({ filter: 'b' })),
+    ellipse({ cx: 256, cy: 170, rx: 100, ry: 100, fill: '#000'}),
+    rect({ x: 216, y: 260, width_: 80, height_: 160 })
   ));
 }

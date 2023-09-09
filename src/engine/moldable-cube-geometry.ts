@@ -192,6 +192,12 @@ export class MoldableCubeGeometry {
     const combinedNormals = new Float32Array([...thisNormals, ...otherNormals]);
     this.setAttribute_(AttributeLocation.Normals, combinedNormals, 3);
 
+    if (this.getAttribute_(AttributeLocation.TextureDepth)) {
+      const thisTextureDepth = this.getAttribute_(AttributeLocation.TextureDepth).data;
+      const otherTextureDepth = otherMoldable.getAttribute_(AttributeLocation.TextureDepth).data;
+      const combinedTextureDepth = new Float32Array([...thisTextureDepth, ...otherTextureDepth]);
+      this.setAttribute_(AttributeLocation.TextureDepth, combinedTextureDepth, 1);
+    }
     return this;
   }
 

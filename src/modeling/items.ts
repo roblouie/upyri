@@ -104,3 +104,34 @@ export function fenceDoor() {
       .done_(),
     materials.silver);
 }
+
+export function lockedDoor() {
+  const doorTextures = MoldableCubeGeometry.TexturePerSide(1, 1, 1,
+    materials.wood.texture!,
+    materials.wood.texture!,
+    materials.wood.texture!,
+    materials.wood.texture!,
+    materials.planks.texture!,
+    materials.planks.texture!,
+  );
+  const doorGeo = new MoldableCubeGeometry(4, 7, 1);
+
+  doorGeo.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(doorTextures), 1);
+
+  const lock = new MoldableCubeGeometry(1, 1, 1.2).translate_(-1.4).done_();
+
+  const lockTextures = MoldableCubeGeometry.TexturePerSide(1, 1, 1,
+    materials.gold.texture!,
+    materials.gold.texture!,
+    materials.gold.texture!,
+    materials.gold.texture!,
+    materials.keyLock.texture!,
+    materials.keyLock.texture!,
+  );
+
+  lock.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(lockTextures), 1);
+
+  doorGeo.merge(lock).done_();
+
+  return new Mesh(doorGeo, new Material());
+}

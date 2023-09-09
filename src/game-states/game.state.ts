@@ -32,7 +32,7 @@ import {
   upyriAttack,
   upyriAttack2, upyriHit
 } from '@/sound-effects';
-import { fenceDoor, key, makeCoffin, makeCoffinBottomTop, stake, upyri } from '@/modeling/items';
+import { fenceDoor, key, lockedDoor, makeCoffin, makeCoffinBottomTop, stake, upyri } from '@/modeling/items';
 
 export class GameState implements State {
   player: FirstPersonPlayer;
@@ -41,7 +41,7 @@ export class GameState implements State {
   leverDoors: LeverDoorObject3d[] =[];
 
   stake = stake();
-  hasStake = true;
+  hasStake = false;
 
   key = key();
   hasKey = false;
@@ -81,7 +81,7 @@ export class GameState implements State {
 
       // Locked door to upper keep
       new LeverDoorObject3d(new EnhancedDOMPoint(23, 0, 37.5), [
-        new DoorData(this.door(), new EnhancedDOMPoint(23, 24, 37.5), -1)
+        new DoorData(lockedDoor(), new EnhancedDOMPoint(23, 24, 37.5), -1)
       ]),
 
 
@@ -214,16 +214,23 @@ export class GameState implements State {
             this.leverDoors[3].doorDatas[1].creakPlayer = { start: () => {} };
 
             tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
-              drawBloodText({ x: '50%', y: '90%', style: 'font-size: 150px; text-shadow: 1px 1px 20px' }, 'KILL UPYRI TO ESCAPE', 40),
+              drawBloodText({ x: '50%', y: '90%', style: 'font-size: 150px; text-shadow: 1px 1px 20px' }, 'YOU WOKE UPYRI', 40),
             );
 
-            setTimeout(() => tmpl.innerHTML = '', 3000);
+            setTimeout(() => {
+              tmpl.innerHTML = overlaySvg({ style: 'text-anchor: middle' },
+                drawBloodText({ x: '50%', y: '90%', style: 'font-size: 150px; text-shadow: 1px 1px 20px' }, 'KILL HIM IN HIS COFFIN', 40),
+              );
+
+              setTimeout(() => tmpl.innerHTML = '', 3000);
+
+            }, 3000);
 
           }, 4000);
         }
     }
 
-    //debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z}`;
+    // debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z} // ${this.player.camera.rotation_.x} ${this.player.camera.rotation_.y} ${this.player.camera.rotation_.z}`;
   }
 
   private upyriTriggerCounter = 0;
@@ -341,7 +348,20 @@ export class GameState implements State {
         );
       }, 3000);
         return true;
-    }, undefined, 6)
+    }, undefined, 6),
+
+    new GameEvent(new EnhancedDOMPoint(32, 24, -40), () => { ominousDiscovery1().start(); return true }, new EnhancedDOMPoint(28, -15)),
+
+    new GameEvent(new EnhancedDOMPoint(44, 21, -26), () => {
+      setTimeout(() => {
+        tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+          drawBloodText({ x: '50%', y: '90%', style: 'font-size: 160px; text-shadow: 1px 1px 20px' }, 'ESCAPE THE CASTLE', 40),
+        );
+        setTimeout(() => tmpl.innerHTML = '', 5000);
+      }, 3000);
+      return true;
+    }, undefined),
+
   ];
 
   isCoffinTopPlayed = false;
