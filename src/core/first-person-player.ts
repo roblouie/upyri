@@ -2,7 +2,10 @@ import { Camera } from '@/engine/renderer/camera';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { Face } from '@/engine/physics/face';
 import { controls } from '@/core/controls';
-import { findFloorHeightAtPosition, findWallCollisionsFromList } from '@/engine/physics/surface-collision';
+import {
+  findFloorHeightAtPosition,
+  findWallCollisionsFromList,
+} from '@/engine/physics/surface-collision';
 import { audioCtx } from '@/engine/audio/audio-player';
 import { clamp } from '@/engine/helpers';
 import { indoorFootsteps, outsideFootsteps } from '@/sound-effects';
@@ -42,7 +45,7 @@ export class FirstPersonPlayer {
 
   private isFootstepsStopped = true;
 
-  update(groupedFaces: { floorFaces: Face[]; wallFaces: Face[] }) {
+  update(gridFaces: {floorFaces: Face[], wallFaces: Face[]}[]) {
     //debug.innerHTML = this.feetCenter.y;
     if (!this.isFrozen) {
       this.updateVelocityFromControls();
@@ -64,8 +67,11 @@ export class FirstPersonPlayer {
     this.velocity.y -= 0.003; // gravity
     this.feetCenter.add_(this.velocity);
 
+    const playerGridPosition = this.feetCenter.x < 0 ? 0 : 1;
 
-    this.collideWithLevel(groupedFaces);
+
+    // @ts-ignore
+    this.collideWithLevel(gridFaces[playerGridPosition]); // do collision detection, if collision is found, feetCenter gets pushed out of the collision
 
     this.camera.position_.set(this.feetCenter);
     this.camera.position_.y += 3.5;

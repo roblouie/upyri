@@ -39,6 +39,8 @@ export class GameState implements State {
   player?: FirstPersonPlayer;
   scene: Scene;
   groupedFaces: {floorFaces: Face[], wallFaces: Face[] };
+  gridFaces: {floorFaces: Face[], wallFaces: Face[] }[] = [];
+
   leverDoors: LeverDoorObject3d[] =[];
 
   stake = stake();
@@ -89,7 +91,34 @@ export class GameState implements State {
 
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
 
-    this.groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle, coffin, this.coffinTop]));
+    const groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle, coffin, this.coffinTop]));
+
+    function onlyUnique(value: any, index: number, array: any[]) {
+      return array.indexOf(value) === index;
+    }
+
+    groupedFaces.floorFaces.forEach(face => {
+      const gridPositions = face.points.map(point => point.x < 0 ? 0 : 1);
+
+      gridPositions.filter(onlyUnique).forEach(position_ => {
+        if (!this.gridFaces[position_]) {
+          this.gridFaces[position_] = { floorFaces: [], wallFaces: [] };
+        }
+        this.gridFaces[position_].floorFaces.push(face);
+      });
+    });
+
+    groupedFaces.wallFaces.forEach(face => {
+      const gridPositions = face.points.map(point => point.x < 0 ? 0 : 1);
+
+      gridPositions.filter(onlyUnique).forEach(position_ => {
+        if (!this.gridFaces[position_]) {
+          this.gridFaces[position_] = { floorFaces: [], wallFaces: [] };
+        }
+        this.gridFaces[position_].wallFaces.push(face);
+      });
+    });
+
     this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, coffin, this.coffinTop, this.coffinTopBloodstain, bridge);
 
     this.scene.skybox = new Skybox(...skyboxes.test);
@@ -106,7 +135,7 @@ export class GameState implements State {
 
 
   onUpdate(): void {
-    this.player!.update(this.groupedFaces);
+    this.player!.update(this.gridFaces);
     render(this.player!.camera, this.scene);
 
 

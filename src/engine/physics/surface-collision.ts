@@ -1,15 +1,6 @@
 import { Face } from './face';
 import { EnhancedDOMPoint } from "@/engine/enhanced-dom-point";
 
-export const halfLevelSize = 1024;
-export const maxHalfLevelValue = halfLevelSize - 1;
-const cellSize = 64;
-
-const cellsInOneDirection = 16;
-
-export function getGridPosition(point: EnhancedDOMPoint) {
-  return Math.floor((point.x + halfLevelSize) / cellSize) + (Math.floor((point.z + halfLevelSize) / cellSize) * cellsInOneDirection);
-}
 
 // TODO: simple optimization would be to sort floor faces first, as long as there are no moving floor pieces they
 // could be pre sorted
