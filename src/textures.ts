@@ -222,10 +222,8 @@ export function drawGrass() {
   ));
 }
 
-function getPattern(width = 160, height = 256) {
-  return `<pattern id="pattern" width="${width}" height="${height}" patternUnits="userSpaceOnUse">
-        <path d="m 0 246 h 148 V 125 H 0 V112 h72 V0 h15 v112 h 74 V 0 H 0"/>
-    </pattern>`
+function getPattern(width_ = 160, height_ = 256) {
+  return `<pattern id="pattern" width="${width_}" height="${height_}" patternUnits="userSpaceOnUse"><path d="m 0 246 h 148 V 125 H 0 V112 h72 V0 h15 v112 h 74 V 0 H 0"/></pattern>`;
 }
 
 function rockWoodFilter(isRock = true) {

@@ -1,6 +1,5 @@
 import { State } from '@/core/state';
 import { controls } from '@/core/controls';
-import { gameStateMachine } from '@/game-state-machine';
 import { FirstPersonPlayer } from '@/core/first-person-player';
 import { Scene } from '@/engine/renderer/scene';
 import { Camera } from '@/engine/renderer/camera';
@@ -11,17 +10,13 @@ import { PlaneGeometry } from '@/engine/plane-geometry';
 import { getGroupedFaces, meshToFaces } from '@/engine/physics/parse-faces';
 import { Skybox } from '@/engine/skybox';
 import { drawBloodText, materials, skyboxes } from '@/textures';
-import { gameStates } from '@/game-states/game-states';
 import { newNoiseLandscape } from '@/engine/new-new-noise';
-import { NoiseType, text } from '@/engine/svg-maker/base';
+import { NoiseType } from '@/engine/svg-maker/base';
 import { overlaySvg } from '@/draw-helpers';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
-import { castleContainer, createCastle } from '@/modeling/castle';
-import { createStairs } from '@/modeling/building-blocks';
-import { DoorData, LeverDoorObject3d } from '@/modeling/lever-door';
+import { castleContainer } from '@/modeling/castle';
+import { LeverDoorObject3d } from '@/modeling/lever-door';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
-import { Object3d } from '@/engine/renderer/object-3d';
-import { Material } from '@/engine/renderer/material';
 import {
   draggingSound2, makeSong,
   ominousDiscovery1,
@@ -31,7 +26,14 @@ import {
   upyriAttack,
   upyriAttack2, upyriHit
 } from '@/sound-effects';
-import { fenceDoor, key, woodenDoor, makeCoffin, makeCoffinBottomTop, stake, upyri } from '@/modeling/items';
+import {
+  key,
+  makeCoffin,
+  makeCoffinBottomTop,
+  stake,
+  upyri,
+  getLeverDoors
+} from '@/modeling/items';
 
 export class GameState implements State {
   player?: FirstPersonPlayer;
@@ -57,39 +59,7 @@ export class GameState implements State {
     this.scene = new Scene();
     this.groupedFaces = { floorFaces: [], wallFaces: [] };
 
-
-
-    // Corner entrance
-    this.leverDoors.push(
-      new LeverDoorObject3d(new EnhancedDOMPoint(42, 36, -60), [
-        new DoorData(fenceDoor(), new EnhancedDOMPoint(53, 36.5, -49))
-      ], -90),
-
-
-      // Keep entrance
-      new LeverDoorObject3d(new EnhancedDOMPoint(57, 24, 42), [
-        new DoorData(woodenDoor(), new EnhancedDOMPoint(-2, 24.5, -15)),
-        new DoorData(woodenDoor(), new EnhancedDOMPoint(2, 24.5, -15), -1, 1),
-        new DoorData(woodenDoor(), new EnhancedDOMPoint(53, 24.5, 47), -1, -1)
-      ], -90),
-
-      // Locked door to upper keep
-      new LeverDoorObject3d(new EnhancedDOMPoint(23, 0, 37.5), [
-        new DoorData(woodenDoor(true), new EnhancedDOMPoint(23, 24.5, 37.5), -1)
-      ]),
-
-
-      // Front gate
-      new LeverDoorObject3d(new EnhancedDOMPoint(3, 58, -12), [
-        new DoorData(woodenDoor(false, 6, 11), new EnhancedDOMPoint(-3, 26, -60), 1, 1, false, true),
-        new DoorData(woodenDoor(false, 6, 11), new EnhancedDOMPoint(3, 26, -60), -1, 1, false, true)
-      ]),
-
-      // Door to key
-      new LeverDoorObject3d(new EnhancedDOMPoint(-11, 36, 50), [
-        new DoorData(fenceDoor(), new EnhancedDOMPoint(-25, 36, 61.5), 1, 1, true)
-      ], -90)
-    );
+    this.leverDoors = getLeverDoors();
   }
 
   async onEnter() {
@@ -183,7 +153,6 @@ export class GameState implements State {
         if (this.upyriAttackingTimer > 40) {
           tmpl.style.backgroundColor = `rgb(0, 0, 0)`;
           this.isUpyriAttacking = false;
-          //TODO: Maybe add blood splatter here
 
           // Reset
           setTimeout(() => {

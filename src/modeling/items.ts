@@ -5,6 +5,8 @@ import { SegmentedWall } from '@/modeling/building-blocks';
 import { materials } from "@/textures";
 import { Object3d } from "@/engine/renderer/object-3d";
 import { AttributeLocation } from "@/engine/renderer/renderer";
+import { DoorData, LeverDoorObject3d } from '@/modeling/lever-door';
+import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 
 export function stake() {
   return new Mesh(new MoldableCubeGeometry(0.5, 0.5, 2, 2, 2)
@@ -118,8 +120,8 @@ export function woodenDoor(hasLock = false, width_ = 4, height_ = 7) {
 
   doorGeo.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(doorTextures), 1);
 
-  const barGeo = new MoldableCubeGeometry(width_ + .05, 0.5, 1.2).translate_(0, 2.5).spreadTextureCoords();
-  const barGeo2 = new MoldableCubeGeometry(width_ + .05, 0.5, 1.2).translate_(0, -2.5).spreadTextureCoords();
+  const barGeo = new MoldableCubeGeometry(width_ + .05, 0.5, 1.2).translate_(0, width_ === 4 ? 2.5: 5).spreadTextureCoords();
+  const barGeo2 = new MoldableCubeGeometry(width_ + .05, 0.5, 1.2).translate_(0, width_ === 4 ? -2.5: -1).spreadTextureCoords();
 
   const barTextures = MoldableCubeGeometry.TexturePerSide(1, 1, 1,
     materials.iron.texture!,
@@ -156,4 +158,38 @@ export function woodenDoor(hasLock = false, width_ = 4, height_ = 7) {
   doorGeo.done_();
 
   return new Mesh(doorGeo, new Material());
+}
+
+export function getLeverDoors() {
+ return [
+   // Corner entrance
+     new LeverDoorObject3d(new EnhancedDOMPoint(42, 36, -60), [
+      new DoorData(fenceDoor(), new EnhancedDOMPoint(53, 36.5, -49))
+    ], -90),
+
+
+    // Keep entrance
+    new LeverDoorObject3d(new EnhancedDOMPoint(57, 24, 42), [
+      new DoorData(woodenDoor(), new EnhancedDOMPoint(-2, 24.5, -15)),
+      new DoorData(woodenDoor(), new EnhancedDOMPoint(2, 24.5, -15), -1, 1),
+      new DoorData(woodenDoor(), new EnhancedDOMPoint(53, 24.5, 47), -1, -1)
+    ], -90),
+
+    // Locked door to upper keep
+    new LeverDoorObject3d(new EnhancedDOMPoint(23, 0, 37.5), [
+      new DoorData(woodenDoor(true), new EnhancedDOMPoint(23, 24.5, 37.5), -1)
+    ]),
+
+
+    // Front gate
+    new LeverDoorObject3d(new EnhancedDOMPoint(3, 58, -12), [
+      new DoorData(woodenDoor(false, 6, 15), new EnhancedDOMPoint(-3, 24, -60), 1, 1, false, true),
+      new DoorData(woodenDoor(false, 6, 15), new EnhancedDOMPoint(3, 24, -60), -1, 1, false, true)
+    ]),
+
+    // Door to key
+    new LeverDoorObject3d(new EnhancedDOMPoint(-11, 36, 50), [
+      new DoorData(fenceDoor(), new EnhancedDOMPoint(-25, 36, 61.5), 1, 1, true)
+    ], -90)
+   ];
 }

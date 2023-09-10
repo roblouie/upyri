@@ -1,23 +1,22 @@
 import { State } from '@/core/state';
-import { controls } from '@/core/controls';
 import { gameStateMachine } from '@/game-state-machine';
 import { gameStates } from '@/game-states/game-states';
 import { drawFullScreenText, overlaySvg } from '@/draw-helpers';
-import { NoiseType, rect, text } from '@/engine/svg-maker/base';
+import { NoiseType, text } from '@/engine/svg-maker/base';
 import { drawBloodText, materials, skyboxes } from '@/textures';
 import { newNoiseLandscape } from '@/engine/new-new-noise';
 import { Mesh } from '@/engine/renderer/mesh';
 import { PlaneGeometry } from '@/engine/plane-geometry';
-import { castleContainer, createCastle } from '@/modeling/castle';
+import { castleContainer } from '@/modeling/castle';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 import { Skybox } from '@/engine/skybox';
 import { Scene } from '@/engine/renderer/scene';
 import { Camera } from '@/engine/renderer/camera';
 import { render } from '@/engine/renderer/renderer';
-import { makeCoffin, makeCoffinBottomTop } from '@/modeling/items';
+import { getLeverDoors } from '@/modeling/items';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { createLookAt2 } from '@/engine/renderer/object-3d';
-import { makeSong, musicNote, pickup1, scaryNote2 } from '@/sound-effects';
+import { makeSong, pickup1, scaryNote2 } from '@/sound-effects';
 import { audioCtx } from '@/engine/audio/audio-player';
 
 export class MenuState implements State {
@@ -46,9 +45,10 @@ export class MenuState implements State {
     const castle = new Mesh(castleContainer.value!, materials.brickWall);
     const bridge = new Mesh(new MoldableCubeGeometry(18, 1, 65).translate_(0, 20.5, -125).done_(), materials.planks);
 
-    this.scene.add_(floor, castle, bridge);
+    this.scene.add_(floor, castle, bridge, ...getLeverDoors().flatMap(leverDoor => leverDoor.doorDatas));
 
     this.scene.skybox = new Skybox(...skyboxes.test);
+    this.scene.updateWorldMatrix();
     this.scene.skybox.bindGeometry();
 
     tmpl.innerHTML = overlaySvg({ style: 'text-anchor: middle' },
@@ -58,11 +58,7 @@ export class MenuState implements State {
     );
     // TODO: Probably add this to the svg library, if I have enough space to keep it anyway
     tmpl.querySelectorAll('feTurbulence').forEach((el: HTMLElement) => {
-      el.innerHTML = `<animate
-        attributeName="baseFrequency"
-        values="0.13 0.08;0.13 0.007"
-        dur="80s"
-        repeatCount="indefinite" />`;
+      el.innerHTML = `<animate attributeName="baseFrequency" values="0.13 0.08;0.13 0.007" dur="80s" repeatCount="indefinite" />`;
     });
 
     start.onclick = () => {
