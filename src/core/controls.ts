@@ -6,7 +6,6 @@ class Controls {
   isLeft?: boolean = false;
   isRight?: boolean = false;
   isConfirm? = false;
-  isJump? = false;
   inputDirection: EnhancedDOMPoint;
   private mouseMovement = new EnhancedDOMPoint();
   private onMouseMoveCallback?: (mouseMovement: EnhancedDOMPoint) => void;
@@ -44,7 +43,6 @@ class Controls {
     this.isLeft = this.keyMap.get('KeyA');
     this.isRight = this.keyMap.get('KeyD');
     this.isConfirm = this.keyMap.get('KeyE');
-    this.isJump = this.keyMap.get('Space');
   }
 
   private toggleKey(event: { code: string }, isPressed: boolean) {

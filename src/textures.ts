@@ -324,7 +324,7 @@ export function metals(goldSilverIron: number) {
 
   return toImage(svg({ width_: 512, height_: 512 },
     filter({ id_: 'b' },
-      feTurbulence({ baseFrequency: (goldSilverIron < 2 ? [0.1, 0.004] : 0.4), numOctaves_: (goldSilverIron < 2 ? 1 : 5), type_: NoiseType.Fractal }),
+      feTurbulence({ baseFrequency: (goldSilverIron < 2 ? [0.1, 0.004] : 1.2), numOctaves_: (goldSilverIron < 2 ? 1 : 5), type_: NoiseType.Fractal }),
       feColorMatrix({ values: matrices[goldSilverIron] })
     ),
     rect(fullSize({ filter: 'b' })),

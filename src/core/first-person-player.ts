@@ -106,7 +106,7 @@ export class FirstPersonPlayer {
 
       if (this.isOnDirt && floorData.height > 21) {
         this.footstepsPlayer.stop();
-        this.footstepsPlayer = this.determineFootstepPlayer(floorData.height)
+        this.footstepsPlayer = this.determineFootstepPlayer(floorData.height);
         this.footstepsPlayer.loop = true;
         this.footstepsPlayer.start();
         this.isOnDirt = false;
@@ -114,7 +114,7 @@ export class FirstPersonPlayer {
 
       if (!this.isOnDirt && floorData.height === 21) {
         this.footstepsPlayer.stop();
-        this.footstepsPlayer = this.determineFootstepPlayer(floorData.height)
+        this.footstepsPlayer = this.determineFootstepPlayer(floorData.height);
         this.footstepsPlayer.loop = true;
         this.footstepsPlayer.start();
         this.isOnDirt = true;
@@ -126,8 +126,8 @@ export class FirstPersonPlayer {
     }
   }
 
-  determineFootstepPlayer(height: number) {
-    if (height === 21) {
+  determineFootstepPlayer(height_: number) {
+    if (height_ === 21) {
       return outsideFootsteps();
     } else {
       return indoorFootsteps();
@@ -137,21 +137,17 @@ export class FirstPersonPlayer {
   protected updateVelocityFromControls() {
     const speed = 0.18;
 
-    const depthMovementZ = Math.cos(this.cameraRotation.y) * controls.inputDirection.y * speed;
-    const depthMovementX = Math.sin(this.cameraRotation.y) * controls.inputDirection.y * speed;
+    const depthMovementZ = Math.cos(this.cameraRotation.y) * controls.inputDirection.y;
+    const depthMovementX = Math.sin(this.cameraRotation.y) * controls.inputDirection.y;
 
-    const sidestepZ = Math.cos(this.cameraRotation.y + Math.PI / 2) * controls.inputDirection.x * speed;
-    const sidestepX = Math.sin(this.cameraRotation.y + Math.PI / 2) * controls.inputDirection.x * speed;
+    const sidestepZ = Math.cos(this.cameraRotation.y + Math.PI / 2) * controls.inputDirection.x;
+    const sidestepX = Math.sin(this.cameraRotation.y + Math.PI / 2) * controls.inputDirection.x;
 
     this.velocity.z = depthMovementZ + sidestepZ;
     this.velocity.x = depthMovementX + sidestepX;
-
-    if (controls.isJump) {
-      if (!this.isJumping) {
-        this.velocity.y = 0.15;
-        this.isJumping = true;
-      }
-    }
+    let oldY = this.velocity.y;
+    this.velocity.normalize_().scale_(speed);
+    this.velocity.y = oldY;
   }
 
   private updateAudio() {

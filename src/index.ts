@@ -10,18 +10,17 @@ import { castleContainer, createCastle } from '@/modeling/castle';
 let previousTime = 0;
 const interval = 1000 / 60;
 
-(async () => {
-  drawFullScreenText('LOADING');
-  await initTextures();
-  castleContainer.value = createCastle().translate_(0, 21).done_();
-
-  gameStates.gameState = new GameState();
-  gameStates.menuState = new MenuState();
-
+(() => {
   drawFullScreenText('CLICK TO START', 200);
-
-  document.onclick = () => {
+  document.onclick = async () => {
     drawFullScreenText('LOADING');
+
+    await initTextures();
+    castleContainer.value = createCastle().translate_(0, 21).done_();
+
+    gameStates.gameState = new GameState();
+    gameStates.menuState = new MenuState();
+
     createGameStateMachine(gameStates.menuState);
 
     draw(0);

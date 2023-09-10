@@ -60,7 +60,7 @@ export const frontLeftCornerRoom = [
 ];
 
 export const rearRightCornerRoom = structuredClone(frontLeftCornerRoom);
-rearRightCornerRoom[0][0] = [[9.25, doorWidth - 0.5, 6.25, 3], [12, 5.5, 12, 5], [0]];
+rearRightCornerRoom[0][0] = [[9.25, doorWidth - 0.5, 6.25, 3], [12, 5, 12, 5], [0]];
 rearRightCornerRoom[1][0] = [[9, 4, 4, 2, 3], [12, 5, 12, 4, 12], [0, 0, 0, 2, 0]];
 
 export const otherCorners = [
@@ -91,7 +91,7 @@ export const otherCorners = [
     ],
     // Back Wall
     [
-      [3, 2, 12, 2, 3], [12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0]
+      [3, 2, 5, 2, 5, 2, 3], [12, windowTopHeight, 12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0, windowBottomHeight, 0]
     ],
     // Left Wall
     [

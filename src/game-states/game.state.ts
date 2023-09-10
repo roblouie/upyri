@@ -31,7 +31,7 @@ import {
   upyriAttack,
   upyriAttack2, upyriHit
 } from '@/sound-effects';
-import { fenceDoor, key, lockedDoor, makeCoffin, makeCoffinBottomTop, stake, upyri } from '@/modeling/items';
+import { fenceDoor, key, woodenDoor, makeCoffin, makeCoffinBottomTop, stake, upyri } from '@/modeling/items';
 
 export class GameState implements State {
   player?: FirstPersonPlayer;
@@ -53,9 +53,6 @@ export class GameState implements State {
   coffinTop = new Mesh(makeCoffinBottomTop().rotate_(0, Math.PI).translate_(0, 56.35, 8).done_(), materials.wood);
   coffinTopBloodstain = new Mesh(new MoldableCubeGeometry(3, 1, 3).translate_(0, 55.95, -0.5).done_(), materials.bloodCircle);
 
-  door = () => new Mesh(new MoldableCubeGeometry(4, 7, 1), materials.planks);
-  gateDoor = () => new Mesh(new MoldableCubeGeometry(6, 15, 1), materials.planks);
-
   constructor() {
     this.scene = new Scene();
     this.groupedFaces = { floorFaces: [], wallFaces: [] };
@@ -71,21 +68,21 @@ export class GameState implements State {
 
       // Keep entrance
       new LeverDoorObject3d(new EnhancedDOMPoint(57, 24, 42), [
-        new DoorData(this.door(), new EnhancedDOMPoint(-2, 24.5, -15)),
-        new DoorData(this.door(), new EnhancedDOMPoint(2, 24.5, -15), -1, 1),
-        new DoorData(this.door(), new EnhancedDOMPoint(53, 24, 47), -1, -1)
+        new DoorData(woodenDoor(), new EnhancedDOMPoint(-2, 24.5, -15)),
+        new DoorData(woodenDoor(), new EnhancedDOMPoint(2, 24.5, -15), -1, 1),
+        new DoorData(woodenDoor(), new EnhancedDOMPoint(53, 24.5, 47), -1, -1)
       ], -90),
 
       // Locked door to upper keep
       new LeverDoorObject3d(new EnhancedDOMPoint(23, 0, 37.5), [
-        new DoorData(lockedDoor(), new EnhancedDOMPoint(23, 24, 37.5), -1)
+        new DoorData(woodenDoor(true), new EnhancedDOMPoint(23, 24.5, 37.5), -1)
       ]),
 
 
       // Front gate
       new LeverDoorObject3d(new EnhancedDOMPoint(3, 58, -12), [
-        new DoorData(this.gateDoor(), new EnhancedDOMPoint(-3, 24, -60), 1, 1, false, true),
-        new DoorData(this.gateDoor(), new EnhancedDOMPoint(3, 24, -60), -1, 1, false, true)
+        new DoorData(woodenDoor(false, 6, 11), new EnhancedDOMPoint(-3, 26, -60), 1, 1, false, true),
+        new DoorData(woodenDoor(false, 6, 11), new EnhancedDOMPoint(3, 26, -60), -1, 1, false, true)
       ]),
 
       // Door to key
@@ -354,7 +351,7 @@ export class GameState implements State {
     }, undefined, 6),
 
     // Look at broken wall piece
-    new GameEvent(new EnhancedDOMPoint(32, 24, -40), () => { ominousDiscovery1().start(); return true }, new EnhancedDOMPoint(28, -15)),
+    new GameEvent(new EnhancedDOMPoint(32, 24, -40), () => { ominousDiscovery1().start(); return true }, new EnhancedDOMPoint(28, -15), 8),
 
     // Initial cue to give player instruction that their goal is to escape the castle
     new GameEvent(new EnhancedDOMPoint(44, 21, -26), () => {

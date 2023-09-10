@@ -105,7 +105,7 @@ export function fenceDoor() {
     materials.silver);
 }
 
-export function lockedDoor() {
+export function woodenDoor(hasLock = false, width_ = 4, height_ = 7) {
   const doorTextures = MoldableCubeGeometry.TexturePerSide(1, 1, 1,
     materials.wood.texture!,
     materials.wood.texture!,
@@ -114,9 +114,25 @@ export function lockedDoor() {
     materials.planks.texture!,
     materials.planks.texture!,
   );
-  const doorGeo = new MoldableCubeGeometry(4, 7, 1);
+  const doorGeo = new MoldableCubeGeometry(width_, height_, 1);
 
   doorGeo.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(doorTextures), 1);
+
+  const barGeo = new MoldableCubeGeometry(width_ + .05, 0.5, 1.2).translate_(0, 2.5).spreadTextureCoords();
+  const barGeo2 = new MoldableCubeGeometry(width_ + .05, 0.5, 1.2).translate_(0, -2.5).spreadTextureCoords();
+
+  const barTextures = MoldableCubeGeometry.TexturePerSide(1, 1, 1,
+    materials.iron.texture!,
+    materials.iron.texture!,
+    materials.iron.texture!,
+    materials.iron.texture!,
+    materials.iron.texture!,
+    materials.iron.texture!,
+  );
+
+  barGeo.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(barTextures), 1);
+  barGeo2.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(barTextures), 1);
+
 
   const lock = new MoldableCubeGeometry(1, 1, 1.2).translate_(-1.4).done_();
 
@@ -131,7 +147,13 @@ export function lockedDoor() {
 
   lock.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(lockTextures), 1);
 
-  doorGeo.merge(lock).done_();
+  doorGeo.merge(barGeo).merge(barGeo2);
+
+  if (hasLock) {
+    doorGeo.merge(lock);
+  }
+
+  doorGeo.done_();
 
   return new Mesh(doorGeo, new Material());
 }
