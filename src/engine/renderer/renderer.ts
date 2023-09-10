@@ -5,18 +5,13 @@ import { Skybox } from '@/engine/skybox';
 import { Scene } from '@/engine/renderer/scene';
 import { Mesh } from '@/engine/renderer/mesh';
 import {
-  color,
   emissive, lightPovMvp,
   modelviewProjection,
-  normalMatrix, shadowMap,
-  textureRepeat, u_skybox, u_viewDirectionProjectionInverse, uSampler, viewProjection
+  normalMatrix,
+  textureRepeat, u_skybox, u_viewDirectionProjectionInverse
 } from '@/engine/shaders/shaders';
-import { OrthoCamera } from '@/engine/renderer/ortho-camera';
-import { createLookAt2, createMultiColorCube, createOrtho, Object3d } from '@/engine/renderer/object-3d';
+import { createLookAt2, createOrtho } from '@/engine/renderer/object-3d';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
-import { stake } from '@/modeling/items';
-import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
-import { materials } from '@/textures';
 
 // IMPORTANT! The index of a given buffer in the buffer array must match it's respective data location in the shader.
 // This allows us to use the index while looping through buffers to bind the attributes. So setting a buffer
@@ -37,7 +32,6 @@ gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 const modelviewProjectionLocation = gl.getUniformLocation(lilgl.program, modelviewProjection)!;
 const normalMatrixLocation =  gl.getUniformLocation(lilgl.program, normalMatrix)!;
-const colorLocation =  gl.getUniformLocation(lilgl.program, color)!;
 const emissiveLocation = gl.getUniformLocation(lilgl.program, emissive)!;
 const textureRepeatLocation = gl.getUniformLocation(lilgl.program, textureRepeat)!;
 const skyboxLocation = gl.getUniformLocation(lilgl.skyboxProgram, u_skybox)!;
@@ -104,7 +98,6 @@ export function render(camera: Camera, scene: Scene) {
     gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
     const modelViewProjectionMatrix = projection.multiply(mesh.worldMatrix);
 
-    gl.uniform4fv(colorLocation, mesh.material.color);
     gl.uniform4fv(emissiveLocation, mesh.material.emissive);
     gl.vertexAttrib1f(AttributeLocation.TextureDepth, mesh.material.texture?.id ?? -1.0);
     const textureRepeat = [mesh.material.texture?.textureRepeat.x ?? 1, mesh.material.texture?.textureRepeat.y ?? 1];

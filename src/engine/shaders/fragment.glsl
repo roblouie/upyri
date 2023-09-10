@@ -11,7 +11,6 @@ in mat4 vNormalMatrix;
 in vec4 positionFromLightPov;
 
 uniform vec2 textureRepeat;
-uniform vec4 color;
 uniform vec4 emissive;
 uniform mediump sampler2DArray uSampler;
 uniform mediump sampler2DShadow shadowMap;
@@ -46,9 +45,9 @@ void main() {
     float litPercent = max(dot(normalizedLightPosition, correctedNormals) * visibility, ambientLight);
 
 
-    vec3 litColor = length(emissive) > 0.0 ? emissive.rgb : (litPercent * color.rgb);
+    vec3 litColor = length(emissive) > 0.0 ? emissive.rgb : (litPercent * vec3(1.0, 1.0, 1.0));
 
-    vec4 vColor = vec4(litColor.r, litColor.g, litColor.b, color.a);
+    vec4 vColor = vec4(litColor.rgb, 1.0);
 
     if (vDepth < 0.0) {
         outColor = vColor;

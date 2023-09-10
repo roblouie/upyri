@@ -19,11 +19,11 @@ svg {
     font-weight: bold;
 }
 
-#fullscreen,#start {
+#Fullscreen,#Start {
     fill: #666;
     cursor: pointer;
 }
 
-#fullscreen:hover,#start:hover {
+#Fullscreen:hover,#Start:hover {
     fill: red;
 }

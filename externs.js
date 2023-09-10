@@ -1,5 +1,5 @@
 let localStorage;
 let c3d;
-let start;
+let Start;
 let tmpl;
-let fullscreen;
+let Fullscreen;

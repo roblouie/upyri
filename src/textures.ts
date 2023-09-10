@@ -69,8 +69,6 @@ export async function initTextures() {
   textureLoader.bindTextures();
 }
 
-const night = 'black';
-
 function castleSign() {
   return toImage(
     svg({ width_: textureSize, height_: textureSize },
@@ -170,7 +168,7 @@ function landPattern(y: number, color: string, seed_: number, numOctaves: number
       feDisplacementMap({ in: 'SourceGraphic', scale_: 100 }),
     ) +
     filter({ id_: `g${y}`, x: 0, width_: '100%' },
-      feTurbulence({ id_: 'test', baseFrequency: [0.02, 0.01], numOctaves_: numOctaves, type_: NoiseType.Fractal, result: `n${y}`, seed_, stitchTiles_: 'stitch' }),
+      feTurbulence({ baseFrequency: [0.02, 0.01], numOctaves_: numOctaves, type_: NoiseType.Fractal, result: `n${y}`, seed_, stitchTiles_: 'stitch' }),
       feDiffuseLighting({ in: `n${y}`, lightingColor: color, surfaceScale: 22 },
         feDistantLight(45, 60)
       ),
@@ -182,14 +180,14 @@ function landPattern(y: number, color: string, seed_: number, numOctaves: number
 }
 
 function drawSkyboxHor() {
-  return horizontalSkyboxSlice({ width_: skyboxSize * 4, height_: skyboxSize, style: `background:${night};` },
+  return horizontalSkyboxSlice({ width_: skyboxSize * 4, height_: skyboxSize, style: `background: #000;` },
     drawBetterClouds(skyboxSize * 4),
     landPattern(1000, '#1c1d2d', 15, 4),
   );
 }
 
 function drawSkyboxTop() {
-  return svg({ width_: skyboxSize, height_: skyboxSize, style: `background: ${night}` }, drawClouds());
+  return svg({ width_: skyboxSize, height_: skyboxSize, style: `background: #000;` }, drawClouds());
 }
 
 function horizontalSkyboxSlice(svgSetting: SvgAttributes, ...elements: string[]) {
@@ -223,7 +221,7 @@ export function drawGrass() {
 }
 
 function getPattern(width_ = 160, height_ = 256) {
-  return `<pattern id="pattern" width="${width_}" height="${height_}" patternUnits="userSpaceOnUse"><path d="m 0 246 h 148 V 125 H 0 V112 h72 V0 h15 v112 h 74 V 0 H 0"/></pattern>`;
+  return `<pattern id="p" width="${width_}" height="${height_}" patternUnits="userSpaceOnUse"><path d="m 0 246 h 148 V 125 H 0 V112 h72 V0 h15 v112 h 74 V 0 H 0"/></pattern>`;
 }
 
 function rockWoodFilter(isRock = true) {
@@ -243,7 +241,7 @@ function bricksRocksPlanksWood(isRock = true, isPattern = true) {
   return toImage(svg({ width_: 512, height_: 512 },
     (isPattern ? getPattern( isRock ? 160 : 75, isRock ? 256 : 1) : '') +
     rockWoodFilter(isRock),
-    rect({ x: 0, y: 0, width_: '100%', height_: '100%', fill: isPattern ? 'url(#pattern)' : undefined, filter: 'rw' })
+    rect({ x: 0, y: 0, width_: '100%', height_: '100%', fill: isPattern ? 'url(#p)' : undefined, filter: 'rw' })
   ));
 }
 
@@ -343,7 +341,7 @@ function keyLock() {
 
 
 function fffix() {
-  if (navigator.userAgent.includes('Firefox')) {
+  if (navigator.userAgent.includes('fox')) {
     return feComponentTransfer({},
       feFunc('R',  'gamma', []),
       feFunc('G',  'gamma', []),

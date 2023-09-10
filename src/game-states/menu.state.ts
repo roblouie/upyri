@@ -52,16 +52,16 @@ export class MenuState implements State {
     this.scene.skybox.bindGeometry();
 
     tmpl.innerHTML = overlaySvg({ style: 'text-anchor: middle' },
-      drawBloodText({ x: '50%', y: 300, id_: 'title' }, 'UPYRI'),
-      text({ x: '50%', y: 900, id_: 'start' }, 'Start'),
-      text({ x: '50%', y: 1010, id_: 'fullscreen' }, 'Fullscreen'),
+      drawBloodText({ x: '50%', y: 300 }, 'UPYRI'),
+      text({ x: '50%', y: 900, id_: 'Start' }, 'Start'),
+      text({ x: '50%', y: 1010, id_: 'Fullscreen' }, 'Fullscreen'),
     );
     // TODO: Probably add this to the svg library, if I have enough space to keep it anyway
     tmpl.querySelectorAll('feTurbulence').forEach((el: HTMLElement) => {
       el.innerHTML = `<animate attributeName="baseFrequency" values="0.13 0.08;0.13 0.007" dur="80s" repeatCount="indefinite" />`;
     });
 
-    start.onclick = () => {
+    Start.onclick = () => {
       this.drumHit.stop();
       this.song.stop();
       pickup1().start();
@@ -69,7 +69,7 @@ export class MenuState implements State {
       setTimeout(() => gameStateMachine.setState(gameStates.gameState), 10);
     };
 
-    fullscreen.onclick = () => {
+    Fullscreen.onclick = () => {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen();
       } else {

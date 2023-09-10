@@ -1,6 +1,6 @@
 import { addGap, createAudioNode, createPannerNode, zzfxG } from '@/engine/audio/audio-player';
 
-const pannerFunc = navigator.userAgent.includes('Firefox') ? createAudioNode : createPannerNode;
+const pannerFunc = navigator.userAgent.includes('fox') ? createAudioNode : createPannerNode;
 
 export const outsideFootsteps = createAudioNode(addGap(zzfxG(...[.1,.65,986,.01,.03,.03,4,2.63,,,,,.25,6.8,,,.09,.14,.01]), 0.3));
 export const indoorFootsteps = createAudioNode(zzfxG(...[.1,.65,1100,,.03,.42,4,2.63,,,,,,2.2,,,,.14,.01]));
