@@ -17,7 +17,8 @@ import { render } from '@/engine/renderer/renderer';
 import { makeCoffin, makeCoffinBottomTop } from '@/modeling/items';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { createLookAt2 } from '@/engine/renderer/object-3d';
-import { pickup1, scaryNote1, scaryNote2 } from '@/sound-effects';
+import { makeSong, musicNote, pickup1, scaryNote2 } from '@/sound-effects';
+import { audioCtx } from '@/engine/audio/audio-player';
 
 export class MenuState implements State {
   camera: Camera;
@@ -34,6 +35,10 @@ export class MenuState implements State {
     this.camera.position_.z = 120;
     this.scene = new Scene();
   }
+
+  song = makeSong();
+  drumHit = scaryNote2(0.6)();
+  isSongPlaying = false;
 
   async onEnter() {
     const heightmap = await newNoiseLandscape(256, 6, 0.05, 3, NoiseType.Fractal, 113);
@@ -61,22 +66,31 @@ export class MenuState implements State {
     });
 
     start.onclick = () => {
-      scaryNote1().start();
+      this.drumHit.stop();
+      this.song.stop();
+      pickup1().start();
       drawLoadingScreen();
       setTimeout(() => gameStateMachine.setState(gameStates.gameState), 10);
     };
 
     fullscreen.onclick = () => {
-      this.toggleFullscreen();
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
     };
-  }
 
-  toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
+    tmpl.onmouseover = () => {
+      if (!this.isSongPlaying) {
+        this.song.loop = true;
+        this.song.start();
+
+        this.drumHit.loop = true;
+        this.drumHit.start(audioCtx.currentTime + 2);
+        this.isSongPlaying = true;
+      }
+    };
   }
 
   cameraRotationAngles = new EnhancedDOMPoint();

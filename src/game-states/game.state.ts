@@ -23,11 +23,10 @@ import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { Object3d } from '@/engine/renderer/object-3d';
 import { Material } from '@/engine/renderer/material';
 import {
-  draggingSound2,
+  draggingSound2, makeSong,
   ominousDiscovery1,
   ominousDiscovery2,
   pickup1,
-  scaryNote1,
   scaryNote2,
   upyriAttack,
   upyriAttack2, upyriHit
@@ -200,7 +199,7 @@ export class GameState implements State {
             this.coffinTop.position_.set(0, 0, 0);
             this.coffinTop.rotation_.y = 0;
             this.isCoffinTopPlayed = false;
-            this.player.feetCenter.set(0, 51, 22);
+            this.player.feetCenter.set(0, 49, 22);
             this.gameEvents[5].isFired = false;
             this.leverDoors[3].isPulled = false;
             this.leverDoors[3].isFinished = false;
@@ -234,7 +233,7 @@ export class GameState implements State {
         }
     }
 
-    // debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z} // ${this.player.camera.rotation_.x} ${this.player.camera.rotation_.y} ${this.player.camera.rotation_.z}`;
+    debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z} // ${this.player.camera.rotation_.x} ${this.player.camera.rotation_.y} ${this.player.camera.rotation_.z}`;
   }
 
   private upyriTriggerCounter = 0;
@@ -250,7 +249,7 @@ export class GameState implements State {
 
     // Enter coffin room
     new GameEvent(new EnhancedDOMPoint(0, 58, 8), () => {
-      scaryNote2().start();
+      scaryNote2()().start();
       return true;
     }, undefined),
 
@@ -354,8 +353,10 @@ export class GameState implements State {
         return true;
     }, undefined, 6),
 
+    // Look at broken wall piece
     new GameEvent(new EnhancedDOMPoint(32, 24, -40), () => { ominousDiscovery1().start(); return true }, new EnhancedDOMPoint(28, -15)),
 
+    // Initial cue to give player instruction that their goal is to escape the castle
     new GameEvent(new EnhancedDOMPoint(44, 21, -26), () => {
       setTimeout(() => {
         tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
@@ -365,6 +366,9 @@ export class GameState implements State {
       }, 2000);
       return true;
     }, undefined),
+
+    // Rooftop music cue
+    new GameEvent(new EnhancedDOMPoint(15, 48, 48), () => { makeSong().start(); return true}),
 
   ];
 

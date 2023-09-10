@@ -18,10 +18,13 @@ export const ominousDiscovery2 = createAudioNode(zzfxG(...[3,,87.30706,.08,.41,1
 
 export const pickup1 = createAudioNode(zzfxG(...[1.09,,152,.01,.08,1,,2.19,,,,,.05,1.1,51,.2,.02,.86,.04]));
 
-export const scaryNote1 = createAudioNode(zzfxG(...[,0,110,,3,1.41,,3,10.5,1,-9,.5,-0.02,,,.1,.2,,1,.36]));
-export const scaryNote2 = createAudioNode(zzfxG(...[,0,50,.67,.1,1,,.11,-0.1,-0.1,,,.18,,,,.31,1.01,.5,.08]));
+export const scaryNote2 = (vol = 1) => createAudioNode(addGap(zzfxG(...[vol,0,50,.6,.1,1,,.11,-0.1,-0.1,,,.18,,,,.3,1.01,.5,.08]), .8));
 
 export const upyriAttack = createAudioNode(zzfxG(...[2,,276,,2,,,.71,7.5,,,,,.1,-430,.5,.19,.7,.2]));
 export const upyriAttack2 = createAudioNode(zzfxG(...[2,0,50,,.1,1,,.11,-0.1,-0.1,,,.18,,,,.31,1.01,.5,.08]));
 
 export const upyriHit = createPannerNode(zzfxG(...[1.65,,57,.01,.09,.08,4,.11,,,,,.15,1.3,,.2,.08,.72,.04]));
+
+const music = (freqs: number[], durs: number[]) => createAudioNode(freqs.flatMap((freq, i) => zzfxG(...[,0,freq,.1,durs[i],.26,2,1.18,,,,,,.2,,,.11,.38,.03])));
+
+export const makeSong = music([65.41	, 82.41, 77.78, 65.41	, 82.41, 77.78, 65.41	, 82.41, 77.78, 61.74, 65.41], [.25, .25, 1, .25, .25, 1,  .25, .25, .25, .25, 2])
