@@ -14,9 +14,9 @@ import { drawBloodText, materials, skyboxes } from '@/textures';
 import { gameStates } from '@/game-states/game-states';
 import { newNoiseLandscape } from '@/engine/new-new-noise';
 import { NoiseType, text } from '@/engine/svg-maker/base';
-import { clearTemplate, overlaySvg } from '@/draw-helpers';
+import { overlaySvg } from '@/draw-helpers';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
-import { createCastle } from '@/modeling/castle';
+import { castleContainer, createCastle } from '@/modeling/castle';
 import { createStairs } from '@/modeling/building-blocks';
 import { DoorData, LeverDoorObject3d } from '@/modeling/lever-door';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
@@ -105,7 +105,7 @@ export class GameState implements State {
     const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap).spreadTextureCoords(), materials.grass);
     const floorCollision = new Mesh( new PlaneGeometry(1024, 1024, 4, 4).translate_(0, 20.5).done_(), materials.grass);
 
-    const castle = new Mesh(createCastle().translate_(0, 21).done_(), materials.brickWall);
+    const castle = new Mesh(castleContainer.value!.done_(), materials.brickWall);
 
     const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(57.4, 26, 43).done_(), materials.castleWriting)
     const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(47.4, 24, 42).done_(), materials.handprint)
@@ -128,10 +128,12 @@ export class GameState implements State {
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
-    clearTemplate();
+    tmpl.innerHTML = '';
     tmpl.addEventListener('click', () => {
       tmpl.requestPointerLock();
     });
+
+    this.player.cameraRotation.set(0, 90, 0);
   }
 
   leverPlayerDistance = new EnhancedDOMPoint();
@@ -163,7 +165,7 @@ export class GameState implements State {
 
     if (this.winState) {
       this.winCounter++;
-      if (this.winCounter > 1200) {
+      if (this.winCounter > 1800) {
         tmpl.style.backgroundColor = `rgba(0, 0, 0, ${this.backgroundFade})`;
         this.backgroundFade += 0.004;
       }
@@ -243,7 +245,7 @@ export class GameState implements State {
 
   gameEvents = [
     // see blood stain on wall
-    new GameEvent(new EnhancedDOMPoint(41, 21, 42), () => { ominousDiscovery1().start(); return true }, new EnhancedDOMPoint(11, -90)),
+    new GameEvent(new EnhancedDOMPoint(41, 21, 42), () => { ominousDiscovery2().start(); return true }, new EnhancedDOMPoint(11, -90)),
 
 
     // Enter coffin room
@@ -316,7 +318,7 @@ export class GameState implements State {
         this.coffinTop.rotation_.y = 25;
 
         if (!this.isCoffinTopPlayed) {
-          upyriHit(this.upyri.position_).start();
+          upyriHit(new EnhancedDOMPoint(-7, 58, -3)).start();
           this.isCoffinTopPlayed = true;
         }
 
@@ -360,7 +362,7 @@ export class GameState implements State {
           drawBloodText({ x: '50%', y: '90%', style: 'font-size: 160px; text-shadow: 1px 1px 20px' }, 'ESCAPE THE CASTLE', 40),
         );
         setTimeout(() => tmpl.innerHTML = '', 5000);
-      }, 3000);
+      }, 2000);
       return true;
     }, undefined),
 

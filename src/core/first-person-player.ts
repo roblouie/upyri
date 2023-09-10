@@ -146,12 +146,12 @@ export class FirstPersonPlayer {
     this.velocity.z = depthMovementZ + sidestepZ;
     this.velocity.x = depthMovementX + sidestepX;
 
-    if (controls.isJump) {
-      if (!this.isJumping) {
-        this.velocity.y = 0.15;
-        this.isJumping = true;
-      }
-    }
+    // if (controls.isJump) {
+    //   if (!this.isJumping) {
+    //     this.velocity.y = 0.15;
+    //     this.isJumping = true;
+    //   }
+    // }
   }
 
   private updateAudio() {

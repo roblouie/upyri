@@ -16,6 +16,8 @@ const doorTopHeight = 5;
 const windowWidth = 2;
 const doorWidth = 4;
 
+export const castleContainer: { value?: MoldableCubeGeometry } = { value: undefined };
+
 export const frontLeftCornerRoom = [
   // First Floor
   [

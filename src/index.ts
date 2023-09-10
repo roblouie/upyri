@@ -5,6 +5,7 @@ import { GameState } from '@/game-states/game.state';
 import { gameStates } from '@/game-states/game-states';
 import { MenuState } from '@/game-states/menu.state';
 import { drawLoadingScreen } from '@/draw-helpers';
+import { castleContainer, createCastle } from '@/modeling/castle';
 
 let previousTime = 0;
 const interval = 1000 / 60;
@@ -12,6 +13,7 @@ const interval = 1000 / 60;
 (async () => {
   drawLoadingScreen();
   await initTextures();
+  castleContainer.value = createCastle().translate_(0, 21).done_();
 
   gameStates.gameState = new GameState();
   gameStates.menuState = new MenuState();
