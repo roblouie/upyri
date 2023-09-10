@@ -16,6 +16,6 @@ export function overlaySvg(additionalAttributes?: Partial<SvgAttributes>, ...ele
 export function drawLoadingScreen() {
   tmpl.innerHTML = overlaySvg({ style: 'text-anchor: middle' },
     rect({x: 0, y: 0, width_: '100%', height_: '100%' }),
-      drawBloodText({ x: '50%', y: '50%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'LOADING', 40),
+      drawBloodText({ x: '50%', y: '52%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'LOADING', 40),
   );
 }

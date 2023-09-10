@@ -234,7 +234,7 @@ export class GameState implements State {
         }
     }
 
-    debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z} // ${this.player.camera.rotation_.x} ${this.player.camera.rotation_.y} ${this.player.camera.rotation_.z}`;
+    // debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z} // ${this.player.camera.rotation_.x} ${this.player.camera.rotation_.y} ${this.player.camera.rotation_.z}`;
   }
 
   private upyriTriggerCounter = 0;

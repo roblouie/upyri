@@ -60,7 +60,7 @@ export const frontLeftCornerRoom = [
 ];
 
 export const rearRightCornerRoom = structuredClone(frontLeftCornerRoom);
-rearRightCornerRoom[0][0] = [[9, doorWidth - 0.5, 6, 3], [12, 5.5, 12, 5], [0]];
+rearRightCornerRoom[0][0] = [[9.25, doorWidth - 0.5, 6.25, 3], [12, 5.5, 12, 5], [0]];
 rearRightCornerRoom[1][0] = [[9, 4, 4, 2, 3], [12, 5, 12, 4, 12], [0, 0, 0, 2, 0]];
 
 export const otherCorners = [
@@ -72,11 +72,11 @@ export const otherCorners = [
     ],
     // Back Wall
     [
-      [3, 2, 12, 2, 3], [12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0]
+      [3, 2, 12, 2, 3], [12, windowTopHeight, 12, 12, 12], [0, windowBottomHeight, 0, 0, 0]
     ],
     // Left Wall
     [
-      [1, 2, 14, 2, 1], [12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0]
+      [1, 2, 14, 2, 1], [12, windowTopHeight, 12, 12, 12], [0, windowBottomHeight, 0, 0, 0]
     ],
     // Right Wall
     [
@@ -193,7 +193,7 @@ function castleKeep() {
     ],
     [
       [
-        [3, 12, 1, 1, 6, 1, 6, 1, 6, 1, 16], [12, 6, 12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 2, 0, 4, 0, 4, 0, 4, 0, 4, 0],
+        [3, 12, 39], [12, 6, 12], [0, 2, 0],
       ],
       [
         [15.5, 2, 5, 2, 5, 2, 5, 2, 15.5], [12, 3, 12, 3, 12, 3, 12, 3, 12], [0, 3, 0, 3, 0, 3, 0, 3, 0],
