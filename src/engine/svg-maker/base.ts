@@ -268,8 +268,9 @@ export function feComponentTransfer(attributes: FeComponentTransferAttributes, .
   return `<feComponentTransfer color-interpolation-filters="sRGB">${feFuncs.join('')}</feComponentTransfer>`;
 }
 
-export function feFunc(color: 'R' | 'G' | 'B' | 'A', type: 'linear' | 'discrete' | 'table', values: number[]): FeFuncString {
-  return `<feFunc${color} type="${type}" tableValues="${values}"/>`;
+export function feFunc(color: 'R' | 'G' | 'B' | 'A', type: 'linear' | 'discrete' | 'table' | 'gamma', values: number[]): FeFuncString {
+  const fixFirefoxAttrs = type === 'gamma' ? 'amplitude="1" exponent="0.55"' : `tableValues="${values}"`;
+  return `<feFunc${color} type="${type}" ${fixFirefoxAttrs}/>`;
 }
 
 // Displacement Map

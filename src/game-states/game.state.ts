@@ -34,7 +34,7 @@ import {
 import { fenceDoor, key, lockedDoor, makeCoffin, makeCoffinBottomTop, stake, upyri } from '@/modeling/items';
 
 export class GameState implements State {
-  player: FirstPersonPlayer;
+  player?: FirstPersonPlayer;
   scene: Scene;
   groupedFaces: {floorFaces: Face[], wallFaces: Face[] };
   leverDoors: LeverDoorObject3d[] =[];
@@ -57,8 +57,6 @@ export class GameState implements State {
   gateDoor = () => new Mesh(new MoldableCubeGeometry(6, 15, 1), materials.planks);
 
   constructor() {
-    const camera = new Camera(Math.PI / 3, 16 / 9, 1, 400);
-    this.player = new FirstPersonPlayer(camera);
     this.scene = new Scene();
     this.groupedFaces = { floorFaces: [], wallFaces: [] };
 
@@ -98,6 +96,8 @@ export class GameState implements State {
   }
 
   async onEnter() {
+    const camera = new Camera(Math.PI / 3, 16 / 9, 1, 500);
+    this.player = new FirstPersonPlayer(camera);
 
 
     const heightmap = await newNoiseLandscape(256, 6, 0.05, 3, NoiseType.Fractal, 113);
@@ -139,8 +139,8 @@ export class GameState implements State {
 
 
   onUpdate(): void {
-    this.player.update(this.groupedFaces);
-    render(this.player.camera, this.scene);
+    this.player!.update(this.groupedFaces);
+    render(this.player!.camera, this.scene);
 
 
     this.handleEvents()
@@ -151,15 +151,15 @@ export class GameState implements State {
         if (distance < 7 && controls.isConfirm) {
           leverDoor.pullLever();
         }
-        this.player.wallCollision(leverDoor.closedDoorCollision);
+        this.player!.wallCollision(leverDoor.closedDoorCollision);
       } else {
-        this.player.wallCollision(leverDoor.openDoorCollision);
+        this.player!.wallCollision(leverDoor.openDoorCollision);
       }
 
       leverDoor.update();
     });
 
-    this.upyri.lookAt(this.player.camera.position_);
+    this.upyri.lookAt(this.player!.camera.position_);
     this.scene.updateWorldMatrix();
 
     if (this.winState) {
@@ -181,7 +181,7 @@ export class GameState implements State {
 
     if (this.isUpyriAttacking) {
       c3d.style.filter = 'blur(7px) brightness(0.8)';
-      this.upyri.position_.moveTowards(this.player.camera.position_, 0.5);
+      this.upyri.position_.moveTowards(this.player!.camera.position_, 0.5);
       this.upyriAttackingTimer++;
         if (this.upyriAttackingTimer > 40) {
           tmpl.style.backgroundColor = `rgb(0, 0, 0)`;
@@ -199,7 +199,7 @@ export class GameState implements State {
             this.coffinTop.position_.set(0, 0, 0);
             this.coffinTop.rotation_.y = 0;
             this.isCoffinTopPlayed = false;
-            this.player.feetCenter.set(0, 49, 22);
+            this.player!.feetCenter.set(0, 49, 22);
             this.gameEvents[5].isFired = false;
             this.leverDoors[3].isPulled = false;
             this.leverDoors[3].isFinished = false;
@@ -233,7 +233,7 @@ export class GameState implements State {
         }
     }
 
-    debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z} // ${this.player.camera.rotation_.x} ${this.player.camera.rotation_.y} ${this.player.camera.rotation_.z}`;
+    // debug.innerHTML = `${this.player.camera.position_.x}, ${this.player.camera.position_.y} ${this.player.camera.position_.z} // ${this.player.camera.rotation_.x} ${this.player.camera.rotation_.y} ${this.player.camera.rotation_.z}`;
   }
 
   private upyriTriggerCounter = 0;
@@ -322,10 +322,10 @@ export class GameState implements State {
         }
 
         const point = new DOMPoint(0, 0, -1);
-        const cameraRot = new EnhancedDOMPoint().set(this.player.camera.rotationMatrix.transformPoint(point));
+        const cameraRot = new EnhancedDOMPoint().set(this.player!.camera.rotationMatrix.transformPoint(point));
         const upyriRot = new EnhancedDOMPoint().set(this.upyri.rotationMatrix.transformPoint(point));
 
-        if (cameraRot.dot(upyriRot) < -0.70 || this.upyriTriggerCounter > 240 || this.player.camera.position_.z > 10) {
+        if (cameraRot.dot(upyriRot) < -0.70 || this.upyriTriggerCounter > 240 || this.player!.camera.position_.z > 10) {
           setTimeout(() =>  {
             upyriAttack().start();
             upyriAttack2().start();
@@ -343,8 +343,8 @@ export class GameState implements State {
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'ESCAPED', 40),
       );
       this.winState = true;
-      this.player.isFrozen = true;
-      this.player.velocity.set(0, 0, -0.1);
+      this.player!.isFrozen = true;
+      this.player!.velocity.set(0, 0, -0.1);
       setTimeout(() => {
         tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
           drawBloodText({ x: '50%', y: '90%', style: 'font-size: 160px; text-shadow: 1px 1px 20px' }, 'THANKS FOR PLAYING', 40),
@@ -377,7 +377,7 @@ export class GameState implements State {
 
 
   handleEvents() {
-    this.gameEvents.forEach(gameEvent => gameEvent.check(this.player.camera.position_, this.player.camera.rotation_));
+    this.gameEvents.forEach(gameEvent => gameEvent.check(this.player!.camera.position_, this.player!.camera.rotation_));
   }
 }
 

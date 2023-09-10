@@ -2,7 +2,7 @@ import { State } from '@/core/state';
 import { controls } from '@/core/controls';
 import { gameStateMachine } from '@/game-state-machine';
 import { gameStates } from '@/game-states/game-states';
-import { drawLoadingScreen, overlaySvg } from '@/draw-helpers';
+import { drawFullScreenText, overlaySvg } from '@/draw-helpers';
 import { NoiseType, rect, text } from '@/engine/svg-maker/base';
 import { drawBloodText, materials, skyboxes } from '@/textures';
 import { newNoiseLandscape } from '@/engine/new-new-noise';
@@ -69,7 +69,7 @@ export class MenuState implements State {
       this.drumHit.stop();
       this.song.stop();
       pickup1().start();
-      drawLoadingScreen();
+      drawFullScreenText('LOADING');
       setTimeout(() => gameStateMachine.setState(gameStates.gameState), 10);
     };
 
@@ -81,16 +81,14 @@ export class MenuState implements State {
       }
     };
 
-    tmpl.onmouseover = () => {
-      if (!this.isSongPlaying) {
-        this.song.loop = true;
-        this.song.start();
+    if (!this.isSongPlaying) {
+      this.song.loop = true;
+      this.song.start();
 
-        this.drumHit.loop = true;
-        this.drumHit.start(audioCtx.currentTime + 2);
-        this.isSongPlaying = true;
-      }
-    };
+      this.drumHit.loop = true;
+      this.drumHit.start(audioCtx.currentTime + 2);
+      this.isSongPlaying = true;
+    }
   }
 
   cameraRotationAngles = new EnhancedDOMPoint();

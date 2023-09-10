@@ -237,6 +237,7 @@ function rockWoodFilter(isRock = true) {
     feDiffuseLighting({ surfaceScale: 2.5, lightingColor: isRock ? '#ffd' : '#6e5e42' },
       feDistantLight(isRock ? 265 : 110, isRock ? 4 : 10),
     ),
+    fffix(),
   )
 }
 
@@ -340,4 +341,18 @@ function keyLock() {
     ellipse({ cx: 256, cy: 170, rx: 100, ry: 100, fill: '#000'}),
     rect({ x: 216, y: 260, width_: 80, height_: 160 })
   ));
+}
+
+
+function fffix() {
+  if (navigator.userAgent.includes('Firefox')) {
+    return feComponentTransfer({},
+      feFunc('R',  'gamma', []),
+      feFunc('G',  'gamma', []),
+      feFunc('B',  'gamma', []),
+      feFunc('A',  'gamma', [])
+    );
+  } else {
+    return '';
+  }
 }

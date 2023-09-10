@@ -28,8 +28,8 @@ export class FirstPersonPlayer {
 
     this.footstepsPlayer = outsideFootsteps();
     this.footstepsPlayer.loop = true;
-    this.footstepsPlayer.start();
     this.footstepsPlayer.playbackRate.value = 0;
+    this.footstepsPlayer.start();
 
     const rotationSpeed = 0.002;
     controls.onMouseMove(mouseMovement => {

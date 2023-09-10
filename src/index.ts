@@ -4,23 +4,30 @@ import { initTextures } from '@/textures';
 import { GameState } from '@/game-states/game.state';
 import { gameStates } from '@/game-states/game-states';
 import { MenuState } from '@/game-states/menu.state';
-import { drawLoadingScreen } from '@/draw-helpers';
+import { drawFullScreenText } from '@/draw-helpers';
 import { castleContainer, createCastle } from '@/modeling/castle';
 
 let previousTime = 0;
 const interval = 1000 / 60;
 
 (async () => {
-  drawLoadingScreen();
+  drawFullScreenText('LOADING');
   await initTextures();
   castleContainer.value = createCastle().translate_(0, 21).done_();
 
   gameStates.gameState = new GameState();
   gameStates.menuState = new MenuState();
 
-  createGameStateMachine(gameStates.menuState);
+  drawFullScreenText('CLICK TO START', 200);
 
-  draw(0);
+  document.onclick = () => {
+    drawFullScreenText('LOADING');
+    createGameStateMachine(gameStates.menuState);
+
+    draw(0);
+
+    document.onclick = null;
+  };
 
   function draw(currentTime: number) {
     const delta = currentTime - previousTime;
