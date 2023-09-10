@@ -55,8 +55,8 @@ export class MenuState implements State {
     tmpl.querySelectorAll('feTurbulence').forEach((el: HTMLElement) => {
       el.innerHTML = `<animate
         attributeName="baseFrequency"
-        values="0.13 0.08;0.13 0.025"
-        dur="40s"
+        values="0.13 0.08;0.13 0.007"
+        dur="80s"
         repeatCount="indefinite" />`;
     });
 
