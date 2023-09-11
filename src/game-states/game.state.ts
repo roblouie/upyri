@@ -9,7 +9,7 @@ import { Mesh } from '@/engine/renderer/mesh';
 import { PlaneGeometry } from '@/engine/plane-geometry';
 import { getGroupedFaces, meshToFaces } from '@/engine/physics/parse-faces';
 import { Skybox } from '@/engine/skybox';
-import { drawBloodText, materials, skyboxes } from '@/textures';
+import { drawBloodText, materials, skyboxes, testHeightmap } from '@/textures';
 import { newNoiseLandscape } from '@/engine/new-new-noise';
 import { NoiseType } from '@/engine/svg-maker/base';
 import { overlaySvg } from '@/draw-helpers';
@@ -32,7 +32,7 @@ import {
   makeCoffinBottomTop,
   stake,
   upyri,
-  getLeverDoors
+  getLeverDoors, makeBanners
 } from '@/modeling/items';
 
 export class GameState implements State {
@@ -93,6 +93,10 @@ export class GameState implements State {
 
     const groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle, coffin, this.coffinTop]));
 
+
+    // Banners
+    const bannerHeightmap = await testHeightmap();
+
     function onlyUnique(value: any, index: number, array: any[]) {
       return array.indexOf(value) === index;
     }
@@ -119,7 +123,7 @@ export class GameState implements State {
       });
     });
 
-    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, coffin, this.coffinTop, this.coffinTopBloodstain, bridge);
+    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, coffin, this.coffinTop, this.coffinTopBloodstain, bridge, makeBanners(bannerHeightmap));
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();

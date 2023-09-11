@@ -204,11 +204,10 @@ export class MoldableCubeGeometry {
     return this;
   }
 
-  spreadTextureCoords() {
+  spreadTextureCoords(scaleX = 12, scaleY = 12, shiftX = 0, shiftY = 0) {
     const texCoordSideCount = (u: number, v: number) => (2 + (u - 1)) * (2 + (v - 1)) * 2;
     const xzCount = texCoordSideCount(this.widthSegments, this.depthSegments);
     const zyCount = xzCount + texCoordSideCount(this.depthSegments, this.heightSegments);
-    const testTextureSize = 12;
 
     const textureCoords = this.getAttribute_(AttributeLocation.TextureCoords).data;
     let u,v;
@@ -220,7 +219,7 @@ export class MoldableCubeGeometry {
       } else {
         u = vert.x; v = vert.y;
       }
-      const pointInTextureGrid = [u / testTextureSize, v / testTextureSize];
+      const pointInTextureGrid = [u / scaleX + shiftX, v / scaleY + shiftY];
       textureCoords.set(pointInTextureGrid, index * 2);
     });
     this.setAttribute_(AttributeLocation.TextureCoords, textureCoords, 2);

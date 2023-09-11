@@ -3,10 +3,10 @@ import { Mesh } from '@/engine/renderer/mesh';
 import { Material } from '@/engine/renderer/material';
 import { SegmentedWall } from '@/modeling/building-blocks';
 import { materials } from "@/textures";
-import { Object3d } from "@/engine/renderer/object-3d";
 import { AttributeLocation } from "@/engine/renderer/renderer";
 import { DoorData, LeverDoorObject3d } from '@/modeling/lever-door';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
+import { PlaneGeometry } from '@/engine/plane-geometry';
 
 export function stake() {
   return new Mesh(new MoldableCubeGeometry(0.5, 0.5, 2, 2, 2)
@@ -203,6 +203,33 @@ export function getLeverDoors() {
    ];
 }
 
-export function banners() {
+function bannerMaker(bannerHeightmap: number[]) {
+    const banner = new PlaneGeometry(64, 64, 31, 31, bannerHeightmap)
+      .selectBy(vert => vert.z <= 20)
+      .modifyEachVertex(vert => vert.z -= Math.abs(vert.x) / 3)
+      .all_()
+      .spreadTextureCoords(60, 12, 0.5, 0.18)
+      .scale_(0.05, 1, 0.2)
+      .rotate_(-Math.PI / 2)
+      .computeNormals(true);
 
+  const textureDepths = banner.vertices.map(vert => {
+    if (vert.y < -2.6 && vert.y > -5) {
+      return materials.bannerIcon.texture!.id;
+    } else {
+      return materials.banner.texture!.id;
+    }
+  });
+
+    banner.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(textureDepths), 1);
+
+    return banner;
+}
+
+export function makeBanners(bannerHeightmap: number[]) {
+  return new Mesh(
+    bannerMaker(bannerHeightmap).translate_(18, 32, -16.6)
+      .merge(bannerMaker(bannerHeightmap).translate_(-18, 32, -16.6))
+      .done_(),
+    materials.banner);
 }

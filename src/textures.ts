@@ -23,7 +23,7 @@ import {
   SvgTextAttributes,
   text
 } from '@/engine/svg-maker/base';
-import { toImage } from '@/engine/svg-maker/converters';
+import { toHeightmap, toImage } from '@/engine/svg-maker/converters';
 import { doTimes } from '@/engine/helpers';
 import { Material } from '@/engine/renderer/material';
 import { textureLoader } from '@/engine/renderer/texture-loader';
@@ -54,6 +54,8 @@ export async function initTextures() {
   materials.silver = new Material({ texture: textureLoader.load_(await metals(1)) });
   materials.iron = new Material({ texture: textureLoader.load_(await metals(2)) });
   materials.keyLock = new Material({ texture: textureLoader.load_(await keyLock())});
+  materials.banner = new Material({ texture: textureLoader.load_(await banner()) });
+  materials.bannerIcon = new Material({ texture: textureLoader.load_(await bannerIcon() )});
 
   const testSlicer = drawSkyboxHor();
   const horSlices = [await testSlicer(), await testSlicer(), await testSlicer(), await testSlicer()];
@@ -311,17 +313,19 @@ const matrices = [
   ]
 ];
 
-export function metals(goldSilverIron: number) {
-
-
-
-  return toImage(svg({ width_: 512, height_: 512 },
+export function metals(goldSilverIron: number, isHeightmap = false) {
+  const method = isHeightmap ? toHeightmap : toImage;
+  return method(svg({ width_: isHeightmap ? 32 : 512, height_: isHeightmap ? 32 : 512 },
     filter({ id_: 'b' },
       feTurbulence({ baseFrequency: (goldSilverIron < 2 ? [0.1, 0.004] : 1.2), numOctaves_: (goldSilverIron < 2 ? 1 : 5), type_: NoiseType.Fractal }),
       feColorMatrix({ values: matrices[goldSilverIron] })
     ),
     rect(fullSize({ filter: 'b' })),
-  ));
+  ), 1);
+}
+
+export function testHeightmap() {
+  return metals(1, true);
 }
 
 function keyLock() {
@@ -349,3 +353,23 @@ function fffix() {
     return '';
   }
 }
+
+const bannerColor = '#460c0c';
+const symbolColor = '#ce9b3c';
+
+function banner() {
+  return toImage(svg({ width_: 512, height_: 512, },
+    rect(fullSize({ fill: bannerColor })),
+  ));
+}
+
+function bannerIcon() {
+  return toImage(svg({ width_: 512, height_: 512, },
+    rect(fullSize({ fill: bannerColor })),
+    ellipse({ cx: 256, cy: 128, ry: 128, rx: 128, fill: symbolColor }),
+    ellipse({ cx: 256, cy: 384, ry: 128, rx: 128, fill: symbolColor }),
+    ellipse({ cx: 256, cy: 448, ry: 128, rx: 128, fill:  bannerColor })
+  ));
+}
+
+

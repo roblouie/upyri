@@ -3,7 +3,7 @@ import { gameStateMachine } from '@/game-state-machine';
 import { gameStates } from '@/game-states/game-states';
 import { drawFullScreenText, overlaySvg } from '@/draw-helpers';
 import { NoiseType, text } from '@/engine/svg-maker/base';
-import { drawBloodText, materials, skyboxes } from '@/textures';
+import { drawBloodText, materials, skyboxes, testHeightmap } from '@/textures';
 import { newNoiseLandscape } from '@/engine/new-new-noise';
 import { Mesh } from '@/engine/renderer/mesh';
 import { PlaneGeometry } from '@/engine/plane-geometry';
@@ -13,7 +13,7 @@ import { Skybox } from '@/engine/skybox';
 import { Scene } from '@/engine/renderer/scene';
 import { Camera } from '@/engine/renderer/camera';
 import { render } from '@/engine/renderer/renderer';
-import { getLeverDoors } from '@/modeling/items';
+import { getLeverDoors, makeBanners } from '@/modeling/items';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { makeSong, pickup1, scaryNote2 } from '@/sound-effects';
 import { audioCtx } from '@/engine/audio/audio-player';
@@ -44,7 +44,10 @@ export class MenuState implements State {
     const castle = new Mesh(castleContainer.value!, materials.brickWall);
     const bridge = new Mesh(new MoldableCubeGeometry(18, 1, 65).translate_(0, 20.5, -125).done_(), materials.planks);
 
-    this.scene.add_(floor, castle, bridge, ...getLeverDoors().flatMap(leverDoor => leverDoor.doorDatas));
+    // Banners
+    const bannerHeightmap = await testHeightmap();
+
+    this.scene.add_(floor, castle, bridge, ...getLeverDoors().flatMap(leverDoor => leverDoor.doorDatas), makeBanners(bannerHeightmap));
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.updateWorldMatrix();

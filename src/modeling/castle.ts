@@ -311,12 +311,17 @@ function castleKeep() {
 
 
     // Floor
-    .merge(new MoldableCubeGeometry(54, 0.5, 68).spreadTextureCoords())
+    .merge(new MoldableCubeGeometry(53, 0.5, 68).spreadTextureCoords())
 
+    // columns
     .merge(new MoldableCubeGeometry(2, 24, 2, 3, 1, 3).cylindrify(2).translate_(-10, 11).computeNormals(true).spreadTextureCoords())
     .merge(new MoldableCubeGeometry(2, 24, 2, 3, 1, 3).cylindrify(2).translate_(-10, 11, -20).computeNormals(true).spreadTextureCoords())
     .merge(new MoldableCubeGeometry(2, 24, 2, 3, 1, 3).cylindrify(2).translate_(10, 11).computeNormals(true).spreadTextureCoords())
     .merge(new MoldableCubeGeometry(2, 24, 2, 3, 1, 3).cylindrify(2).translate_(10, 11, -20).computeNormals(true).spreadTextureCoords())
+
+    // banner holders
+    .merge(new MoldableCubeGeometry(5, 0.8, 1.5).translate_(18, 18, -36).spreadTextureCoords())
+    .merge(new MoldableCubeGeometry(5, 0.8, 1.5).translate_(-18, 18, -36).spreadTextureCoords())
 
     .translate_(0, 0, 20)
     .computeNormals();
