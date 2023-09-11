@@ -202,3 +202,7 @@ export function getLeverDoors() {
     ], -90)
    ];
 }
+
+export function banners() {
+
+}
