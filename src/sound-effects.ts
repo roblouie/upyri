@@ -22,12 +22,10 @@ export const pickup1 = createAudioNode(zzfxG(...[1.09,,152,.01,.08,1,,2.19,,,,,.
 
 export const scaryNote2 = (vol = 1) => createAudioNode(addGap(zzfxG(...[vol,0,50,.6,.1,1,,.11,-0.1,-0.1,,,.18,,,,.3,1.01,.5,.08]), .8));
 
-export const upyriAttack = createAudioNode(zzfxG(...[2,,276,,2,,,.71,7.5,,,,,.1,-430,.5,.19,.7,.2]));
-export const upyriAttack2 = createAudioNode(zzfxG(...[2,0,50,,.1,1,,.11,-0.1,-0.1,,,.18,,,,.31,1.01,.5,.08]));
+export const upyriAttack = createAudioNode(zzfxG(...[3.2,0,276,,2,,,.71,7.5,,,,,.1,-430,.5,.19,.2,.2]));
+export const upyriAttack2 = createAudioNode(zzfxG(...[2.4,0,50,.01,.1,1,,.11,-0.1,-0.1,,,.18,,,,.31,.3,.5,.08]));
 
 export const upyriHit = createPannerNode(zzfxG(...[1.65,,57,.01,.09,.08,4,.11,,,,,.15,1.3,,.2,.08,.72,.04]));
-
-export const baseNote = createAudioNode(zzfxG(...[2.15,0,65.40639,,.57,.22,,1.1,,,,,.05,.2,,,.11,.48,.08,.19]));
 
 const music = (freqs: number[], durs: number[]) => createAudioNode(freqs.flatMap((freq, i) => zzfxG(...[,0,freq,.1,durs[i],.26,2,1.18,,,,,,.2,,,.11,.38,.03])));
 
