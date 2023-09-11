@@ -1,4 +1,4 @@
-import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
+import { getTextureForSide, MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 import { Mesh } from '@/engine/renderer/mesh';
 import { Material } from '@/engine/renderer/material';
 import { SegmentedWall } from '@/modeling/building-blocks';
@@ -40,14 +40,7 @@ export function upyri() {
     .all_()
     .translate_(0, 0.25, -0.3)
     .rotate_(0.1)
-    .setAttribute_(AttributeLocation.TextureDepth,  new Float32Array(MoldableCubeGeometry.TexturePerSide(3, 1, 3,
-      materials.silver.texture!,
-      materials.silver.texture!,
-      materials.silver.texture!,
-      materials.silver.texture!,
-      materials.silver.texture!,
-      materials.silver.texture!,
-    )), 1);
+    .setAttribute_(AttributeLocation.TextureDepth,  new Float32Array(getTextureForSide(9, 9, materials.silver.texture!)), 1);
 
   const obj = new Mesh(new MoldableCubeGeometry(1, 1, 1, 6, 6, 6)
       .spherify(0.8)
