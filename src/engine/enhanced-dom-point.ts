@@ -90,20 +90,10 @@ export class EnhancedDOMPoint extends DOMPoint {
     const distance = new EnhancedDOMPoint().subtractVectors(otherVector, this);
 
     if (distance.magnitude > 1) {
-      const direction = distance.normalize_().scale_(speed);
-      this.add_(direction);
+      const direction_ = distance.normalize_().scale_(speed);
+      this.add_(direction_);
     }
 
-    // this.x += ( otherVector.x - this.x ) * alpha;
-    // this.y += ( otherVector.y - this.y ) * alpha;
-    // this.z += ( otherVector.z - this.z ) * alpha;
-    return this;
-  }
-
-  modifyComponents(callback: (component: number) => number) {
-    this.x = callback(this.x);
-    this.y = callback(this.y);
-    this.z = callback(this.z);
     return this;
   }
 
