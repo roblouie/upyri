@@ -33,14 +33,14 @@ export class DoorData extends Object3d {
       new MoldableCubeGeometry(isMainGate ? 6 : 4, 7, 1)
         .translate_(position_.x - (swapOpenClosed ? 4 : 0), position_.y, position_.z)
         .done_()
-      , new Material({ color: [1, 0, 1, 1]}));
+      , new Material());
 
     this.openDoorCollisionM = new Mesh(
       new MoldableCubeGeometry(4, 7, 1)
         .rotate_(0, Math.PI / 2)
         .translate_(position_.x - 2 * swapHingeSideX, position_.y, position_.z - 2 * swapHingeSideZ)
         .done_()
-      , new Material({ color: [0, 1, 1, 1]}));
+      , new Material());
 
     if (swapOpenClosed) {
       const temp = this.closedDoorCollisionM;

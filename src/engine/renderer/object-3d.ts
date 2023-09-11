@@ -11,7 +11,7 @@ export class Object3d {
   up: EnhancedDOMPoint;
   rotationMatrix: DOMMatrix;
 
-  constructor(...children: Object3d[]) {
+  constructor(...children_: Object3d[]) {
     this.position_ = new EnhancedDOMPoint();
     this.scale_ = new EnhancedDOMPoint(1, 1, 1);
     this.children_ = [];
@@ -19,8 +19,8 @@ export class Object3d {
     this.worldMatrix = new DOMMatrix();
     this.up = new EnhancedDOMPoint(0, 1, 0);
     this.rotationMatrix = new DOMMatrix();
-    if (children) {
-      this.add_(...children);
+    if (children_) {
+      this.add_(...children_);
     }
   }
 
@@ -76,10 +76,10 @@ export class Object3d {
   }
 
   allChildren(): Object3d[] {
-    function getChildren(object3d: Object3d, all: Object3d[]) {
+    function getChildren(object3d: Object3d, all_: Object3d[]) {
       object3d.children_.forEach(child => {
-        all.push(child);
-        getChildren(child, all);
+        all_.push(child);
+        getChildren(child, all_);
       });
     }
 
@@ -107,8 +107,8 @@ export class Object3d {
   }
 }
 
-export function createLookAt2(position: EnhancedDOMPoint, target: EnhancedDOMPoint, up = { x: 0, y: 1, z: 0}) {
-  const forward = new EnhancedDOMPoint().subtractVectors(target, position).normalize_();
+export function createLookAt2(position_: EnhancedDOMPoint, target: EnhancedDOMPoint, up = { x: 0, y: 1, z: 0}) {
+  const forward = new EnhancedDOMPoint().subtractVectors(target, position_).normalize_();
   const right = new EnhancedDOMPoint().crossVectors(forward, up).normalize_();
   const lookAtUp = new EnhancedDOMPoint().crossVectors(right, forward);
 
@@ -118,7 +118,7 @@ export function createLookAt2(position: EnhancedDOMPoint, target: EnhancedDOMPoi
     right.x, lookAtUp.x, invertedZ.x, 0,
     right.y, lookAtUp.y, invertedZ.y, 0,
     right.z, lookAtUp.z, invertedZ.z, 0,
-    -right.dot(position), -lookAtUp.dot(position), -invertedZ.dot(position), 1,
+    -right.dot(position_), -lookAtUp.dot(position_), -invertedZ.dot(position_), 1,
   ]);
 }
 

@@ -162,27 +162,24 @@ function drawBetterClouds(width_: number) {
 }
 
 
-function landPattern(y: number, color: string, seed_: number, numOctaves: number) {
-  return filter({ id_: `f${y}`, x: 0, width_: '100%', height_: '150%' },
-      feTurbulence({ type_: NoiseType.Fractal, baseFrequency: [0.008, 0], numOctaves_: numOctaves, seed_, stitchTiles_: 'stitch' }),
+function drawSkyboxHor() {
+  return horizontalSkyboxSlice({ width_: skyboxSize * 4, height_: skyboxSize, style: `background: #000;` },
+    drawBetterClouds(skyboxSize * 4),
+    //y: number, color: string, seed_: number, numOctaves: number
+    filter({ id_: 'f', x: 0, width_: '100%', height_: '150%' },
+      feTurbulence({ type_: NoiseType.Fractal, baseFrequency: [0.008, 0], numOctaves_: 4, seed_: 15, stitchTiles_: 'stitch' }),
       feDisplacementMap({ in: 'SourceGraphic', scale_: 100 }),
     ) +
-    filter({ id_: `g${y}`, x: 0, width_: '100%' },
-      feTurbulence({ baseFrequency: [0.02, 0.01], numOctaves_: numOctaves, type_: NoiseType.Fractal, result: `n${y}`, seed_, stitchTiles_: 'stitch' }),
-      feDiffuseLighting({ in: `n${y}`, lightingColor: color, surfaceScale: 22 },
+    filter({ id_: 'g', x: 0, width_: '100%' },
+      feTurbulence({ baseFrequency: [0.02, 0.01], numOctaves_: 4, type_: NoiseType.Fractal, result: `n`, seed_: 15, stitchTiles_: 'stitch' }),
+      feDiffuseLighting({ in: 'n', lightingColor: '#1c1d2d', surfaceScale: 22 },
         feDistantLight(45, 60)
       ),
       feComposite({ in2: 'SourceGraphic', operator: 'in' }),
     ) +
-    group({ filter: `g${y}` },
-      rect({ x: 0, y, width_: skyboxSize * 4, height_: '50%', filter: `f${y}`})
-    );
-}
-
-function drawSkyboxHor() {
-  return horizontalSkyboxSlice({ width_: skyboxSize * 4, height_: skyboxSize, style: `background: #000;` },
-    drawBetterClouds(skyboxSize * 4),
-    landPattern(1000, '#1c1d2d', 15, 4),
+    group({ filter: 'g' },
+      rect({ x: 0, y: 1000, width_: skyboxSize * 4, height_: '50%', filter: 'f'})
+    )
   );
 }
 

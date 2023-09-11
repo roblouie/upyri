@@ -24,9 +24,9 @@ export class EnhancedDOMPoint extends DOMPoint {
       z = x.z;
       x = x.x;
     }
-    this.x = x != null ? x : this.x;
-    this.y = y != null ? y : this.y;
-    this.z = z != null ? z : this.z;
+    this.x = x ?? this.x;
+    this.y = y ?? this.y;
+    this.z = z ?? this.z;
     return this;
   }
 

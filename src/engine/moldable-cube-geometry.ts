@@ -201,20 +201,6 @@ export class MoldableCubeGeometry {
     return this;
   }
 
-  noisify(seed: number, scale: number) {
-    this.getIndicesWithUniquePositions().forEach(index => {
-      const allMatchingVertices = this.vertices.filter(vertex => vertex.isEqualTo(this.vertices[index]));
-      allMatchingVertices.forEach(vertex => {
-        const angle = new EnhancedDOMPoint(randomNumber(seed + vertex.x), randomNumber(seed + vertex.y), randomNumber(seed + vertex.z));
-        vertex.z += angle.z * scale;
-        vertex.y += angle.y * scale;
-        vertex.x += angle.x * scale;
-      })
-    })
-
-    return this;
-  }
-
   cylindrify(radius: number, aroundAxis: 'x' | 'y' | 'z' = 'y', circleCenter: VectorLike = {x: 0, y: 0, z: 0}) {
     this.modifyEachVertex(vertex => {
       const originalAxis = vertex[aroundAxis];

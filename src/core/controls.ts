@@ -1,10 +1,6 @@
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 
 class Controls {
-  isUp? = false;
-  isDown? = false;
-  isLeft?: boolean = false;
-  isRight?: boolean = false;
   isConfirm? = false;
   inputDirection: EnhancedDOMPoint;
   private mouseMovement = new EnhancedDOMPoint();
@@ -37,11 +33,6 @@ class Controls {
     const downVal = (this.keyMap.get('KeyS') || this.keyMap.get('ArrowDown')) ? 1 : 0;
     this.inputDirection.x = (leftVal + rightVal);
     this.inputDirection.y = (upVal + downVal);
-
-    this.isUp = this.keyMap.get('KeyW');
-    this.isDown = this.keyMap.get('KeyS');
-    this.isLeft = this.keyMap.get('KeyA');
-    this.isRight = this.keyMap.get('KeyD');
     this.isConfirm = this.keyMap.get('KeyE');
   }
 
