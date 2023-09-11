@@ -33,30 +33,46 @@ export function key() {
 }
 
 export function upyri() {
-  const obj = new Mesh(new MoldableCubeGeometry(1, 1, 1, 4, 4, 4)
-      .spherify(1)
+  const fang = () => new MoldableCubeGeometry(2, 0.5, 2, 3, 1, 3)
+    .cylindrify(0.08)
+    .selectBy(vert => vert.y > 0)
+    .scale_(0, 1, 0)
+    .all_()
+    .translate_(0, 0.25, -0.3)
+    .rotate_(0.1)
+    .setAttribute_(AttributeLocation.TextureDepth,  new Float32Array(MoldableCubeGeometry.TexturePerSide(3, 1, 3,
+      materials.silver.texture!,
+      materials.silver.texture!,
+      materials.silver.texture!,
+      materials.silver.texture!,
+      materials.silver.texture!,
+      materials.silver.texture!,
+    )), 1);
+
+  const obj = new Mesh(new MoldableCubeGeometry(1, 1, 1, 6, 6, 6)
+      .spherify(0.8)
       .scale_(1, 1.3, 0.8)
-      // .selectBy(vert => vert.y > 0.2)
-      // .scale_(0.8)
+      .selectBy(vert => vert.y > 0.7)
+      .scale_(3, 1, 1)
+      .selectBy(vert => vert.y > 0.8)
+      .scale_(1.5, 8, 2)
+      .setAttribute_(AttributeLocation.TextureDepth, new Float32Array(MoldableCubeGeometry.TexturePerSide(6, 6, 6,
+        materials.iron.texture!,
+        materials.iron.texture!,
+        materials.iron.texture!,
+        materials.iron.texture!,
+        materials.face.texture!,
+        materials.face.texture!,
+      )), 1)
+      .merge(fang().translate_(-0.2))
+      .merge(fang().translate_(0.2))
       .computeNormals(true)
       .all_()
       .rotate_(Math.PI)
-      // .rotate_(0,Math.PI / 64)
       .done_()
     , materials.face);
 
-  const textures = MoldableCubeGeometry.TexturePerSide(4, 4, 4,
-    materials.wood.texture!,
-    materials.wood.texture!,
-    materials.wood.texture!,
-    materials.wood.texture!,
-    materials.face.texture!,
-    materials.face.texture!,
-  );
-
   obj.position_.y = 54;
-
-  obj.geometry.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(textures), 1);
 
   return obj;
 }
@@ -75,7 +91,7 @@ export function makeCoffin() {
   function makeCoffinSide(swap = 1) {
     return new MoldableCubeGeometry(0.5, 2, 7.5, 1, 1, 2)
       .selectBy(vertex => vertex.z === 0)
-      .translate_(1 * swap, 0, -1)
+      .translate_(swap, 0, -1)
       .all_()
       .translate_(1.5 * swap, 0.4, 9)
       .spreadTextureCoords();

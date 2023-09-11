@@ -279,7 +279,7 @@ export function face() {
           feComposite({ in: 'SourceAlpha', operator: 'in' }),
           feDisplacementMap({ in2: 'n', scale_: 0.9 })
         ),
-      rect(fullSize({ id_: 'l', filter: 'filter', y: -37 })),
+      rect(fullSize({ id_: 'l', filter: 'filter', y: -14 })),
       rect({ fill: '#fff', width_: '100%', height_: '100%' }),
     `
     <use href="#l" x="22%" y="42" transform="scale(2.2, 1.2)"></use>

@@ -176,10 +176,10 @@ export class GameState implements State {
     }
 
     if (this.isUpyriAttacking) {
-      c3d.style.filter = 'blur(7px) brightness(0.8)';
-      this.upyri.position_.moveTowards(this.player!.camera.position_, 0.5);
+      c3d.style.filter = 'blur(9px) brightness(0.8)';
+      this.upyri.position_.moveTowards(this.player!.camera.position_, 0.6);
       this.upyriAttackingTimer++;
-        if (this.upyriAttackingTimer > 40) {
+        if (this.upyriAttackingTimer > 30) {
           tmpl.style.backgroundColor = `rgb(0, 0, 0)`;
           this.isUpyriAttacking = false;
 
@@ -306,7 +306,7 @@ export class GameState implements State {
     new GameEvent(new EnhancedDOMPoint(0, 58.5, 0), () => {
       if (!this.isUpyriKilled && this.leverDoors[3].isPulled) {
         this.upyriTriggerCounter++;
-        this.upyri.position_.y = 58.5;
+        this.upyri.position_.y = 61;
         this.coffinTop.position_.y = -1;
         this.coffinTop.position_.x = -5.5;
         this.coffinTop.rotation_.y = 25;

@@ -89,7 +89,7 @@ export class EnhancedDOMPoint extends DOMPoint {
   moveTowards(otherVector: EnhancedDOMPoint, speed: number) {
     const distance = new EnhancedDOMPoint().subtractVectors(otherVector, this);
 
-    if (distance.magnitude > 1) {
+    if (distance.magnitude > 1.2) {
       const direction_ = distance.normalize_().scale_(speed);
       this.add_(direction_);
     }

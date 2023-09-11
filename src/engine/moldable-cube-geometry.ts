@@ -7,17 +7,10 @@ import { randomNumber } from '@/engine/new-new-noise';
 
 type BufferInfo = { data: Float32Array; size: number };
 
-function getTextureForSide(uDivisions: number, vDivisions: number, texture: Texture) {
+export function getTextureForSide(uDivisions: number, vDivisions: number, texture: Texture) {
   // @ts-ignore
   return new Array((uDivisions + 1) * (vDivisions + 1)).fill().map(_ => texture.id);
 }
-
-// TODO: Experiment with finding the smallest x and treating that as texture S 0 and the smallest Y and treating that as texture T 0
-// THen finding largest and treating that as width, divide width by texture size and assign it, then change all vertices as percentages.
-
-// In theory this results in properly tiling textures regardless of reshaping.
-
-// Would have to be done for each face. Could use same system as texture depth to get vertices for each face
 
 
 export class MoldableCubeGeometry {
@@ -284,6 +277,7 @@ export class MoldableCubeGeometry {
 
   setAttribute_(attributeLocation: AttributeLocation, data: Float32Array, size: number) {
     this.buffers.set(attributeLocation, { data, size });
+    return this;
   }
 
   getIndices(): Uint16Array {
