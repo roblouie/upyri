@@ -38,8 +38,8 @@ export function upyri() {
     .selectBy(vert => vert.y > 0)
     .scale_(0, 1, 0)
     .all_()
-    .translate_(0, 0.25, -0.3)
-    .rotate_(0.1)
+    .translate_(0, 0.3, 0.53)
+    .rotate_(0.2)
     .setAttribute_(AttributeLocation.TextureDepth,  new Float32Array(getTextureForSide(9, 9, materials.silver.texture!)), 1);
 
   const obj = new Mesh(new MoldableCubeGeometry(1, 1, 1, 6, 6, 6)

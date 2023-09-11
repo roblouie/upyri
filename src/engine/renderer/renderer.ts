@@ -10,7 +10,7 @@ import {
   normalMatrix,
   textureRepeat, u_skybox, u_viewDirectionProjectionInverse
 } from '@/engine/shaders/shaders';
-import { createLookAt2, createOrtho } from '@/engine/renderer/object-3d';
+import { createOrtho, Object3d } from '@/engine/renderer/object-3d';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 
 // IMPORTANT! The index of a given buffer in the buffer array must match it's respective data location in the shader.
@@ -40,10 +40,15 @@ const viewDirectionProjectionInverseLocation = gl.getUniformLocation(lilgl.skybo
 
 const origin = new EnhancedDOMPoint(0, 0, 0);
 
-const inverseLightDirection = new EnhancedDOMPoint(-0.8, 1.5, -1).normalize_()
 const lightPovProjection = createOrtho(-105,105,-105,105,-400,400);
-const lightPovView = createLookAt2(inverseLightDirection, origin);
-const lightPovMvpMatrix = lightPovProjection.multiply(lightPovView);
+
+const inverseLightDirection = new EnhancedDOMPoint(-0.8, 1.5, -1).normalize_();
+const lightPovView = new Object3d();
+lightPovView.position_.set(inverseLightDirection);
+lightPovView.lookAt(origin);
+lightPovView.rotationMatrix.invertSelf();
+
+const lightPovMvpMatrix = lightPovProjection.multiply(lightPovView.rotationMatrix);
 
 const lightPovMvpDepthLocation = gl.getUniformLocation(lilgl.depthProgram, lightPovMvp);
 gl.useProgram(lilgl.depthProgram);

@@ -94,35 +94,21 @@ export class Object3d {
 
   lookAt(target: EnhancedDOMPoint) {
     this.isUsingLookAt = true;
-    this.forward.subtractVectors(target, this.position_).normalize_();
+    this.forward.subtractVectors(this.position_, target).normalize_();
     this.right.crossVectors(this.up, this.forward).normalize_();
     this.lookatUp.crossVectors(this.forward, this.right).normalize_();
 
     this.rotationMatrix = new DOMMatrix([
       this.right.x, this.right.y, this.right.z, 0,
       this.lookatUp.x, this.lookatUp.y, this.lookatUp.z, 0,
-      -this.forward.x, -this.forward.y, -this.forward.z, 0,
+      this.forward.x, this.forward.y, this.forward.z, 0,
       0, 0, 0, 1,
     ]);
   }
 }
 
-export function createLookAt2(position_: EnhancedDOMPoint, target: EnhancedDOMPoint, up = { x: 0, y: 1, z: 0}) {
-  const forward = new EnhancedDOMPoint().subtractVectors(target, position_).normalize_();
-  const right = new EnhancedDOMPoint().crossVectors(forward, up).normalize_();
-  const lookAtUp = new EnhancedDOMPoint().crossVectors(right, forward);
 
-  const invertedZ = new EnhancedDOMPoint(forward.x * -1, forward.y * -1, forward.z * -1);
-
-  return new DOMMatrix([
-    right.x, lookAtUp.x, invertedZ.x, 0,
-    right.y, lookAtUp.y, invertedZ.y, 0,
-    right.z, lookAtUp.z, invertedZ.z, 0,
-    -right.dot(position_), -lookAtUp.dot(position_), -invertedZ.dot(position_), 1,
-  ]);
-}
-
-export function createOrtho(bottom, top, left, right, near, far) {
+export function createOrtho(bottom: number, top: number, left: number, right: number, near: number, far: number) {
   return new DOMMatrix([
     2 / (right - left), 0, 0, 0,
     0, 2 / (top - bottom), 0, 0,

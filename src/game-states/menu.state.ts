@@ -15,7 +15,6 @@ import { Camera } from '@/engine/renderer/camera';
 import { render } from '@/engine/renderer/renderer';
 import { getLeverDoors } from '@/modeling/items';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
-import { createLookAt2 } from '@/engine/renderer/object-3d';
 import { makeSong, pickup1, scaryNote2 } from '@/sound-effects';
 import { audioCtx } from '@/engine/audio/audio-player';
 
@@ -100,9 +99,8 @@ export class MenuState implements State {
     this.camera.position_.y = Math.cos(this.cameraRotationAngles.y) * 35 + 50;
     this.camera.position_.z = (Math.sin(this.cameraRotationAngles.z) * 125);
 
-    this.camera.isUsingLookAt = true;
-    this.camera.worldMatrix = createLookAt2(this.camera.position_, new EnhancedDOMPoint(0.1, 31, 0.1));
-    this.camera.worldMatrix.invertSelf();
+    this.camera.lookAt(new EnhancedDOMPoint(0.1, 31, 0.1));
+    this.camera.updateWorldMatrix();
   }
 
   onLeave() {
