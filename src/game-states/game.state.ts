@@ -35,14 +35,6 @@ import {
   getLeverDoors, makeBanners
 } from '@/modeling/items';
 
-// const showMessage = (text: string, size: number, showForMs: number) => {
-//   tmpl.innerHTML = overlaySvg({},
-//     drawBloodText({ x: '50%', y: '90%', style: 'font-size: 150px; text-shadow: 1px 1px 20px' }, text, 40),
-//   );
-//
-//   setTimeout(() => tmpl.innerHTML = '', showForMs);
-// }
-
 export class GameState implements State {
   player?: FirstPersonPlayer;
   scene: Scene;
