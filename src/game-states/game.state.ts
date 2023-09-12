@@ -35,6 +35,14 @@ import {
   getLeverDoors, makeBanners
 } from '@/modeling/items';
 
+// const showMessage = (text: string, size: number, showForMs: number) => {
+//   tmpl.innerHTML = overlaySvg({},
+//     drawBloodText({ x: '50%', y: '90%', style: 'font-size: 150px; text-shadow: 1px 1px 20px' }, text, 40),
+//   );
+//
+//   setTimeout(() => tmpl.innerHTML = '', showForMs);
+// }
+
 export class GameState implements State {
   player?: FirstPersonPlayer;
   scene: Scene;
@@ -200,27 +208,20 @@ export class GameState implements State {
             this.isCoffinTopPlayed = false;
             this.player!.feetCenter.set(0, 49, 22);
             this.gameEvents[5].isFired = false;
-            this.leverDoors[3].isPulled = false;
-            this.leverDoors[3].isFinished = false;
-            this.leverDoors[3].children_[1].rotation_.x = -45;
-            this.leverDoors[3].audioPlayer = draggingSound2(this.leverDoors[3].switchPosition);
-            this.leverDoors[3].doorDatas[0].rotation_.y = 0;
-            this.leverDoors[3].doorDatas[1].rotation_.y = 0;
-            // @ts-ignore
-            this.leverDoors[3].doorDatas[0].dragPlayer = { start: () => {} };
-            // @ts-ignore
-            this.leverDoors[3].doorDatas[0].creakPlayer = { start: () => {} };
-            // @ts-ignore
-            this.leverDoors[3].doorDatas[1].dragPlayer = { start: () => {} };
-            // @ts-ignore
-            this.leverDoors[3].doorDatas[1].creakPlayer = { start: () => {} };
+            this.scene.remove_(this.leverDoors[3]);
+            this.scene.remove_(this.leverDoors[3].doorDatas[0]);
+            this.scene.remove_(this.leverDoors[3].doorDatas[1]);
+            this.leverDoors[3] = getLeverDoors()[3];
+            this.scene.add_(this.leverDoors[3]);
+            this.scene.add_(this.leverDoors[3].doorDatas[0]);
+            this.scene.add_(this.leverDoors[3].doorDatas[1]);
 
-            tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+            tmpl.innerHTML =  overlaySvg({},
               drawBloodText({ x: '50%', y: '90%', style: 'font-size: 150px; text-shadow: 1px 1px 20px' }, 'YOU WOKE UPYRI', 40),
             );
 
             setTimeout(() => {
-              tmpl.innerHTML = overlaySvg({ style: 'text-anchor: middle' },
+              tmpl.innerHTML = overlaySvg({},
                 drawBloodText({ x: '50%', y: '90%', style: 'font-size: 150px; text-shadow: 1px 1px 20px' }, 'KILL HIM IN HIS COFFIN', 40),
               );
 
@@ -254,7 +255,7 @@ export class GameState implements State {
 
     // Got stake
     new GameEvent(new EnhancedDOMPoint(-51, 24, -65),() => {
-      tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+      tmpl.innerHTML =  overlaySvg({ },
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'GOT STAKE', 40),
       );
       pickup1().start();
@@ -266,7 +267,7 @@ export class GameState implements State {
 
     // Got Key
     new GameEvent(new EnhancedDOMPoint(-32,36,60.5),() => {
-      tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+      tmpl.innerHTML =  overlaySvg({},
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'GOT KEY', 40),
       );
       pickup1().start();
@@ -287,7 +288,7 @@ export class GameState implements State {
         if (controls.isConfirm) {
           if (this.hasStake) {
             upyriHit(this.upyri.position_).start();
-            tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+            tmpl.innerHTML =  overlaySvg({},
               drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'UPYRI KILLED', 40),
             );
             this.stake.position_.set(0, 57, -0.5);
@@ -297,7 +298,7 @@ export class GameState implements State {
             setTimeout(() => tmpl.innerHTML = '', 3000);
             return true;
           } else {
-            tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+            tmpl.innerHTML =  overlaySvg({},
               drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'NEED STAKE', 40),
             );
             setTimeout(() => tmpl.innerHTML = '', 3000);
@@ -338,14 +339,14 @@ export class GameState implements State {
 
     // Escape
     new GameEvent(new EnhancedDOMPoint(0, 24.5, -72), () => {
-      tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+      tmpl.innerHTML =  overlaySvg({},
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'ESCAPED', 40),
       );
       this.winState = true;
       this.player!.isFrozen = true;
       this.player!.velocity.set(0, 0, -0.1);
       setTimeout(() => {
-        tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+        tmpl.innerHTML =  overlaySvg({},
           drawBloodText({ x: '50%', y: '90%', style: 'font-size: 160px; text-shadow: 1px 1px 20px' }, 'THANKS FOR PLAYING', 40),
         );
       }, 3000);
@@ -358,7 +359,7 @@ export class GameState implements State {
     // Initial cue to give player instruction that their goal is to escape the castle
     new GameEvent(new EnhancedDOMPoint(44, 21, -26), () => {
       setTimeout(() => {
-        tmpl.innerHTML =  overlaySvg({ style: 'text-anchor: middle' },
+        tmpl.innerHTML =  overlaySvg({},
           drawBloodText({ x: '50%', y: '90%', style: 'font-size: 160px; text-shadow: 1px 1px 20px' }, 'ESCAPE THE CASTLE', 40),
         );
         setTimeout(() => tmpl.innerHTML = '', 5000);

@@ -2,6 +2,7 @@ canvas, svg, #tmpl {
     width: min(100vw, calc(100vh * 16/9));
     position: absolute;
     aspect-ratio: 16/9;
+    text-anchor: middle;
 }
 
 html, body {

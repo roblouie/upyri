@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
+import { doTimes } from '@/engine/helpers';
 
 export const audioCtx = new AudioContext();
 
@@ -34,7 +35,7 @@ export function createPannerNode(buffer: number[]) {
 
 export function createAudioNode(buffer: number[]) {
   return () => {
-    const node = zzfxP(buffer)
+    const node = zzfxP(buffer);
     node.connect(audioCtx.destination);
     return node;
   }
@@ -42,9 +43,7 @@ export function createAudioNode(buffer: number[]) {
 
 
 export function addGap(buffer: number[], seconds: number) {
-  for (let i = 0; i < seconds * zzfxR; i++) {
-    buffer.push(0);
-  }
+  doTimes(seconds * zzfxR, () => buffer.push(0))
   return buffer;
 }
 

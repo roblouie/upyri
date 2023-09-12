@@ -53,7 +53,7 @@ export class MenuState implements State {
     this.scene.updateWorldMatrix();
     this.scene.skybox.bindGeometry();
 
-    tmpl.innerHTML = overlaySvg({ style: 'text-anchor: middle' },
+    tmpl.innerHTML = overlaySvg({},
       drawBloodText({ x: '50%', y: 300 }, 'UPYRI'),
       text({ x: '50%', y: 900, id_: 'Start' }, 'Start'),
       text({ x: '50%', y: 1010, id_: 'Fullscreen' }, 'Fullscreen'),
