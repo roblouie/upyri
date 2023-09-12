@@ -1,8 +1,7 @@
 import { State } from '@/core/state';
 import { gameStateMachine } from '@/game-state-machine';
 import { gameStates } from '@/game-states/game-states';
-import { drawFullScreenText, overlaySvg } from '@/draw-helpers';
-import { NoiseType, text } from '@/engine/svg-maker/base';
+import { NoiseType, rect, svg, text } from '@/engine/svg-maker/base';
 import { drawBloodText, materials, skyboxes, testHeightmap } from '@/textures';
 import { newNoiseLandscape } from '@/engine/new-new-noise';
 import { Mesh } from '@/engine/renderer/mesh';
@@ -13,7 +12,7 @@ import { Skybox } from '@/engine/skybox';
 import { Scene } from '@/engine/renderer/scene';
 import { Camera } from '@/engine/renderer/camera';
 import { render } from '@/engine/renderer/renderer';
-import { getLeverDoors, makeBanners } from '@/modeling/items';
+import { getLeverDoors, makeBanners, makeSymbols } from '@/modeling/items';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { makeSong, pickup1, scaryNote2 } from '@/sound-effects';
 import { audioCtx } from '@/engine/audio/audio-player';
@@ -42,18 +41,18 @@ export class MenuState implements State {
     const heightmap = await newNoiseLandscape(256, 6, 0.05, 3, NoiseType.Fractal, 113);
     const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap).spreadTextureCoords(), materials.grass);
     const castle = new Mesh(castleContainer.value!, materials.brickWall);
-    const bridge = new Mesh(new MoldableCubeGeometry(18, 1, 65).translate_(0, 20.5, -125).done_(), materials.planks);
+    const bridge = new Mesh(new MoldableCubeGeometry(18, 1, 65).translate_(0, 20.5, -125), materials.planks);
 
     // Banners
     const bannerHeightmap = await testHeightmap();
 
-    this.scene.add_(floor, castle, bridge, ...getLeverDoors().flatMap(leverDoor => leverDoor.doorDatas), makeBanners(bannerHeightmap));
+    this.scene.add_(floor, castle, bridge, ...getLeverDoors().flatMap(leverDoor => leverDoor.doorDatas), makeBanners(bannerHeightmap), makeSymbols());
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.updateWorldMatrix();
     this.scene.skybox.bindGeometry();
 
-    tmpl.innerHTML = overlaySvg({},
+    tmpl.innerHTML = svg({ viewBox: `0 0 1920 1080` },
       drawBloodText({ x: '50%', y: 300 }, 'UPYRI'),
       text({ x: '50%', y: 900, id_: 'Start' }, 'Start'),
       text({ x: '50%', y: 1010, id_: 'Fullscreen' }, 'Fullscreen'),
@@ -67,7 +66,10 @@ export class MenuState implements State {
       this.drumHit.stop();
       this.song.stop();
       pickup1().start();
-      drawFullScreenText('LOADING');
+      tmpl.innerHTML = svg({ viewBox: `0 0 1920 1080` },
+        rect({x: 0, y: 0, width_: '100%', height_: '100%' }),
+        drawBloodText({ x: '50%', y: '52%', style: `font-size: 200px; text-shadow: 1px 1px 20px` }, 'LOADING', 40),
+      );
       setTimeout(() => gameStateMachine.setState(gameStates.gameState), 10);
     };
 

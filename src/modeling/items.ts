@@ -14,8 +14,7 @@ export function stake() {
     .translate_(0, 0, 1)
     .scale_(1, 0, 1)
     .all_()
-    .spreadTextureCoords()
-    .done_(), materials.wood);
+    .spreadTextureCoords(), materials.wood);
 }
 
 export function key() {
@@ -25,8 +24,7 @@ export function key() {
       .merge(new SegmentedWall([1, 0.5, 0.5, 0.5], 1, [0.25, 1, 0.25, 1], [0], 0, 0, 0.5).translate_(2, -0.75))
       .scale_(0.5, 0.5, 0.5)
       .rotate_(0, Math.PI / 2)
-      .translate_(-32,36,60)
-      .done_(),
+      .translate_(-32,36,60),
     materials.gold);
 }
 
@@ -47,20 +45,19 @@ export function upyri() {
       .scale_(3, 1, 1)
       .selectBy(vert => vert.y > 0.8)
       .scale_(1.5, 8, 2)
-      .setAttribute_(AttributeLocation.TextureDepth, new Float32Array(MoldableCubeGeometry.TexturePerSide(6, 6, 6,
+      .texturePerSide(
         materials.iron.texture!,
         materials.iron.texture!,
         materials.iron.texture!,
         materials.iron.texture!,
         materials.face.texture!,
         materials.face.texture!,
-      )), 1)
+      )
       .merge(fang().translate_(-0.2))
       .merge(fang().translate_(0.2))
       .computeNormals(true)
       .all_()
       .rotate_(Math.PI)
-      .done_()
     , materials.face);
 
   obj.position_.set(0, 54, 2);
@@ -102,67 +99,66 @@ export function makeCoffin() {
     .merge(makeCoffinFrontBack())
     .merge(makeCoffinFrontBack(true))
     .merge(makeCoffinBottomTop())
-    .computeNormals()
-    .done_();
+    .computeNormals();
 }
 
 export function fenceDoor() {
   return new Mesh(
     new SegmentedWall([0.25, ...patternFill([0.5, 0.1], 11), 0.25], 7, patternFill([7, 1], 13), patternFill([0, 1], 13), 0, 0, 0.15)
-      .translate_(0, -3.5)
-      .done_(),
+      .translate_(0, -3.5),
     materials.silver);
 }
 
 export function woodenDoor(hasLock = false, width_ = 4, height_ = 7) {
-  const doorTextures = MoldableCubeGeometry.TexturePerSide(1, 1, 1,
-    materials.wood.texture!,
-    materials.wood.texture!,
-    materials.wood.texture!,
-    materials.wood.texture!,
-    materials.planks.texture!,
-    materials.planks.texture!,
-  );
-  const doorGeo = new MoldableCubeGeometry(width_, height_, 1);
+  const doorGeo = new MoldableCubeGeometry(width_, height_, 1)
+    .texturePerSide(
+      materials.wood.texture!,
+      materials.wood.texture!,
+      materials.wood.texture!,
+      materials.wood.texture!,
+      materials.planks.texture!,
+      materials.planks.texture!,
+    );
 
-  doorGeo.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(doorTextures), 1);
+  const barGeo = new MoldableCubeGeometry(width_ + .05, 0.5, 1.2)
+    .translate_(0, width_ === 4 ? 2.5: 5)
+    .texturePerSide(
+      materials.iron.texture!,
+      materials.iron.texture!,
+      materials.iron.texture!,
+      materials.iron.texture!,
+      materials.iron.texture!,
+      materials.iron.texture!,
+    )
+    .spreadTextureCoords();
+  const barGeo2 = new MoldableCubeGeometry(width_ + .05, 0.5, 1.2)
+    .translate_(0, width_ === 4 ? -2.5: -1)
+    .texturePerSide(
+      materials.iron.texture!,
+      materials.iron.texture!,
+      materials.iron.texture!,
+      materials.iron.texture!,
+      materials.iron.texture!,
+      materials.iron.texture!,
+    )
+    .spreadTextureCoords();
 
-  const barGeo = new MoldableCubeGeometry(width_ + .05, 0.5, 1.2).translate_(0, width_ === 4 ? 2.5: 5).spreadTextureCoords();
-  const barGeo2 = new MoldableCubeGeometry(width_ + .05, 0.5, 1.2).translate_(0, width_ === 4 ? -2.5: -1).spreadTextureCoords();
-
-  const barTextures = MoldableCubeGeometry.TexturePerSide(1, 1, 1,
-    materials.iron.texture!,
-    materials.iron.texture!,
-    materials.iron.texture!,
-    materials.iron.texture!,
-    materials.iron.texture!,
-    materials.iron.texture!,
-  );
-
-  barGeo.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(barTextures), 1);
-  barGeo2.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(barTextures), 1);
-
-
-  const lock = new MoldableCubeGeometry(1, 1, 1.2).translate_(-1.4).done_();
-
-  const lockTextures = MoldableCubeGeometry.TexturePerSide(1, 1, 1,
-    materials.gold.texture!,
-    materials.gold.texture!,
-    materials.gold.texture!,
-    materials.gold.texture!,
-    materials.keyLock.texture!,
-    materials.keyLock.texture!,
-  );
-
-  lock.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(lockTextures), 1);
+  const lock = new MoldableCubeGeometry(1, 1, 1.2)
+    .texturePerSide(
+      materials.gold.texture!,
+      materials.gold.texture!,
+      materials.gold.texture!,
+      materials.gold.texture!,
+      materials.keyLock.texture!,
+      materials.keyLock.texture!,
+    )
+    .translate_(-1.4);
 
   doorGeo.merge(barGeo).merge(barGeo2);
 
   if (hasLock) {
     doorGeo.merge(lock);
   }
-
-  doorGeo.done_();
 
   return new Mesh(doorGeo, new Material());
 }
@@ -227,7 +223,30 @@ function bannerMaker(bannerHeightmap: number[]) {
 export function makeBanners(bannerHeightmap: number[]) {
   return new Mesh(
     bannerMaker(bannerHeightmap).translate_(18, 32, -16.6)
-      .merge(bannerMaker(bannerHeightmap).translate_(-18, 32, -16.6))
-      .done_(),
+      .merge(bannerMaker(bannerHeightmap).translate_(-18, 32, -16.6)),
     materials.banner);
+}
+
+export function makeSymbols() {
+  return new Mesh(new MoldableCubeGeometry(3, 3, 2, 12, 12, 1)
+    .cylindrify(1.1, 'z')
+      .spreadTextureCoords(40, 40)
+    .merge(
+      new MoldableCubeGeometry(3, 0.5, 2, 8, 1, 1)
+        .translate_(0, 1.25)
+        .spreadTextureCoords(40, 40)
+        .merge(new MoldableCubeGeometry(0.4, 1, 2, 1, 8, 1).translate_(-1.3, 0.5).spreadTextureCoords(40, 40))
+        .merge(new MoldableCubeGeometry(0.4, 1, 2, 1, 8, 1).translate_(1.3, 0.5).spreadTextureCoords(40, 40))
+        .selectBy(vert => Math.abs(vert.y) <= 1 && Math.abs(vert.x) <= 1.2)
+        .cylindrify(1, 'z', new EnhancedDOMPoint(0, -1, 0))
+        .translate_(0, -0.2)
+        .invertSelection()
+        .cylindrify(1.2, 'z')
+        .all_()
+        .translate_(0, -2.3)
+    )
+      .scale_(3, 3)
+      .translate_(0, 35, 30)
+    .computeNormals(true)
+    , materials.golds);
 }

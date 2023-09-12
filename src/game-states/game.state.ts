@@ -11,8 +11,7 @@ import { getGroupedFaces, meshToFaces } from '@/engine/physics/parse-faces';
 import { Skybox } from '@/engine/skybox';
 import { drawBloodText, materials, skyboxes, testHeightmap } from '@/textures';
 import { newNoiseLandscape } from '@/engine/new-new-noise';
-import { NoiseType } from '@/engine/svg-maker/base';
-import { overlaySvg } from '@/draw-helpers';
+import { NoiseType, svg } from '@/engine/svg-maker/base';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 import { castleContainer } from '@/modeling/castle';
 import { LeverDoorObject3d } from '@/modeling/lever-door';
@@ -32,7 +31,7 @@ import {
   makeCoffinBottomTop,
   stake,
   upyri,
-  getLeverDoors, makeBanners
+  getLeverDoors, makeBanners, makeSymbols
 } from '@/modeling/items';
 
 export class GameState implements State {
@@ -54,8 +53,8 @@ export class GameState implements State {
   isUpyriDying = false;
   isUpyriAttacking = false;
   upyriAttackingTimer = 0;
-  coffinTop = new Mesh(makeCoffinBottomTop().translate_(0, 56.35, -9).done_(), materials.wood);
-  coffinTopBloodstain = new Mesh(new MoldableCubeGeometry(3, 1, 3).translate_(0, 55.95, -0.5).done_(), materials.bloodCircle);
+  coffinTop = new Mesh(makeCoffinBottomTop().translate_(0, 56.35, -9), materials.wood);
+  coffinTopBloodstain = new Mesh(new MoldableCubeGeometry(3, 1, 3).translate_(0, 55.95, -0.5), materials.bloodCircle);
 
   constructor() {
     this.scene = new Scene();
@@ -71,16 +70,16 @@ export class GameState implements State {
 
     const heightmap = await newNoiseLandscape(256, 6, 0.05, 3, NoiseType.Fractal, 113);
     const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap).spreadTextureCoords(), materials.grass);
-    const floorCollision = new Mesh( new PlaneGeometry(1024, 1024, 4, 4).translate_(0, 20.5).done_(), materials.grass);
+    const floorCollision = new Mesh( new PlaneGeometry(1024, 1024, 4, 4).translate_(0, 20.5), materials.grass);
 
-    const castle = new Mesh(castleContainer.value!.done_(), materials.brickWall);
+    const castle = new Mesh(castleContainer.value!, materials.brickWall);
 
-    const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(57.4, 26, 43).done_(), materials.castleWriting)
-    const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(47.4, 24, 42).done_(), materials.handprint)
+    const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(57.4, 26, 43), materials.castleWriting)
+    const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(47.4, 24, 42), materials.handprint)
 
-    const coffin = new Mesh(makeCoffin().translate_(0, 55, -9).done_(), materials.wood);
+    const coffin = new Mesh(makeCoffin().translate_(0, 55, -9), materials.wood);
 
-    const bridge = new Mesh(new MoldableCubeGeometry(18, 1, 65).translate_(0, 20.5, -125).done_(), materials.planks);
+    const bridge = new Mesh(new MoldableCubeGeometry(18, 1, 65).translate_(0, 20.5, -125), materials.planks);
 
     this.coffinTopBloodstain.scale_.set(0, 1, 0);
 
@@ -123,7 +122,7 @@ export class GameState implements State {
       });
     });
 
-    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, coffin, this.coffinTop, this.coffinTopBloodstain, bridge, makeBanners(bannerHeightmap));
+    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, coffin, this.coffinTop, this.coffinTopBloodstain, bridge, makeBanners(bannerHeightmap), makeSymbols());
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
@@ -208,12 +207,12 @@ export class GameState implements State {
             this.scene.add_(this.leverDoors[3].doorDatas[0]);
             this.scene.add_(this.leverDoors[3].doorDatas[1]);
 
-            tmpl.innerHTML =  overlaySvg({},
+            tmpl.innerHTML =  svg({ viewBox: `0 0 1920 1080` },
               drawBloodText({ x: '50%', y: '90%', style: 'font-size: 150px; text-shadow: 1px 1px 20px' }, 'YOU WOKE UPYRI', 40),
             );
 
             setTimeout(() => {
-              tmpl.innerHTML = overlaySvg({},
+              tmpl.innerHTML = svg({ viewBox: `0 0 1920 1080` },
                 drawBloodText({ x: '50%', y: '90%', style: 'font-size: 150px; text-shadow: 1px 1px 20px' }, 'KILL HIM IN HIS COFFIN', 40),
               );
 
@@ -247,7 +246,7 @@ export class GameState implements State {
 
     // Got stake
     new GameEvent(new EnhancedDOMPoint(-51, 24, -65),() => {
-      tmpl.innerHTML =  overlaySvg({ },
+      tmpl.innerHTML =  svg({ viewBox: `0 0 1920 1080` },
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'GOT STAKE', 40),
       );
       pickup1().start();
@@ -259,7 +258,7 @@ export class GameState implements State {
 
     // Got Key
     new GameEvent(new EnhancedDOMPoint(-32,36,60.5),() => {
-      tmpl.innerHTML =  overlaySvg({},
+      tmpl.innerHTML =  svg({ viewBox: `0 0 1920 1080` },
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'GOT KEY', 40),
       );
       pickup1().start();
@@ -280,7 +279,7 @@ export class GameState implements State {
         if (controls.isConfirm) {
           if (this.hasStake) {
             upyriHit(this.upyri.position_).start();
-            tmpl.innerHTML =  overlaySvg({},
+            tmpl.innerHTML =  svg({ viewBox: `0 0 1920 1080` },
               drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'UPYRI KILLED', 40),
             );
             this.stake.position_.set(0, 57, -0.5);
@@ -290,7 +289,7 @@ export class GameState implements State {
             setTimeout(() => tmpl.innerHTML = '', 3000);
             return true;
           } else {
-            tmpl.innerHTML =  overlaySvg({},
+            tmpl.innerHTML =  svg({ viewBox: `0 0 1920 1080` },
               drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'NEED STAKE', 40),
             );
             setTimeout(() => tmpl.innerHTML = '', 3000);
@@ -331,14 +330,14 @@ export class GameState implements State {
 
     // Escape
     new GameEvent(new EnhancedDOMPoint(0, 24.5, -72), () => {
-      tmpl.innerHTML =  overlaySvg({},
+      tmpl.innerHTML =  svg({ viewBox: `0 0 1920 1080` },
         drawBloodText({ x: '50%', y: '90%', style: 'font-size: 250px; text-shadow: 1px 1px 20px' }, 'ESCAPED', 40),
       );
       this.winState = true;
       this.player!.isFrozen = true;
       this.player!.velocity.set(0, 0, -0.1);
       setTimeout(() => {
-        tmpl.innerHTML =  overlaySvg({},
+        tmpl.innerHTML =  svg({ viewBox: `0 0 1920 1080` },
           drawBloodText({ x: '50%', y: '90%', style: 'font-size: 160px; text-shadow: 1px 1px 20px' }, 'THANKS FOR PLAYING', 40),
         );
       }, 3000);
@@ -351,7 +350,7 @@ export class GameState implements State {
     // Initial cue to give player instruction that their goal is to escape the castle
     new GameEvent(new EnhancedDOMPoint(44, 21, -26), () => {
       setTimeout(() => {
-        tmpl.innerHTML =  overlaySvg({},
+        tmpl.innerHTML =  svg({ viewBox: `0 0 1920 1080` },
           drawBloodText({ x: '50%', y: '90%', style: 'font-size: 160px; text-shadow: 1px 1px 20px' }, 'ESCAPE THE CASTLE', 40),
         );
         setTimeout(() => tmpl.innerHTML = '', 5000);

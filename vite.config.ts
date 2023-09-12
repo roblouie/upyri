@@ -8,6 +8,8 @@ import CleanCSS from 'clean-css';
 import { statSync } from 'fs';
 const { execFileSync } = require('child_process');
 import ect from 'ect-bin';
+import advzip from 'advzip-bin';
+
 import { exec } from 'node:child_process';
 
 const htmlMinify = require('html-minifier');
@@ -210,7 +212,13 @@ function ectPlugin(): Plugin {
         const result = execFileSync(ect, args);
         console.log('ECT result', result.toString().trim());
         const stats = statSync('dist/index.zip');
-        console.log('ZIP size', stats.size);
+        console.log('ECT ZIP size', stats.size);
+
+        const result2 = execFileSync(advzip, ['--recompress', '--shrink-insane', 'dist/index.zip']);
+        console.log('ADV ZIP RESULT', result2.toString().trim());
+        const stats2 = statSync('dist/index.zip');
+
+        console.log('ADVZIP ZIP size', stats2.size);
       } catch (err) {
         console.log('ECT error', err);
       }

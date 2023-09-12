@@ -51,6 +51,7 @@ export async function initTextures() {
   materials.face = new Material({ texture: textureLoader.load_(await face())});
   materials.bloodCircle = new Material({ texture: textureLoader.load_(await drawBloodCircle()), isTransparent: true });
   materials.gold = new Material({ texture: textureLoader.load_(await metals(0)), emissive: [0.7, 0.7, 0.7, 0.7] });
+  materials.golds = new Material({ texture: textureLoader.load_(await metals(0)) });
   materials.silver = new Material({ texture: textureLoader.load_(await metals(1)) });
   materials.iron = new Material({ texture: textureLoader.load_(await metals(2)) });
   materials.keyLock = new Material({ texture: textureLoader.load_(await keyLock())});

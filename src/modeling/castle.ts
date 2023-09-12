@@ -178,9 +178,7 @@ export function createCastle() {
     .merge(new MoldableCubeGeometry(2, 3, 2, 2, 1, 2).cylindrify(1.2).translate_(-32,13.1,59.5).spreadTextureCoords())
 
     // Key doorway
-    .merge(new SegmentedWall([1.5, 4, 1.5], 8, [8, 1, 8], [0], 0, 0, 0.5).rotate_(0, Math.PI / 2).translate_(-27, 11.5, 59.5).computeNormals())
-
-    .done_();
+    .merge(new SegmentedWall([1.5, 4, 1.5], 8, [8, 1, 8], [0], 0, 0, 0.5).rotate_(0, Math.PI / 2).translate_(-27, 11.5, 59.5).computeNormals());
 }
 
 function castleKeep() {
@@ -413,8 +411,7 @@ export function solidCastleWall(z: number, hasDoor?: boolean) {
   return new SegmentedWall([36, 12, 36], 11.5, [12, hasDoor ? 1 : 12, 12], [0, 0, 0], 0, 0, 8)
     .merge(castleTopper(hasDoor ? 76 : 82, 11.5, 4).translate_(hasDoor ? -4 : 0))
     .merge(castleTopper(hasDoor ? 85 : 13, 11.5, -4).translate_(hasDoor ? 0 : 33.5))
-    .translate_(0,0, z)
-    .done_();
+    .translate_(0,0, z);
 }
 
 export function hollowCastleWall(x: number) {
@@ -465,8 +462,7 @@ function tubify(moldableCubeBox: MoldableCubeGeometry, selectSize: number, inner
     .invertSelection()
     .cylindrify(outerRadius, 'y')
     .computeNormals(true)
-    .all_()
-    .done_();
+    .all_();
 }
 
 export function cornerRamp(isRounded?: boolean, isFlipped?: boolean, includeWalkway = true) {
@@ -487,7 +483,7 @@ export function cornerRamp(isRounded?: boolean, isFlipped?: boolean, includeWalk
           .all_()
           .translate_(index * stepWidth + stepWidth / 2, currentHeight / 2)).spreadTextureCoords()
       })
-    ).done_();
+    );
   }
 
 

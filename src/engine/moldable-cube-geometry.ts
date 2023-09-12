@@ -3,7 +3,6 @@ import { EnhancedDOMPoint, VectorLike } from '@/engine/enhanced-dom-point';
 import { calculateVertexNormals, doTimes, radsToDegrees } from "@/engine/helpers";
 import { Texture } from '@/engine/renderer/texture';
 import { gl } from '@/engine/renderer/lil-gl';
-import { randomNumber } from '@/engine/new-new-noise';
 
 type BufferInfo = { data: Float32Array; size: number };
 
@@ -24,15 +23,15 @@ export class MoldableCubeGeometry {
   heightSegments: number;
   depthSegments: number;
 
-  static TexturePerSide(widthDivisions: number, heightDivisions: number, depthDivisions: number,
-                        left: Texture, right: Texture, top: Texture, bottom: Texture, back: Texture, front: Texture) {
-    const leftTexture = getTextureForSide(depthDivisions, heightDivisions, left);
-    const rightTexture = getTextureForSide(depthDivisions, heightDivisions, right);
-    const topTexture = getTextureForSide(widthDivisions, depthDivisions, top);
-    const bottomTexture = getTextureForSide(widthDivisions, depthDivisions, bottom);
-    const backTexture = getTextureForSide(widthDivisions, heightDivisions, back);
-    const frontTexture = getTextureForSide(widthDivisions, heightDivisions, front);
-    return [...topTexture, ...bottomTexture, ...leftTexture, ...rightTexture,  ...backTexture, ...frontTexture];
+  texturePerSide(left: Texture, right: Texture, top: Texture, bottom: Texture, back: Texture, front: Texture) {
+    const leftTexture = getTextureForSide(this.depthSegments, this.heightSegments, left);
+    const rightTexture = getTextureForSide(this.depthSegments, this.heightSegments, right);
+    const topTexture = getTextureForSide(this.widthSegments, this.depthSegments, top);
+    const bottomTexture = getTextureForSide(this.widthSegments, this.depthSegments, bottom);
+    const backTexture = getTextureForSide(this.widthSegments, this.heightSegments, back);
+    const frontTexture = getTextureForSide(this.widthSegments, this.heightSegments, front);
+    this.setAttribute_(AttributeLocation.TextureDepth, new Float32Array([...topTexture, ...bottomTexture, ...leftTexture, ...rightTexture,  ...backTexture, ...frontTexture]), 1) ;
+    return this;
   }
 
   constructor(width_ = 1, height_ = 1, depth = 1, widthSegments = 1, heightSegments = 1, depthSegments = 1, sidesToDraw = 6) {
@@ -121,7 +120,6 @@ export class MoldableCubeGeometry {
     this.indices = new Uint16Array(indices);
     this
       .computeNormals()
-      .done_()
       .all_();
   }
 
@@ -172,25 +170,18 @@ export class MoldableCubeGeometry {
   merge(otherMoldable: MoldableCubeGeometry) {
     const updatedOtherIndices = otherMoldable.getIndices()!.map(index => index + this.vertices.length);
     this.indices = new Uint16Array([...this.indices, ...updatedOtherIndices]);
-
     this.vertices.push(...otherMoldable.vertices);
 
-    const thisTextureCoords = this.getAttribute_(AttributeLocation.TextureCoords).data;
-    const otherTextureCoords = otherMoldable.getAttribute_(AttributeLocation.TextureCoords).data;
-    const combinedCoords = new Float32Array([...thisTextureCoords, ...otherTextureCoords]);
-    this.setAttribute_(AttributeLocation.TextureCoords, combinedCoords, 2);
+    doTimes(3, i => {
+      const attrBufferInfo = this.getAttribute_(i + 1);
+      if (!attrBufferInfo) {
+        return;
+      }
+      const otherBufferData = otherMoldable.getAttribute_(i + 1).data;
+      const combinedData = new Float32Array([...attrBufferInfo.data, ...otherBufferData]);
+      this.setAttribute_(i + 1, combinedData, attrBufferInfo.size);
+    });
 
-    const thisNormals = this.getAttribute_(AttributeLocation.Normals).data;
-    const otherNormals = otherMoldable.getAttribute_(AttributeLocation.Normals).data;
-    const combinedNormals = new Float32Array([...thisNormals, ...otherNormals]);
-    this.setAttribute_(AttributeLocation.Normals, combinedNormals, 3);
-
-    if (this.getAttribute_(AttributeLocation.TextureDepth)) {
-      const thisTextureDepth = this.getAttribute_(AttributeLocation.TextureDepth).data;
-      const otherTextureDepth = otherMoldable.getAttribute_(AttributeLocation.TextureDepth).data;
-      const combinedTextureDepth = new Float32Array([...thisTextureDepth, ...otherTextureDepth]);
-      this.setAttribute_(AttributeLocation.TextureDepth, combinedTextureDepth, 1);
-    }
     return this;
   }
 
@@ -263,11 +254,6 @@ export class MoldableCubeGeometry {
     });
 
     return indexCopy;
-  }
-
-  done_() {
-    this.setAttribute_(AttributeLocation.Positions, new Float32Array(this.vertices.flatMap(point => point.toArray())), 3);
-    return this;
   }
 
   getAttribute_(attributeLocation: AttributeLocation) {

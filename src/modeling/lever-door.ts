@@ -32,14 +32,12 @@ export class DoorData extends Object3d {
     this.closedDoorCollisionM = new Mesh(
       new MoldableCubeGeometry(isMainGate ? 6 : 4, 7, 1)
         .translate_(position_.x - (swapOpenClosed ? 4 : 0), position_.y, position_.z)
-        .done_()
       , new Material());
 
     this.openDoorCollisionM = new Mesh(
       new MoldableCubeGeometry(4, 7, 1)
         .rotate_(0, Math.PI / 2)
         .translate_(position_.x - 2 * swapHingeSideX, position_.y, position_.z - 2 * swapHingeSideZ)
-        .done_()
       , new Material());
 
     if (swapOpenClosed) {
@@ -73,8 +71,7 @@ export class LeverDoorObject3d extends Object3d {
       new MoldableCubeGeometry(1, 1, 4, 3, 3)
         .cylindrify(0.25, 'z')
         .merge(new MoldableCubeGeometry(3, 1, 1, 1, 3, 3).cylindrify(0.25, 'x').translate_(0, 0, 2))
-        .computeNormals(true)
-        .done_(), materials.wood);
+        .computeNormals(true), materials.wood);
     super(base, lever);
 
     this.doorDatas = doorDatas;

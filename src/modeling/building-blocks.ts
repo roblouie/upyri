@@ -26,17 +26,17 @@ export class SegmentedWall extends MoldableCubeGeometry {
     });
 
     this.totalWidth = runningLeft;
-    this.all_().translate_((segmentWidths[0] - runningLeft) / 2, 0).computeNormals().done_();
+    this.all_().translate_((segmentWidths[0] - runningLeft) / 2, 0).computeNormals();
   }
 }
 
 export function createHallway(frontWall: SegmentedWall, backWall: MoldableCubeGeometry, spacing: number) {
-  return frontWall.translate_(0, 0, spacing).merge(backWall.translate_(0, 0, -spacing)).done_();
+  return frontWall.translate_(0, 0, spacing).merge(backWall.translate_(0, 0, -spacing));
 }
 
 export function createBox(frontWall: SegmentedWall, backWall: SegmentedWall, leftWall: SegmentedWall, rightWall: SegmentedWall) {
   return createHallway(frontWall, backWall, (leftWall.totalWidth + 2) / 2)
-    .merge(createHallway(leftWall, rightWall, (frontWall.totalWidth - 2) / 2).rotate_(0, Math.PI / 2)).computeNormals().done_();
+    .merge(createHallway(leftWall, rightWall, (frontWall.totalWidth - 2) / 2).rotate_(0, Math.PI / 2)).computeNormals();
 }
 
 export function patternFill(pattern: number[], times: number) {
