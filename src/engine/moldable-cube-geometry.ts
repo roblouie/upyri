@@ -7,7 +7,7 @@ import { randomNumber } from '@/engine/new-new-noise';
 
 type BufferInfo = { data: Float32Array; size: number };
 
-function getTextureForSide(uDivisions: number, vDivisions: number, texture: Texture) {
+export function getTextureForSide(uDivisions: number, vDivisions: number, texture: Texture) {
   // @ts-ignore
   return new Array((uDivisions + 1) * (vDivisions + 1)).fill().map(_ => texture.id);
 }
@@ -20,6 +20,9 @@ export class MoldableCubeGeometry {
   buffers: Map<AttributeLocation, BufferInfo> = new Map<AttributeLocation, BufferInfo>();
   private indices: Uint16Array;
   vao: WebGLVertexArrayObject;
+  widthSegments: number;
+  heightSegments: number;
+  depthSegments: number;
 
   static TexturePerSide(widthDivisions: number, heightDivisions: number, depthDivisions: number,
                         left: Texture, right: Texture, top: Texture, bottom: Texture, back: Texture, front: Texture) {
@@ -32,7 +35,11 @@ export class MoldableCubeGeometry {
     return [...topTexture, ...bottomTexture, ...leftTexture, ...rightTexture,  ...backTexture, ...frontTexture];
   }
 
-  constructor(width = 1, height = 1, depth = 1, widthSegments = 1, heightSegments = 1, depthSegments = 1, sidesToDraw = 6) {
+  constructor(width_ = 1, height_ = 1, depth = 1, widthSegments = 1, heightSegments = 1, depthSegments = 1, sidesToDraw = 6) {
+    this.widthSegments = widthSegments;
+    this.depthSegments = depthSegments;
+    this.heightSegments = heightSegments;
+
     this.vao = gl.createVertexArray()!;
     const indices: number[] = [];
     const uvs: number[] = [];
@@ -45,17 +52,17 @@ export class MoldableCubeGeometry {
       w: 'x' | 'y' | 'z',
       uDir: number,
       vDir: number,
-      width: number,
-      height: number,
+      width_: number,
+      height_: number,
       depth: number,
       gridX: number,
       gridY: number,
     ) => {
-      const segmentWidth = width / gridX;
-      const segmentHeight = height / gridY;
+      const segmentWidth = width_ / gridX;
+      const segmentHeight = height_ / gridY;
 
-      const widthHalf = width / 2;
-      const heightHalf = height / 2;
+      const widthHalf = width_ / 2;
+      const heightHalf = height_ / 2;
       const depthHalf = depth / 2;
 
       const gridX1 = gridX + 1;
@@ -96,16 +103,16 @@ export class MoldableCubeGeometry {
       }
 
       vertexCount += (gridX1 * gridY1);
-    }
+    };
 
     const sides = [
-      ['x', 'z', 'y', 1, 1, width, depth, height, widthSegments, depthSegments], // top
-      ['x', 'z', 'y', 1, -1, width, depth, -height, widthSegments, depthSegments], // bottom
-      ['z', 'y', 'x', -1, -1, depth, height, width, depthSegments, heightSegments], // left
-      ['z', 'y', 'x', 1, -1, depth, height, -width, depthSegments, heightSegments], // right
-      ['x', 'y', 'z', 1, -1, width, height, depth, widthSegments, heightSegments], // front
-      ['x', 'y', 'z', -1, -1, width, height, -depth, widthSegments, heightSegments], // back
-    ]
+      ['x', 'z', 'y', 1, 1, width_, depth, height_, widthSegments, depthSegments], // top
+      ['x', 'z', 'y', 1, -1, width_, depth, -height_, widthSegments, depthSegments], // bottom
+      ['z', 'y', 'x', -1, -1, depth, height_, width_, depthSegments, heightSegments], // left
+      ['z', 'y', 'x', 1, -1, depth, height_, -width_, depthSegments, heightSegments], // right
+      ['x', 'y', 'z', 1, -1, width_, height_, depth, widthSegments, heightSegments], // front
+      ['x', 'y', 'z', -1, -1, width_, height_, -depth, widthSegments, heightSegments], // back
+    ];
 
     // @ts-ignore
     doTimes(sidesToDraw, index => buildPlane(...sides[index]));
@@ -178,20 +185,12 @@ export class MoldableCubeGeometry {
     const combinedNormals = new Float32Array([...thisNormals, ...otherNormals]);
     this.setAttribute_(AttributeLocation.Normals, combinedNormals, 3);
 
-    return this;
-  }
-
-  noisify(seed: number, scale: number) {
-    this.getIndicesWithUniquePositions().forEach(index => {
-      const allMatchingVertices = this.vertices.filter(vertex => vertex.isEqualTo(this.vertices[index]));
-      allMatchingVertices.forEach(vertex => {
-        const angle = new EnhancedDOMPoint(randomNumber(seed + vertex.x), randomNumber(seed + vertex.y), randomNumber(seed + vertex.z));
-        vertex.z += angle.z * scale;
-        vertex.y += angle.y * scale;
-        vertex.x += angle.x * scale;
-      })
-    })
-
+    if (this.getAttribute_(AttributeLocation.TextureDepth)) {
+      const thisTextureDepth = this.getAttribute_(AttributeLocation.TextureDepth).data;
+      const otherTextureDepth = otherMoldable.getAttribute_(AttributeLocation.TextureDepth).data;
+      const combinedTextureDepth = new Float32Array([...thisTextureDepth, ...otherTextureDepth]);
+      this.setAttribute_(AttributeLocation.TextureDepth, combinedTextureDepth, 1);
+    }
     return this;
   }
 
@@ -204,6 +203,30 @@ export class MoldableCubeGeometry {
     });
     return this;
   }
+
+  spreadTextureCoords(scaleX = 12, scaleY = 12, shiftX = 0, shiftY = 0) {
+    const texCoordSideCount = (u: number, v: number) => (2 + (u - 1)) * (2 + (v - 1)) * 2;
+    const xzCount = texCoordSideCount(this.widthSegments, this.depthSegments);
+    const zyCount = xzCount + texCoordSideCount(this.depthSegments, this.heightSegments);
+
+    const textureCoords = this.getAttribute_(AttributeLocation.TextureCoords).data;
+    let u,v;
+    this.vertices.forEach((vert, index) => {
+      if (index < xzCount) {
+        u = vert.x; v = vert.z;
+      } else if (index < zyCount) {
+        u = vert.z; v = vert.y;
+      } else {
+        u = vert.x; v = vert.y;
+      }
+      const pointInTextureGrid = [u / scaleX + shiftX, v / scaleY + shiftY];
+      textureCoords.set(pointInTextureGrid, index * 2);
+    });
+    this.setAttribute_(AttributeLocation.TextureCoords, textureCoords, 2);
+
+    return this;
+  }
+
 
   /**
    * Computes normals. By default it uses faces on a single plane. Use this on moldable planes or for moldable cube
@@ -253,6 +276,7 @@ export class MoldableCubeGeometry {
 
   setAttribute_(attributeLocation: AttributeLocation, data: Float32Array, size: number) {
     this.buffers.set(attributeLocation, { data, size });
+    return this;
   }
 
   getIndices(): Uint16Array {
@@ -275,9 +299,9 @@ export class MoldableCubeGeometry {
     gl.bindVertexArray(this.vao);
 
     let byteOffset = 0;
-    this.buffers.forEach((buffer, position) => {
-      gl.vertexAttribPointer(position, buffer.size, gl.FLOAT, false, 0, byteOffset);
-      gl.enableVertexAttribArray(position);
+    this.buffers.forEach((buffer, position_) => {
+      gl.vertexAttribPointer(position_, buffer.size, gl.FLOAT, false, 0, byteOffset);
+      gl.enableVertexAttribArray(position_);
       byteOffset += buffer.data.length * buffer.data.BYTES_PER_ELEMENT;
     });
 

@@ -1,41 +1,47 @@
 // Generated with Shader Minifier 1.3.4 (https://github.com/laurentlb/Shader_Minifier/)
-export const aCoords = "A"
-export const aDepth = "D"
-export const aNormal = "C"
-export const aPerInstanceMatrix = "M"
-export const aPerInstanceNormalMatrix = "L"
-export const aTexCoord = "z"
-export const color = "e"
-export const emissive = "t"
-export const modelviewProjection = "G"
-export const normalMatrix = "F"
-export const outColor = "o"
-export const textureRepeat = "f"
-export const uSampler = "h"
-export const u_skybox = "d"
-export const u_viewDirectionProjectionInverse = "I"
-export const vColor = "v"
-export const vDepth = "i"
-export const vNormal = "m"
-export const vNormalMatrix = "n"
-export const vTexCoord = "l"
-export const v_position = "H"
-export const viewProjection = "K"
+export const aCoords = 'E';
+export const aDepth = 'L';
+export const aNormal = 'B';
+export const aPosition = 'm';
+export const aTexCoord = 'K';
+export const emissive = 't';
+export const fragDepth = 'v';
+export const lightPovMvp = 'f';
+export const modelviewProjection = 'M';
+export const normalMatrix = 'N';
+export const outColor = 'g';
+export const positionFromLightPov = 'u';
+export const shadowMap = 'z';
+export const textureRepeat = 'h';
+export const uSampler = 's';
+export const u_skybox = 'I';
+export const u_viewDirectionProjectionInverse = 'H';
+export const vColor = 'e';
+export const vDepth = 'n';
+export const vNormal = 'o';
+export const vNormalMatrix = 'l';
+export const vTexCoord = 'i';
+export const v_position = 'G';
+
+export const depth_fragment_glsl = `#version 300 es
+precision highp float;
+out float v;void main(){v=gl_FragCoord.z;}`;
+
+export const depth_vertex_glsl = `#version 300 es
+precision highp float;
+layout(location=0) in vec4 m;uniform mat4 f;void main(){gl_Position=f*m;}`;
 
 export const fragment_glsl = `#version 300 es
 precision highp float;
-in vec4 v;in vec2 l;in float i;in vec3 m;in mat4 n;uniform vec2 f;uniform vec4 e,t;uniform mediump sampler2DArray h;out vec4 o;vec3 s=vec3(-1,2,1);void main(){vec3 v=normalize(mat3(n)*m),d=normalize(s);float z=max(dot(d,v),0.);vec3 A=length(t)>0.?t.xyz:e.xyz*.4f+z*e.xyz*.7;vec4 C=vec4(A,e.w);o=i<0.?C:texture(h,vec3(l*f,i))*C;}`
-
-export const instanced_vertex_glsl = `#version 300 es
-layout(location=0) in vec3 A;layout(location=1) in vec3 C;layout(location=2) in vec2 z;layout(location=3) in float D;layout(location=4) in mat4 M;layout(location=8) in mat4 L;uniform mat4 K;out vec2 l;out float i;out vec3 m;out mat4 n;void main(){vec4 v=vec4(A,1);gl_Position=K*M*v;l=z;i=D;m=C;n=L;}`
+in vec4 e;in vec2 i;in float n;in vec3 o;in mat4 l;in vec4 u;uniform vec2 h;uniform vec4 t;uniform mediump sampler2DArray s;uniform mediump sampler2DShadow z;out vec4 g;vec3 d=vec3(-1,1.5,-1);float A=.2f,C=.6f;vec2 D[5]=vec2[](vec2(0),vec2(-1,0),vec2(1,0),vec2(0,1),vec2(0,-1));float F=1.,J=4200.;void main(){for(int v=0;v<5;v++){vec3 m=vec3(u.xy+D[v]/J,u.z-.001);float f=texture(z,m);F*=max(f,.87);}vec3 v=normalize(mat3(l)*o),f=normalize(d);float m=max(dot(f,v)*F,A);vec3 e=length(t)>0.?t.xyz:m*vec3(1);vec4 C=vec4(e.xyz,1);g=n<0.?C:texture(s,vec3(i*h,n))*C;}`;
 
 export const skybox_fragment_glsl = `#version 300 es
 precision highp float;
-uniform samplerCube d;uniform mat4 I;in vec4 H;out vec4 o;void main(){vec4 v=I*H;o=texture(d,v.xyz);}`
+uniform samplerCube I;uniform mat4 H;in vec4 G;out vec4 g;void main(){vec4 v=H*G;g=texture(I,v.xyz);}`;
 
 export const skybox_vertex_glsl = `#version 300 es
-layout(location=0) in vec4 A;out vec4 H;void main(){H=A;gl_Position=A;gl_Position.z=1.;}`
+layout(location=0) in vec4 E;out vec4 G;void main(){G=E;gl_Position=E;gl_Position.z=1.;}`;
 
 export const vertex_glsl = `#version 300 es
-layout(location=0) in vec3 A;layout(location=1) in vec3 C;layout(location=2) in vec2 z;layout(location=3) in float D;uniform mat4 G,F;out vec2 l;out float i;out vec3 m;out mat4 n;void main(){vec4 v=vec4(A,1);gl_Position=G*v;l=z;i=D;m=C;n=F;}`
+layout(location=0) in vec3 E;layout(location=1) in vec3 B;layout(location=2) in vec2 K;layout(location=3) in float L;uniform mat4 M,N,f;out vec2 i;out float n;out vec3 o;out mat4 l;out vec4 u;void main(){vec4 v=vec4(E,1);gl_Position=M*v;i=K;n=L;o=B;l=N;u=f*v;}`;
 

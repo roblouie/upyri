@@ -16,15 +16,15 @@ const ClosureCompiler = require('google-closure-compiler').compiler;
 
 const shaderMinifyConfig = {
   shouldMinify: true,
-  shaderDirectory: './src/web-gl',
-  output: './src/web-gl/shaders.ts',
+  shaderDirectory: './src/engine/shaders',
+  output: './src/engine/shaders/shaders.ts',
   debounce: 2000,
 };
 
 export default defineConfig(({ command, mode }) => {
   const config = {
     server: {
-      port: 3000,
+      port: 3001,
     },
     resolve: {
       alias: {

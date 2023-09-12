@@ -24,9 +24,9 @@ export class EnhancedDOMPoint extends DOMPoint {
       z = x.z;
       x = x.x;
     }
-    this.x = x != null ? x : this.x;
-    this.y = y != null ? y : this.y;
-    this.z = z != null ? z : this.z;
+    this.x = x ?? this.x;
+    this.y = y ?? this.y;
+    this.z = z ?? this.z;
     return this;
   }
 
@@ -63,7 +63,7 @@ export class EnhancedDOMPoint extends DOMPoint {
     return this;
   }
 
-  dot(otherVector: EnhancedDOMPoint): number {
+  dot(otherVector: VectorLike): number {
     return this.x * otherVector.x + this.y * otherVector.y + this.z * otherVector.z;
   }
 
@@ -86,17 +86,14 @@ export class EnhancedDOMPoint extends DOMPoint {
     return this;
   }
 
-  lerp(otherVector: EnhancedDOMPoint, alpha: number) {
-    this.x += ( otherVector.x - this.x ) * alpha;
-    this.y += ( otherVector.y - this.y ) * alpha;
-    this.z += ( otherVector.z - this.z ) * alpha;
-    return this;
-  }
+  moveTowards(otherVector: EnhancedDOMPoint, speed: number) {
+    const distance = new EnhancedDOMPoint().subtractVectors(otherVector, this);
 
-  modifyComponents(callback: (component: number) => number) {
-    this.x = callback(this.x);
-    this.y = callback(this.y);
-    this.z = callback(this.z);
+    if (distance.magnitude > 2) {
+      const direction_ = distance.normalize_().scale_(speed);
+      this.add_(direction_);
+    }
+
     return this;
   }
 

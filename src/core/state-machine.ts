@@ -8,10 +8,11 @@ export class StateMachine {
     this.currentState.onEnter?.(...enterArgs);
   }
 
-  setState(newState: State, ...enterArgs: any) {
-    this.currentState.onLeave?.();
+  async setState(newState: State, ...enterArgs: any) {
+    await this.currentState.onLeave?.();
+    this.currentState = { onUpdate: () => {} };
+    await newState.onEnter?.(...enterArgs);
     this.currentState = newState;
-    this.currentState.onEnter?.(...enterArgs);
   }
 
   getState() {

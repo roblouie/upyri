@@ -11,7 +11,7 @@ export class Object3d {
   up: EnhancedDOMPoint;
   rotationMatrix: DOMMatrix;
 
-  constructor(...children: Object3d[]) {
+  constructor(...children_: Object3d[]) {
     this.position_ = new EnhancedDOMPoint();
     this.scale_ = new EnhancedDOMPoint(1, 1, 1);
     this.children_ = [];
@@ -19,8 +19,8 @@ export class Object3d {
     this.worldMatrix = new DOMMatrix();
     this.up = new EnhancedDOMPoint(0, 1, 0);
     this.rotationMatrix = new DOMMatrix();
-    if (children) {
-      this.add_(...children);
+    if (children_) {
+      this.add_(...children_);
     }
   }
 
@@ -64,12 +64,6 @@ export class Object3d {
   }
 
   updateWorldMatrix() {
-    // Don't udpate spirits to save time on matrix multiplication. Bit of a hack but ya it works...
-    // @ts-ignore
-    if (this.color !== undefined) {
-      return;
-    }
-
     this.localMatrix = this.getMatrix();
 
     if (this.parent_) {
@@ -82,10 +76,10 @@ export class Object3d {
   }
 
   allChildren(): Object3d[] {
-    function getChildren(object3d: Object3d, all: Object3d[]) {
+    function getChildren(object3d: Object3d, all_: Object3d[]) {
       object3d.children_.forEach(child => {
-        all.push(child);
-        getChildren(child, all);
+        all_.push(child);
+        getChildren(child, all_);
       });
     }
 
@@ -94,21 +88,32 @@ export class Object3d {
     return allChildren;
   }
 
-  private lookAtX = new EnhancedDOMPoint();
-  private lookAtY = new EnhancedDOMPoint();
-  private lookAtZ = new EnhancedDOMPoint();
+  private right = new EnhancedDOMPoint();
+  private lookatUp = new EnhancedDOMPoint();
+  forward = new EnhancedDOMPoint();
 
   lookAt(target: EnhancedDOMPoint) {
     this.isUsingLookAt = true;
-    this.lookAtZ.subtractVectors(this.position_, target).normalize_();
-    this.lookAtX.crossVectors(this.up, this.lookAtZ).normalize_();
-    this.lookAtY.crossVectors(this.lookAtZ, this.lookAtX).normalize_();
+    this.forward.subtractVectors(this.position_, target).normalize_();
+    this.right.crossVectors(this.up, this.forward).normalize_();
+    this.lookatUp.crossVectors(this.forward, this.right).normalize_();
 
     this.rotationMatrix = new DOMMatrix([
-      this.lookAtX.x, this.lookAtX.y, this.lookAtX.z, 0,
-      this.lookAtY.x, this.lookAtY.y, this.lookAtY.z, 0,
-      this.lookAtZ.x, this.lookAtZ.y, this.lookAtZ.z, 0,
+      this.right.x, this.right.y, this.right.z, 0,
+      this.lookatUp.x, this.lookatUp.y, this.lookatUp.z, 0,
+      this.forward.x, this.forward.y, this.forward.z, 0,
       0, 0, 0, 1,
     ]);
   }
 }
+
+
+export function createOrtho(bottom: number, top: number, left: number, right: number, near: number, far: number) {
+  return new DOMMatrix([
+    2 / (right - left), 0, 0, 0,
+    0, 2 / (top - bottom), 0, 0,
+    0, 0, -2 / (far - near), 0,
+    -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1,
+  ]);
+}
+

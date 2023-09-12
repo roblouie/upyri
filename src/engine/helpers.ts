@@ -1,37 +1,18 @@
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 
-const context = new OffscreenCanvas(1,1).getContext('2d')!;
 
-// DO NOT USE FOR REAL TIME COLOR CHANGES
-// This is a very small way to convert color but not a fast one obviously
-export function hexToWebgl(hex: string): number[] {
-  // @ts-ignore
-  context.clearRect(0, 0, 1, 1);
-  // @ts-ignore
-  context.fillStyle = hex;
-  // @ts-ignore
-  context.fillRect(0, 0, 1, 1);
-  // @ts-ignore
-  return [...context.getImageData(0, 0, 1, 1).data].map(val => val / 255);
-}
-
-export function doTimes(times: number, callback: (index: number) => void) {
+export function doTimes<T>(times: number, callback: (index: number) => T): T[] {
+  const result: T[] = [];
   for (let i = 0; i < times; i++) {
-    callback(i);
+    result.push(callback(i));
   }
+  return result;
 }
 
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
-export function moveValueTowardsTarget(currentValue: number, maxValue: number, step: number) {
-  const isIncrease = maxValue >= currentValue;
-  if (isIncrease) {
-    return Math.min(currentValue + step, maxValue);
-  }
-  return Math.max(currentValue - step, maxValue);
-}
 
 export function radsToDegrees(radians: number): number {
   return radians * (180 / Math.PI);

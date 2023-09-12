@@ -1,54 +1,30 @@
-import { hexToWebgl } from '@/engine/helpers';
 import {
-  feColorMatrix,
-  feComponentTransfer, feFunc,
+  ellipse,
   feTurbulence,
   filter,
-  NoiseType,
+  NoiseType, radialGradient,
   rect,
-  svg,
-  SvgString
+  svg, svgStop,
 } from '@/engine/svg-maker/base';
 import { toHeightmap } from '@/engine/svg-maker/converters';
 
-export function noiseImageReplacement(
-  size: number,
-  seed_: number,
-  baseFrequency: number | [number, number],
-  numOctaves_: number,
-  type_: NoiseType,
-  fromColor: string,
-  toColor: string,
-  colorScale = 1,
-): SvgString {
-  const fromColorArray = hexToWebgl(fromColor);
-  const toColorArray = hexToWebgl(toColor);
 
-  return svg({ width_: 256, height_: 256 },
-    filter({ id_: 'noise' },
-      feTurbulence({ seed_, baseFrequency, numOctaves_, type_, stitchTiles_: 'stitch' }),
-      feColorMatrix({ colorInterpolationFilters: 'sRGB', values: [
-        0, 0, 0, colorScale, 0,
-        0, 0, 0, colorScale, 0,
-        0, 0, 0, colorScale, 0,
-        0, 0, 0, colorScale, 0,
-      ]}),
-      feComponentTransfer({},
-        feFunc('R', 'table', [fromColorArray[0], toColorArray[0]]),
-        feFunc('G', 'table', [fromColorArray[1], toColorArray[1]]),
-        feFunc('B', 'table', [fromColorArray[2], toColorArray[2]]),
-        feFunc('A', 'table', [fromColorArray[3], toColorArray[3]]),
-      ),
+export async function newNoiseLandscape(size: number,seed_: number, baseFrequency: number, numOctaves_: number, type_: NoiseType, scale_: number) {
+  const s = svg({ width_: 256, height_: 256 },
+    filter({ id_: 'n' },
+      feTurbulence({ seed_, baseFrequency, numOctaves_, type_ }),
     ),
-    rect({ x: 0, y: 0, width_: '100%', height_: '100%', filter: 'noise' }),
+    radialGradient({ id_: 'l' },
+      svgStop({ offset_: '10%', stopColor: '#0004' }),
+      svgStop({ offset_: '22%', stopColor: '#0000' }),
+    ),
+    rect({ x: 0, y: 0, width_: '100%', height_: '100%', filter: 'n' }),
+    ellipse({ cx: 128, cy: 128, fill: 'url(#l)', rx: 200, ry: 200 }),
+    //    <ellipse cx="128" cy="130" fill="#bbb" rx="23" ry="23"/>
+    ellipse({ cx: 128, cy: 128, fill: '#afafaf', rx: 26, ry: 26 }),
+
+    // rect({ x: 109, y: 109, width_: 38, height_: 42, fill: '#afafaf' }),
+    rect({ x: 125, y: 10, width_: 6, height_: 80, fill: '#afafaf' })
   );
-}
-
-export async function newNoiseLandscape(size: number,seed: number, frequency: number, octaves: number, noiseType: NoiseType, scale: number) {
-  const image = noiseImageReplacement(size, seed, frequency, octaves, noiseType, 'black', 'white', 1);
-  return toHeightmap(image, scale);
-}
-
-export function randomNumber(seed: number): number {
-  return (Math.sin(seed * 127.1 + 38481) * 43780) % 1;
+  return toHeightmap(s, scale_);
 }
