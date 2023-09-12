@@ -1,7 +1,6 @@
 import {
   createBox,
   createHallway,
-  createStairs,
   mergeCubes,
   patternFill,
   SegmentedWall
@@ -9,100 +8,109 @@ import {
 import { doTimes } from '@/engine/helpers';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 
-// TODO: Build castle at 0, translate whole thing up to 21
-const windowTopHeight = 6;
-const windowBottomHeight = 2;
-const doorTopHeight = 5;
-const windowWidth = 2;
-const doorWidth = 4;
 
 export const castleContainer: { value?: MoldableCubeGeometry } = { value: undefined };
 
-export const frontLeftCornerRoom = [
-  // First Floor
+// @ts-ignore
+const levelDecompressor = (compressedData: any[]) => compressedData.map(floor => floor.map(wall => wall.map(segment => segment.split('').map(s => s.charCodeAt() - 65))));
+
+export const frontLeftCornerRoom = levelDecompressor([
   [
-    // Front Wall
     [
-      [9, 4, 5, 2, 2], [12, 5, 12, 6, 12], [0, 0, 0, 2, 0]
+      'JEFCC',
+      'MFMGM',
+      'AAACA'
     ],
-    // Back Wall
     [
-      [11, 11], [12, 12], [0,0]
+      'LL',
+      'MM',
+      'AA'
     ],
-    // Left Wall
     [
-      [4, 3, 13], [5, 12, 12], [0, 0, 0]
+      'EDN',
+      'FMM',
+      'AAA'
     ],
-    // Right Wall
     [
-      [10, 10], [12, 12], [0, 0]
+      'KK',
+      'MM',
+      'AA'
     ]
   ],
-  // Second Floor
   [
-    // Front Wall
     [
-      [9, 4, 4, 2, 3], [12, 5, 12, 4, 12], [0, 0, 0, 3, 0]
+      'JEECD',
+      'MFMEM',
+      'AAADA'
     ],
-    // Back Wall
     [
-      [10, 2, 10], [12, 3, 12], [0, 2, 0]
+      'KCK',
+      'MDM',
+      'ACA'
     ],
-    // Left Wall
     [
-      [2, 2, 4, 4, 8], [12, 4, 12, 5, 12], [0, 2, 0, 0, 0]
+      'CCEEI',
+      'MEMFM',
+      'ACAAA'
     ],
-    // Right Wall
     [
-      [9, 2, 9], [12, 3, 12], [0, 2, 0]
+      'JCJ',
+      'MDM',
+      'ACA'
     ]
   ]
-];
+]);
 
 export const rearRightCornerRoom = structuredClone(frontLeftCornerRoom);
-rearRightCornerRoom[0][0] = [[9.25, doorWidth - 0.5, 6.25, 3], [12, 5, 12, 5], [0]];
+rearRightCornerRoom[0][0] = [[9.25, 4 - 0.5, 6.25, 3], [12, 5, 12, 5], [0]];
 rearRightCornerRoom[1][0] = [[9, 4, 4, 2, 3], [12, 5, 12, 4, 12], [0, 0, 0, 2, 0]];
 
-export const otherCorners = [
-  // First Floor
+export const otherCorners = levelDecompressor([
   [
-    // Front Wall
     [
-      [2, 2, 5, 4, 5, 2, 2], [12, windowTopHeight, 12, doorTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, 0, 0, windowBottomHeight, 0]
+      'CCFEFCC',
+      'MGMFMGM',
+      'ACAAACA'
     ],
-    // Back Wall
     [
-      [3, 2, 12, 2, 3], [12, windowTopHeight, 12, 12, 12], [0, windowBottomHeight, 0, 0, 0]
+      'DCMCD',
+      'MGMMM',
+      'ACAAA'
     ],
-    // Left Wall
     [
-      [1, 2, 14, 2, 1], [12, windowTopHeight, 12, 12, 12], [0, windowBottomHeight, 0, 0, 0]
+      'BCOCB',
+      'MGMMM',
+      'ACAAA'
     ],
-    // Right Wall
     [
-      [1, 2, 14, 2, 1], [12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0]
+      'BCOCB',
+      'MGMGM',
+      'ACACA'
     ]
   ],
-  // Second Floor
   [
-    // Front Wall
     [
-      [2, 2, 5, 4, 5, 2, 2], [12, windowTopHeight, 12, doorTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, 0, 0, windowBottomHeight, 0]
+      'CCFEFCC',
+      'MGMFMGM',
+      'ACAAACA'
     ],
-    // Back Wall
     [
-      [3, 2, 5, 2, 5, 2, 3], [12, windowTopHeight, 12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0, windowBottomHeight, 0]
+      'DCFCFCD',
+      'MGMGMGM',
+      'ACACACA'
     ],
-    // Left Wall
     [
-      [1, 2, 14, 2, 1], [12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0]
+      'BCOCB',
+      'MGMGM',
+      'ACACA'
     ],
-    // Right Wall
     [
-      [3, 4, 6, 4, 3], [12, windowTopHeight, 12, windowTopHeight, 12], [0, windowBottomHeight, 0, windowBottomHeight, 0]
+      'DEGED',
+      'MGMGM',
+      'ACACA'
     ]
   ]
-]
+]);
 
 export const getSize = (sizes: number[]) => sizes.reduce((acc, curr) => acc + curr);
 
@@ -176,36 +184,52 @@ export function createCastle() {
 }
 
 function castleKeep() {
-  return corner([
+  return corner(levelDecompressor([
     [
       [
-        [54], [12], [0],
+        'w',
+        'M',
+        'A'
       ],
       [
-        [19, 2, 2, 8, 2, 2, 19], [12, 2, 12, 5, 12, 2, 12], [0, 3, 0, 0, 0, 3, 0],
+        'TCCICCT',
+        'MCMFMCM',
+        'ADAAADA'
       ],
       [
-        [18, 2, 8, 2, 8, 2, 8, 2, 18], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 3, 0, 3, 0, 3, 0, 3, 0]
+        'SCICICICS',
+        'MEMEMEMEM',
+        'ADADADADA'
       ],
       [
-        [18, 2, 8, 2, 8, 2, 8, 2, 18], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 3, 0, 3, 0, 3, 0, 3, 0]
-      ],
+        'SCICICICS',
+        'MEMEMEMEM',
+        'ADADADADA'
+      ]
     ],
     [
       [
-        [3, 12, 39], [12, 6, 12], [0, 2, 0],
+        'DMh',
+        'MGM',
+        'ACA'
       ],
       [
-        [15.5, 2, 5, 2, 5, 2, 5, 2, 15.5], [12, 3, 12, 3, 12, 3, 12, 3, 12], [0, 3, 0, 3, 0, 3, 0, 3, 0],
+        'PCFCGCFCP',
+        'MDMDMDMDM',
+        'ADADADADA'
       ],
       [
-        [18, 2, 8, 2, 8, 2, 8, 2, 18], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 3, 0, 3, 0, 3, 0, 3, 0]
+        'SCICICICS',
+        'MEMEMEMEM',
+        'ADADADADA'
       ],
       [
-        [18, 2, 8, 2, 8, 2, 8, 2, 18], [12, 4, 12, 4, 12, 4, 12, 4, 12], [0, 3, 0, 3, 0, 3, 0, 3, 0]
-      ],
+        'SCICICICS',
+        'MEMEMEMEM',
+        'ADADADADA'
+      ]
     ]
-  ], true)
+  ]), true)
     // backdrop
     .merge(new MoldableCubeGeometry(22, 12, 24).translate_(0, 6, 22).spreadTextureCoords())
     // ceiling
@@ -233,72 +257,104 @@ function castleKeep() {
 
     // Transition to roof
     .merge(
-      corner([
+      corner(levelDecompressor([
         [
           [
-            [2, 18, 2], [12, 1, 5], [0],
+            'CSC',
+            'MBF',
+            'A'
           ],
           [
-            [22], [12], [0],
+            'W',
+            'M',
+            'A'
           ],
           [
-            [4, 16], [5, 12], [0],
+            'EQ',
+            'FM',
+            'A'
           ],
           [
-            [20], [12], [0],
-          ],
+            'U',
+            'M',
+            'A'
+          ]
         ],
         [
           [
-            [22], [12], [0],
+            'W',
+            'M',
+            'A'
           ],
           [
-            [22], [12], [0],
+            'W',
+            'M',
+            'A'
           ],
           [
-            [1, 4, 15], [12, 5, 12], [0],
+            'BEP',
+            'MFM',
+            'A'
           ],
           [
-            [20], [12], [0],
-          ],
+            'U',
+            'M',
+            'A'
+          ]
         ]
-      ], true)
+      ]), true)
         .merge(cornerRamp(false, false, false))
         .translate_(0, 12, 22)
     )
 
     // Final Tower
-    .merge(corner([
+    .merge(corner(levelDecompressor([
       [
         [
-          [22], [12], [0],
+          'W',
+          'M',
+          'A'
         ],
         [
-          [10, 2, 10], [12, 12, 12], [0],
+          'KCK',
+          'MMM',
+          'A'
         ],
         [
-          [20], [12], [0],
+          'U',
+          'M',
+          'A'
         ],
         [
-          [20], [12], [0],
-        ],
+          'U',
+          'M',
+          'A'
+        ]
       ],
       [
         [
-          [9, 4, 9], [12, 5, 12], [0],
+          'JEJ',
+          'MFM',
+          'A'
         ],
         [
-          [10, 2, 10], [12, 7, 12], [0, 0.6, 0],
+          'KCK',
+          'MHM',
+          'ABA'
         ],
         [
-          [20], [12], [0],
+          'U',
+          'M',
+          'A'
         ],
         [
-          [20], [12], [0],
-        ],
+          'U',
+          'M',
+          'A'
+        ]
       ]
-    ], true).selectBy(vert => vert.z < -10 && Math.abs(vert.x) <= 2 && vert.y > 11 && vert.y < 13)
-      .translate_(0, -0.5, 0.5)
+    ]), true).selectBy((vert, i) => i > 263 && i < 268)
+      .translate_(0, -1, 0)
       .all_()
       .merge(createCastleFloors(21, 20))
       .translate_(0, 22.5, -22))
