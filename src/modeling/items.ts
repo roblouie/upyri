@@ -197,23 +197,24 @@ export function getLeverDoors() {
    ];
 }
 
-function bannerMaker(bannerHeightmap: number[]) {
+function bannerMaker(bannerHeightmap: number[], isCarpet?: boolean) {
     const banner = new PlaneGeometry(64, 64, 31, 31, bannerHeightmap)
       .selectBy(vert => vert.z <= 20)
-      .modifyEachVertex(vert => vert.z -= Math.abs(vert.x) / 3)
+      .modifyEachVertex(vert => vert.z -= (isCarpet ? 0 : (Math.abs(vert.x) / 3)))
       .all_()
       .spreadTextureCoords(60, 12, 0.5, 0.18)
-      .scale_(0.05, 1, 0.2)
-      .rotate_(-Math.PI / 2)
+      .scale_(isCarpet ? 0.5 : .05, isCarpet ? 2 : 1, 0.2)
+      .rotate_(isCarpet ? 0 : -Math.PI / 2, isCarpet ? Math.PI / 2 : 0)
       .computeNormals(true);
 
-  const textureDepths = banner.vertices.map(vert => {
-    if (vert.y < -2.6 && vert.y > -5) {
-      return materials.bannerIcon.texture!.id;
-    } else {
-      return materials.banner.texture!.id;
-    }
-  });
+
+    const textureDepths = banner.vertices.map(vert => {
+      if (!isCarpet && vert.y < -2.6 && vert.y > -5) {
+        return materials.bannerIcon.texture!.id;
+      } else {
+        return materials.banner.texture!.id;
+      }
+    });
 
     banner.setAttribute_(AttributeLocation.TextureDepth, new Float32Array(textureDepths), 1);
 
@@ -223,7 +224,8 @@ function bannerMaker(bannerHeightmap: number[]) {
 export function makeBanners(bannerHeightmap: number[]) {
   return new Mesh(
     bannerMaker(bannerHeightmap).translate_(18, 32, -16.6)
-      .merge(bannerMaker(bannerHeightmap).translate_(-18, 32, -16.6)),
+      .merge(bannerMaker(bannerHeightmap).translate_(-18, 32, -16.6))
+      .merge(bannerMaker(bannerHeightmap, true).translate_(0, 21.7, 8)),
     materials.banner);
 }
 

@@ -25,7 +25,7 @@ export class FirstPersonPlayer {
   isOnDirt = true;
 
   constructor(camera: Camera) {
-    this.feetCenter.set(0, 21, 0);
+    this.feetCenter.set(44, 21, -26);
     this.camera = camera;
     this.listener = audioCtx.listener;
 
@@ -141,7 +141,7 @@ export class FirstPersonPlayer {
   }
 
   protected updateVelocityFromControls() {
-    const speed = 0.5;
+    const speed = 0.18;
 
     const depthMovementZ = Math.cos(this.cameraRotation.y) * controls.inputDirection.y;
     const depthMovementX = Math.sin(this.cameraRotation.y) * controls.inputDirection.y;
