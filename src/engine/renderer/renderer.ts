@@ -66,7 +66,7 @@ const lightPovMvpRenderLocation = gl.getUniformLocation(lilgl.program, lightPovM
 gl.useProgram(lilgl.program);
 gl.uniformMatrix4fv(lightPovMvpRenderLocation, false, textureSpaceMvp.toFloat32Array());
 
-const depthTextureSize = new DOMPoint(2048, 2048);
+const depthTextureSize = new DOMPoint(4096, 4096);
 const depthTexture = gl.createTexture();
 gl.activeTexture(gl.TEXTURE1);
 gl.bindTexture(gl.TEXTURE_2D, depthTexture);

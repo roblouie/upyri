@@ -54,7 +54,7 @@ export class GameState implements State {
   isUpyriDying = false;
   isUpyriAttacking = false;
   upyriAttackingTimer = 0;
-  coffinTop = new Mesh(makeCoffinBottomTop().rotate_(0, Math.PI).translate_(0, 56.35, 8).done_(), materials.wood);
+  coffinTop = new Mesh(makeCoffinBottomTop().translate_(0, 56.35, -9).done_(), materials.wood);
   coffinTopBloodstain = new Mesh(new MoldableCubeGeometry(3, 1, 3).translate_(0, 55.95, -0.5).done_(), materials.bloodCircle);
 
   constructor() {
@@ -78,7 +78,7 @@ export class GameState implements State {
     const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(57.4, 26, 43).done_(), materials.castleWriting)
     const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(47.4, 24, 42).done_(), materials.handprint)
 
-    const coffin = new Mesh(makeCoffin().rotate_(0, Math.PI).translate_(0, 55, 8).done_(), materials.wood);
+    const coffin = new Mesh(makeCoffin().translate_(0, 55, -9).done_(), materials.wood);
 
     const bridge = new Mesh(new MoldableCubeGeometry(18, 1, 65).translate_(0, 20.5, -125).done_(), materials.planks);
 
@@ -191,7 +191,7 @@ export class GameState implements State {
           setTimeout(() => {
             c3d.style.filter = '';
             tmpl.style.backgroundColor = '';
-            this.upyri.position_.set(0, 54, 0);
+            this.upyri.position_.set(0, 54, 2);
             this.isUpyriAttacking = false;
             this.upyriTriggerCounter = 0;
             this.upyriAttackingTimer = 0;

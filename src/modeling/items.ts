@@ -15,8 +15,6 @@ export function stake() {
     .scale_(1, 0, 1)
     .all_()
     .spreadTextureCoords()
-    // .rotate_(0, -1)
-    // .translate_(-51, 21.5, -65)
     .done_(), materials.wood);
 }
 
@@ -65,7 +63,7 @@ export function upyri() {
       .done_()
     , materials.face);
 
-  obj.position_.y = 54;
+  obj.position_.set(0, 54, 2);
 
   return obj;
 }
