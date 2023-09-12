@@ -31,7 +31,7 @@ vec2 adjacentPixels[5] = vec2[](
 );
 
 float visibility = 1.0;
-float shadowSpread = 4200.0;
+float shadowSpread = 5555.0;
 
 void main() {
     for (int i = 0; i < 5; i++) {

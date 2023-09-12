@@ -141,7 +141,7 @@ export class FirstPersonPlayer {
   }
 
   protected updateVelocityFromControls() {
-    const speed = 0.18;
+    const speed = 0.5;
 
     const depthMovementZ = Math.cos(this.cameraRotation.y) * controls.inputDirection.y;
     const depthMovementX = Math.sin(this.cameraRotation.y) * controls.inputDirection.y;

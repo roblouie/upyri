@@ -1,7 +1,7 @@
 import { getTextureForSide, MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 import { Mesh } from '@/engine/renderer/mesh';
 import { Material } from '@/engine/renderer/material';
-import { SegmentedWall } from '@/modeling/building-blocks';
+import { patternFill, SegmentedWall } from '@/modeling/building-blocks';
 import { materials } from "@/textures";
 import { AttributeLocation } from "@/engine/renderer/renderer";
 import { DoorData, LeverDoorObject3d } from '@/modeling/lever-door';
@@ -108,7 +108,7 @@ export function makeCoffin() {
 
 export function fenceDoor() {
   return new Mesh(
-    new SegmentedWall([0.25, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.1, 0.5, 0.25], 7, [7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7], [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1], 0, 0, 0.15)
+    new SegmentedWall([0.25, ...patternFill([0.5, 0.1], 11), 0.25], 7, patternFill([7, 1], 13), patternFill([0, 1], 13), 0, 0, 0.15)
       .translate_(0, -3.5)
       .done_(),
     materials.silver);
