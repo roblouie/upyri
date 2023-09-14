@@ -19,12 +19,7 @@ import { audioCtx } from '@/engine/audio/audio-player';
 
 export class MenuState implements State {
   camera: Camera;
-
   scene: Scene;
-
-
-
-
 
   constructor() {
     this.camera = new Camera(Math.PI / 3, 16 / 9, 1, 600);

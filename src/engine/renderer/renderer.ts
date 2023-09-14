@@ -82,7 +82,7 @@ gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, dept
 
 export function render(camera: Camera, scene: Scene) {
   const viewMatrix = camera.worldMatrix.inverse();
-  const viewMatrixCopy = viewMatrix.scale(1, 1, 1);
+  const viewMatrixCopy = viewMatrix.scale();
   const viewProjectionMatrix = camera.projection.multiply(viewMatrix);
 
   const renderSkybox = (skybox: Skybox) => {

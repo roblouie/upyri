@@ -250,5 +250,5 @@ export function makeSymbols() {
       .scale_(3, 3)
       .translate_(0, 35, 30)
     .computeNormals(true)
-    , materials.golds);
+    , materials.silver);
 }

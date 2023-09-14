@@ -214,11 +214,11 @@ function ectPlugin(): Plugin {
         const stats = statSync('dist/index.zip');
         console.log('ECT ZIP size', stats.size);
 
-        const result2 = execFileSync(advzip, ['--recompress', '--shrink-insane', 'dist/index.zip']);
-        console.log('ADV ZIP RESULT', result2.toString().trim());
-        const stats2 = statSync('dist/index.zip');
-
-        console.log('ADVZIP ZIP size', stats2.size);
+        // const result2 = execFileSync(advzip, ['--recompress', '--shrink-insane', 'dist/index.zip']);
+        // console.log('ADV ZIP RESULT', result2.toString().trim());
+        // const stats2 = statSync('dist/index.zip');
+        //
+        // console.log('ADVZIP ZIP size', stats2.size);
       } catch (err) {
         console.log('ECT error', err);
       }

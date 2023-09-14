@@ -7,7 +7,7 @@ canvas, svg, #tmpl {
 
 html, body {
     margin: 0;
-    background-color: black;
+    background-color: #000;
     display: grid;
     place-items: center;
     height: 100%;

@@ -8,9 +8,9 @@ export class Face {
   lowerY: number;
   originOffset: number;
 
-  constructor(points: EnhancedDOMPoint[], normal?: EnhancedDOMPoint) {
+  constructor(points: EnhancedDOMPoint[]) {
     this.points = points;
-    this.normal = normal ?? calculateFaceNormal(points);
+    this.normal = calculateFaceNormal(points);
     this.originOffset = -this.normal.dot(points[0]);
     const ys = points.map(point => point.y);
     this.upperY = Math.max(...ys);

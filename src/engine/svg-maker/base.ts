@@ -156,50 +156,31 @@ export type AllSvgAttributes = FeTurbulenceAttributes & SvgEllipseAttributes & H
   & Pick<SvgFilterAttributes, 'primitiveUnits'>;
 
 
-export function svg(attributes: SvgAttributes, ...elements: string[]): SvgString {
-  return `<svg ${attributesToString(attributes)} xmlns="http://www.w3.org/2000/svg">${elements.join('')}</svg>`;
-}
+export const svg = (attributes: SvgAttributes, ...elements: string[]): SvgString => `<svg ${attributesToString(attributes)} xmlns="http://www.w3.org/2000/svg">${elements.join('')}</svg>`;
 
-export function group(attributes: Filterable, ...elements: string[]) {
-  return `<g ${attributesToString(attributes)}>${elements.join('')}</g>`;
-}
+export const group = (attributes: Filterable, ...elements: string[]) => `<g ${attributesToString(attributes)}>${elements.join('')}</g>`
 
-export function filter(attributes: SvgFilterAttributes, ...filterElements: FilterElements[]): FilterString {
-  return `<filter ${attributesToString(attributes)}>${filterElements.join('')}</filter>`;
-}
+export const filter = (attributes: SvgFilterAttributes, ...filterElements: FilterElements[]): FilterString => `<filter ${attributesToString(attributes)}>${filterElements.join('')}</filter>`;
 
 // Rectangle
-export function rect(attributes: SvgRectAttributes): RectString {
-  return `<rect ${attributesToString(attributes)}/>`;
-}
+export const rect = (attributes: SvgRectAttributes): RectString =>  `<rect ${attributesToString(attributes)}/>`;
 
 // Ellipse
-export function ellipse(attributes: SvgEllipseAttributes): EllipseString {
-  return `<ellipse ${attributesToString(attributes)}/>`;
-}
+export const ellipse = (attributes: SvgEllipseAttributes): EllipseString => `<ellipse ${attributesToString(attributes)}/>`;
 
 // Text
-export function text(attributes: SvgTextAttributes, textToDisplay?: any): TextString {
-  return `<text ${attributesToString(attributes)}>${textToDisplay ?? ''}</text>`;
-}
+export const text = (attributes: SvgTextAttributes, textToDisplay?: any): TextString => `<text ${attributesToString(attributes)}>${textToDisplay ?? ''}</text>`
 
 // Gradients
-export function linearGradient(attributes: SvgLinearGradientAttributes, ...stops: SvgStopString[]): LinearGradientString {
-  return `<linearGradient ${attributesToString(attributes)}>${stops.join('')}</linearGradient>`;
-}
+export const linearGradient = (attributes: SvgLinearGradientAttributes, ...stops: SvgStopString[]): LinearGradientString => `<linearGradient ${attributesToString(attributes)}>${stops.join('')}</linearGradient>`;
 
-export function radialGradient(attributes: SvgRadialGradientAttributes, ...stops: SvgStopString[]): RadialGradientString {
-  return `<radialGradient ${attributesToString(attributes)}>${stops.join('')}</radialGradient>`;
-}
+export const radialGradient = (attributes: SvgRadialGradientAttributes, ...stops: SvgStopString[]): RadialGradientString => `<radialGradient ${attributesToString(attributes)}>${stops.join('')}</radialGradient>`;
 
-export function svgStop(attributes: SvgStopAttributes): SvgStopString {
-  return `<stop ${attributesToString(attributes)} />`;
-}
+
+export const svgStop = (attributes: SvgStopAttributes): SvgStopString => `<stop ${attributesToString(attributes)} />`;
 
 // Mask
-export function mask(attributes: HasId, ...elements: string[]): SvgMaskString {
-  return `<mask ${attributesToString(attributes)}>${elements.join('')}</mask>`;
-}
+export const mask = (attributes: HasId, ...elements: string[]): SvgMaskString => `<mask ${attributesToString(attributes)}>${elements.join('')}</mask>`;
 
 // Minify-safe attribute converter
 export function attributesToString(object: Partial<AllSvgAttributes>) {
@@ -249,24 +230,17 @@ export function attributesToString(object: Partial<AllSvgAttributes>) {
 }
 
 // Turbulence
-export function feTurbulence(attributes: FeTurbulenceAttributes): FeTurbulenceString {
-  // @ts-ignore
-  return `<feTurbulence ${attributesToString(attributes)} />`;
-}
+export const feTurbulence = (attributes: FeTurbulenceAttributes): FeTurbulenceString => `<feTurbulence ${attributesToString(attributes)} />`;
 
 // Color Matrix
-export function feColorMatrix(attributes: FeColorMatrixAttributes): FeColorMatrixString {
-  // @ts-ignore
-  return `<feColorMatrix ${attributesToString(attributes)}/>`;
-}
+// @ts-ignore
+export const feColorMatrix = (attributes: FeColorMatrixAttributes): FeColorMatrixString => `<feColorMatrix ${attributesToString(attributes)}/>`;
 
 // Component Transfer
 interface FeComponentTransferAttributes extends DoesColorTransformation {
   in?: string;
 }
-export function feComponentTransfer(attributes: FeComponentTransferAttributes, ...feFuncs: FeFuncString[]): FeComponentTransferString {
-  return `<feComponentTransfer color-interpolation-filters="sRGB">${feFuncs.join('')}</feComponentTransfer>`;
-}
+export const feComponentTransfer = (attributes: FeComponentTransferAttributes, ...feFuncs: FeFuncString[]): FeComponentTransferString => `<feComponentTransfer color-interpolation-filters="sRGB">${feFuncs.join('')}</feComponentTransfer>`;
 
 export function feFunc(color: 'R' | 'G' | 'B' | 'A', type: 'linear' | 'discrete' | 'table' | 'gamma', values: number[]): FeFuncString {
   const fixFirefoxAttrs = type === 'gamma' ? 'amplitude="1" exponent="0.55"' : `tableValues="${values}"`;
@@ -274,30 +248,15 @@ export function feFunc(color: 'R' | 'G' | 'B' | 'A', type: 'linear' | 'discrete'
 }
 
 // Displacement Map
-export function feDisplacementMap(attributes: FeDisplacementMapAttributes): FeDisplacementMapString {
-  return `<feDisplacementMap ${attributesToString(attributes)} />`;
-}
+export const feDisplacementMap = (attributes: FeDisplacementMapAttributes): FeDisplacementMapString => `<feDisplacementMap ${attributesToString(attributes)} />`;
 
 // Morphology
-export function feMorphology(attributes: FeMorphologyAttributes): FeMorphologyString {
-  return `<feMorphology ${attributesToString(attributes)} />`;
-}
 
 // Composite
-export function feComposite(attributes: FeCompositeAttributes): FeCompositeString {
-  return `<feComposite ${attributesToString(attributes)} />`;
-}
+export const feComposite = (attributes: FeCompositeAttributes): FeCompositeString => `<feComposite ${attributesToString(attributes)} />`;
 
-// Blend
-export function feBlend(attributes: FeBlendAttributes): FeBlendString {
-  return `<feBlend ${attributesToString(attributes)} />`;
-}
 
 // Diffuse Lighting
-export function feDiffuseLighting(attributes: FeDiffuseLightingAttributes, ...lights: FeDistanceLightString[]): FeDiffuseLightingString {
-  return `<feDiffuseLighting ${attributesToString(attributes)}>${lights.join('')}</feDiffuseLighting>`;
-}
+export const feDiffuseLighting = (attributes: FeDiffuseLightingAttributes, ...lights: FeDistanceLightString[]): FeDiffuseLightingString => `<feDiffuseLighting ${attributesToString(attributes)}>${lights.join('')}</feDiffuseLighting>`;
 
-export function feDistantLight(azimuth: number, elevation: number): FeDistanceLightString {
-  return `<feDistantLight azimuth="${azimuth}" elevation="${elevation}"/>`;
-}
+export const feDistantLight = (azimuth: number, elevation: number): FeDistanceLightString =>`<feDistantLight azimuth="${azimuth}" elevation="${elevation}"/>`;

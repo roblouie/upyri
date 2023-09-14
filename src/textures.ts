@@ -51,7 +51,6 @@ export async function initTextures() {
   materials.face = new Material({ texture: textureLoader.load_(await face())});
   materials.bloodCircle = new Material({ texture: textureLoader.load_(await drawBloodCircle()), isTransparent: true });
   materials.gold = new Material({ texture: textureLoader.load_(await metals(0)), emissive: [0.7, 0.7, 0.7, 0.7] });
-  materials.golds = new Material({ texture: textureLoader.load_(await metals(0)) });
   materials.silver = new Material({ texture: textureLoader.load_(await metals(1)) });
   materials.iron = new Material({ texture: textureLoader.load_(await metals(2)) });
   materials.keyLock = new Material({ texture: textureLoader.load_(await keyLock())});
@@ -207,15 +206,13 @@ export function drawGrass() {
   return toImage(svg({ width_: textureSize, height_: textureSize },
     filter(fullSize({ id_: 'n' }),
       feTurbulence({ seed_: 3, type_: NoiseType.Fractal, baseFrequency: 0.04, numOctaves_: 4, stitchTiles_: 'stitch' }),
-      feMorphology({ operator: 'dilate', radius: 3 }),
       feComponentTransfer({},
         feFunc('R',  'table', [0.2, 0.2]),
         feFunc('G',  'table', [0.2, 0.2]),
         feFunc('B',  'table', [0.25, 0.25]),
-        // feFunc('A',  'table', [0.])
       )
     ),
-    rect(fullSize({ fill: '#171717' })),
+    rect(fullSize({ fill: '#181818' })),
     rect(fullSize({ filter: 'n' })),
   ));
 }
