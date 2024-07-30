@@ -287,23 +287,23 @@ export class MoldableCubeGeometry {
     const fullSize = [...this.buffers.values()].reduce((total, current) => total += current.data.length , 0);
     const fullBuffer = new Float32Array(fullSize);
 
-    let lengthOffset = 0;
-    this.buffers.forEach(buffer => {
-      fullBuffer.set(buffer.data, lengthOffset);
-      lengthOffset+= buffer.data.length;
-    });
-
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()!);
-    gl.bufferData(gl.ARRAY_BUFFER, fullBuffer, gl.STATIC_DRAW);
 
     gl.bindVertexArray(this.vao);
 
     let byteOffset = 0;
+    let lengthOffset = 0;
     this.buffers.forEach((buffer, position_) => {
       gl.vertexAttribPointer(position_, buffer.size, gl.FLOAT, false, 0, byteOffset);
       gl.enableVertexAttribArray(position_);
+      fullBuffer.set(buffer.data, lengthOffset);
+
       byteOffset += buffer.data.length * buffer.data.BYTES_PER_ELEMENT;
+      lengthOffset+= buffer.data.length;
     });
+
+    gl.bufferData(gl.ARRAY_BUFFER, fullBuffer, gl.STATIC_DRAW);
+
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer()!);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
