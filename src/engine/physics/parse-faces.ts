@@ -34,15 +34,3 @@ export function meshToFaces(meshes: Mesh[], transformMatrix?: DOMMatrix) {
     return triangles.map(triangle => new Face(triangle));
   });
 }
-
-export function getGroupedFaces(faces: Face[]) {
-  const result: {floorFaces: Face[], wallFaces: Face[]} = { floorFaces: [], wallFaces: [] };
-  faces.forEach(face => {
-    if (face.normal.y > 0.2) {
-      result.floorFaces.push(face);
-    } else {
-      result.wallFaces.push(face);
-    }
-  });
-  return result;
-}

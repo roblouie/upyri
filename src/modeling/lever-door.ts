@@ -4,7 +4,7 @@ import { Material } from '@/engine/renderer/material';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { MoldableCubeGeometry } from '@/engine/moldable-cube-geometry';
 import { Face } from '@/engine/physics/face';
-import { getGroupedFaces, meshToFaces } from '@/engine/physics/parse-faces';
+import { meshToFaces } from '@/engine/physics/parse-faces';
 import {
   doorCreak,
   draggingSound2,
@@ -87,8 +87,8 @@ export class LeverDoorObject3d extends Object3d {
     this.closedDoorCollisionMs = doorDatas.flatMap(door => door.closedDoorCollisionM);
     this.openDoorCollisionMs = doorDatas.flatMap(door => door.openDoorCollisionM);
 
-    this.closedDoorCollision = getGroupedFaces(meshToFaces(this.closedDoorCollisionMs)).wallFaces;
-    this.openDoorCollision = getGroupedFaces(meshToFaces(this.openDoorCollisionMs)).wallFaces;
+    this.closedDoorCollision = meshToFaces(this.closedDoorCollisionMs);
+    this.openDoorCollision = meshToFaces(this.openDoorCollisionMs);
 
     this.audioPlayer = draggingSound2(switchPosition);
   }

@@ -7,7 +7,7 @@ import { Face } from '@/engine/physics/face';
 import { render } from '@/engine/renderer/renderer';
 import { Mesh } from '@/engine/renderer/mesh';
 import { PlaneGeometry } from '@/engine/plane-geometry';
-import { getGroupedFaces, meshToFaces } from '@/engine/physics/parse-faces';
+import { meshToFaces } from '@/engine/physics/parse-faces';
 import { Skybox } from '@/engine/skybox';
 import { drawBloodText, materials, skyboxes, testHeightmap } from '@/textures';
 import { newNoiseLandscape } from '@/engine/new-new-noise';
@@ -38,7 +38,7 @@ import {
 export class GameState implements State {
   player?: FirstPersonPlayer;
   scene: Scene;
-  groupedFaces: {floorFaces: Face[], wallFaces: Face[] };
+  faces: Face[] = [];
 
   leverDoors: LeverDoorObject3d[] =[];
 
@@ -58,8 +58,6 @@ export class GameState implements State {
 
   constructor() {
     this.scene = new Scene();
-    this.groupedFaces = { floorFaces: [], wallFaces: [] };
-
     this.leverDoors = getLeverDoors();
   }
 
@@ -78,8 +76,7 @@ export class GameState implements State {
 
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
 
-    const faces = meshToFaces([floorCollision, test, test2, test3]);
-    this.groupedFaces = getGroupedFaces(faces);
+    this.faces = meshToFaces([floorCollision, test, test2, test3]);
 
     this.scene.add_(floor, test, test2, test3);
 
@@ -95,7 +92,7 @@ export class GameState implements State {
 
 
   onUpdate(): void {
-    this.player!.update(this.groupedFaces);
+    this.player!.update(this.faces);
     render(this.player!.camera, this.scene);
 
 

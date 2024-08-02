@@ -2,59 +2,8 @@ import { Face } from './face';
 import { EnhancedDOMPoint } from "@/engine/enhanced-dom-point";
 import { FirstPersonPlayer } from '@/core/first-person-player';
 
-
-// TODO: simple optimization would be to sort floor faces first, as long as there are no moving floor pieces they
-// could be pre sorted
-export function findFloorHeightAtPosition(floorFaces: Face[], positionPoint: EnhancedDOMPoint) {
-  let height: number;
-  const collisions = [];
-
-  for (const floor of floorFaces) {
-    const { x: x1, z: z1 } = floor.points[0];
-    const { x: x2, z: z2 } = floor.points[1];
-    const { x: x3, z: z3 } = floor.points[2];
-
-    if ((z1 - positionPoint.z) * (x2 - x1) - (x1 - positionPoint.x) * (z2 - z1) < 0) {
-      continue;
-    }
-
-    if ((z2 - positionPoint.z) * (x3 - x2) - (x2 - positionPoint.x) * (z3 - z2) < 0) {
-      continue;
-    }
-
-    if ((z3 - positionPoint.z) * (x1 - x3) - (x3 - positionPoint.x) * (z1 - z3) < 0) {
-      continue;
-    }
-
-    height = -(positionPoint.x * floor.normal.x + floor.normal.z * positionPoint.z + floor.originOffset) / floor.normal.y;
-
-    const buffer = -3; // original mario 64 code uses a 78 unit buffer, but mario is 160 units tall compared to our presently much smaller sizes
-    if (positionPoint.y - (height + buffer) < 0) {
-      continue;
-    }
-
-    collisions.push({ height, floor });
-  }
-
-  return collisions.sort((a, b) => b.height - a.height)[0];
-}
-
-
-
-export function findWallCollisionsFromList(walls: Face[], position: EnhancedDOMPoint, offsetY: number, radius: number, player: FirstPersonPlayer) {
-  const collisionData = {
-    xPush: 0,
-    zPush: 0,
-    walls: [] as Face[],
-    numberOfWallsHit: 0,
-  };
-
-
+export function findWallCollisionsFromList(walls: Face[], player: FirstPersonPlayer) {
   for (const wall of walls) {
-
-
-    // const newWallHit = isPointInTriangle(test, wall.points[0], wall.points[1], wall.points[2]);
-    // const oldResult = findWallCollisionsFromListOld(wall, position, offsetY, radius);
     const newWallHit = testSphereTriangle(player.collisionSphere, wall.points[0], wall.points[1], wall.points[2]);
 
     if (newWallHit) {
@@ -72,13 +21,7 @@ export function findWallCollisionsFromList(walls: Face[], position: EnhancedDOMP
         player.velocity.y = 0;
       }
     }
-
-      collisionData.walls.push(wall);
-      collisionData.numberOfWallsHit++;
     }
-
-  return collisionData;
-
   }
 
 

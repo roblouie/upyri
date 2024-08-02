@@ -51,11 +51,11 @@ export class FirstPersonPlayer {
     });
   }
 
-  update(gridFaces: {floorFaces: Face[], wallFaces: Face[]}) {
+  update(faces: Face[]) {
     this.updateVelocityFromControls();
     this.velocity.y -= 0.008; // gravity
 
-    findWallCollisionsFromList([...gridFaces.floorFaces, ...gridFaces.wallFaces], this.feetCenter, 1.1, 4, this);
+    findWallCollisionsFromList(faces, this);
     this.feetCenter.add_(this.velocity);
 
 
