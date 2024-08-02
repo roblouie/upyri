@@ -10,23 +10,23 @@ import { castleContainer, createCastle } from '@/modeling/castle';
 let previousTime = 0;
 const interval = 1000 / 60;
 
-(() => {
-  drawFullScreenText('CLICK TO START', 200);
-  document.onclick = async () => {
-    drawFullScreenText('LOADING');
+(async () => {
+  // drawFullScreenText('CLICK TO START', 200);
+    // drawFullScreenText('LOADING');
 
     await initTextures();
-    castleContainer.value = createCastle().translate_(0, 21).done_();
+    // castleContainer.value = createCastle().translate_(0, 21).done_();
 
     gameStates.gameState = new GameState();
     gameStates.menuState = new MenuState();
 
-    createGameStateMachine(gameStates.menuState);
+    await gameStates.gameState.onEnter();
+
+    createGameStateMachine(gameStates.gameState);
 
     draw(0);
 
     document.onclick = null;
-  };
 
   function draw(currentTime: number) {
     const delta = currentTime - previousTime;

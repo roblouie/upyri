@@ -39,7 +39,6 @@ export class GameState implements State {
   player?: FirstPersonPlayer;
   scene: Scene;
   groupedFaces: {floorFaces: Face[], wallFaces: Face[] };
-  gridFaces: {floorFaces: Face[], wallFaces: Face[] }[] = [];
 
   leverDoors: LeverDoorObject3d[] =[];
 
@@ -72,58 +71,13 @@ export class GameState implements State {
     const heightmap = await newNoiseLandscape(256, 6, 0.05, 3, NoiseType.Fractal, 113);
     const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap).spreadTextureCoords(), materials.grass);
     const floorCollision = new Mesh( new PlaneGeometry(1024, 1024, 4, 4).translate_(0, 20.5).done_(), materials.grass);
-
-    const castle = new Mesh(castleContainer.value!.done_(), materials.brickWall);
-
-    const writing = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(57.4, 26, 43).done_(), materials.castleWriting)
-    const handprint = new Mesh(new MoldableCubeGeometry(1, 6, 6).rotate_(0.2).translate_(47.4, 24, 42).done_(), materials.handprint)
-
-    const coffin = new Mesh(makeCoffin().translate_(0, 55, -9).done_(), materials.wood);
-
-    const bridge = new Mesh(new MoldableCubeGeometry(18, 1, 65).translate_(0, 20.5, -125).done_(), materials.planks);
-
-    this.coffinTopBloodstain.scale_.set(0, 1, 0);
-
-    // .rotate_(0, -1)
-    // .translate_(-51, 21.5, -65)
-    this.stake.position_.set(-51, 21.5, -65);
-    this.stake.setRotation_(0, -1, 0);
-
+    const test = new Mesh(new MoldableCubeGeometry(20, 4, 20).translate_(0, 21).done_(), materials.wood);
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
 
-    const groupedFaces = getGroupedFaces(meshToFaces([floorCollision, castle, coffin, this.coffinTop]));
+    const faces = meshToFaces([floorCollision, test]);
+    this.groupedFaces = getGroupedFaces(faces);
 
-
-    // Banners
-    const bannerHeightmap = await testHeightmap();
-
-    function onlyUnique(value: any, index: number, array: any[]) {
-      return array.indexOf(value) === index;
-    }
-
-    groupedFaces.floorFaces.forEach(face => {
-      const gridPositions = face.points.map(point => point.x < 0 ? 0 : 1);
-
-      gridPositions.filter(onlyUnique).forEach(position_ => {
-        if (!this.gridFaces[position_]) {
-          this.gridFaces[position_] = { floorFaces: [], wallFaces: [] };
-        }
-        this.gridFaces[position_].floorFaces.push(face);
-      });
-    });
-
-    groupedFaces.wallFaces.forEach(face => {
-      const gridPositions = face.points.map(point => point.x < 0 ? 0 : 1);
-
-      gridPositions.filter(onlyUnique).forEach(position_ => {
-        if (!this.gridFaces[position_]) {
-          this.gridFaces[position_] = { floorFaces: [], wallFaces: [] };
-        }
-        this.gridFaces[position_].wallFaces.push(face);
-      });
-    });
-
-    this.scene.add_(writing, handprint, floor, castle, ...this.leverDoors, ...doorsFromLeverDoors, this.stake, this.key, this.upyri, coffin, this.coffinTop, this.coffinTopBloodstain, bridge, makeBanners(bannerHeightmap));
+    this.scene.add_(floor, test);
 
     this.scene.skybox = new Skybox(...skyboxes.test);
     this.scene.skybox.bindGeometry();
@@ -135,29 +89,14 @@ export class GameState implements State {
     this.player.cameraRotation.set(0, 90, 0);
   }
 
-  leverPlayerDistance = new EnhancedDOMPoint();
-
 
   onUpdate(): void {
-    this.player!.update(this.gridFaces);
+    this.player!.update(this.groupedFaces);
     render(this.player!.camera, this.scene);
 
 
     this.handleEvents()
 
-    this.leverDoors.forEach(leverDoor => {
-      if (!leverDoor.isPulled) {
-        const distance = this.leverPlayerDistance.subtractVectors(this.player.camera.position_, leverDoor.switchPosition).magnitude;
-        if (distance < 7 && controls.isConfirm) {
-          leverDoor.pullLever();
-        }
-        this.player!.wallCollision(leverDoor.closedDoorCollision);
-      } else {
-        this.player!.wallCollision(leverDoor.openDoorCollision);
-      }
-
-      leverDoor.update();
-    });
 
     this.upyri.lookAt(this.player!.camera.position_);
     this.scene.updateWorldMatrix();

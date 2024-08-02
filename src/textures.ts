@@ -41,9 +41,9 @@ export async function initTextures() {
   // materials.grass.texture!.textureRepeat.x = 160;
   // materials.grass.texture!.textureRepeat.y = 10;
 
-  materials.brickWall = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(true, true))});
-  materials.brickWall.texture?.textureRepeat.set(1.5, 1.5);
-  materials.stone = new Material({texture: textureLoader.load_(await bricksRocksPlanksWood(true, false))});
+  // materials.brickWall = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(true, true))});
+  // materials.brickWall.texture?.textureRepeat.set(1.5, 1.5);
+  // materials.stone = new Material({texture: textureLoader.load_(await bricksRocksPlanksWood(true, false))});
   materials.wood = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(false, false))});
   materials.planks = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(false, true))});
   materials.castleWriting = new Material({ texture: textureLoader.load_(await castleSign()), isTransparent: true, emissive: [0.5, 0.5, 0.5, 0.5] });

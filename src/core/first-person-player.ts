@@ -3,16 +3,14 @@ import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { Face } from '@/engine/physics/face';
 import { controls } from '@/core/controls';
 import {
-  findFloorHeightAtPosition,
   findWallCollisionsFromList,
 } from '@/engine/physics/surface-collision';
 import { audioCtx } from '@/engine/audio/audio-player';
 import { clamp } from '@/engine/helpers';
-import { indoorFootsteps, outsideFootsteps } from '@/sound-effects';
+import { outsideFootsteps } from '@/sound-effects';
 
 
 export class FirstPersonPlayer {
-  isJumping = false;
   feetCenter = new EnhancedDOMPoint(0, 0, 0);
   velocity = new EnhancedDOMPoint(0, 0, 0);
   isFrozen = false;
@@ -22,10 +20,9 @@ export class FirstPersonPlayer {
   cameraRotation = new EnhancedDOMPoint(0, 0, 0);
   listener: AudioListener;
   footstepsPlayer;
-  isOnDirt = true;
 
   constructor(camera: Camera) {
-    this.feetCenter.set(44, 21, -26);
+    this.feetCenter.set(44, 26, -26);
     this.camera = camera;
     this.listener = audioCtx.listener;
 
@@ -43,41 +40,16 @@ export class FirstPersonPlayer {
     });
   }
 
-  private isFootstepsStopped = true;
-
-  update(gridFaces: {floorFaces: Face[], wallFaces: Face[]}[]) {
-    //debug.innerHTML = this.feetCenter.y;
-    if (!this.isFrozen) {
-      this.updateVelocityFromControls();
-    }
-
-    if (!this.isJumping && this.velocity.magnitude > 0) {
-      if (this.isFootstepsStopped) {
-        this.footstepsPlayer.stop();
-        this.footstepsPlayer = this.determineFootstepPlayer(this.feetCenter.y);
-        this.footstepsPlayer.loop = true;
-        this.footstepsPlayer.start();
-        this.isFootstepsStopped = false;
-      }
-    } else {
-      this.isFootstepsStopped = true;
-      this.footstepsPlayer.loop = false;
-    }
-
+  update(gridFaces: {floorFaces: Face[], wallFaces: Face[]}) {
+    this.updateVelocityFromControls();
     this.velocity.y -= 0.003; // gravity
     this.feetCenter.add_(this.velocity);
 
-    const playerGridPosition = this.feetCenter.x < 0 ? 0 : 1;
-
-
-    // @ts-ignore
-    this.collideWithLevel(gridFaces[playerGridPosition]); // do collision detection, if collision is found, feetCenter gets pushed out of the collision
+    this.collideWithLevel(gridFaces);
 
     this.camera.position_.set(this.feetCenter);
     this.camera.position_.y += 3.5;
 
-
-    // @ts-ignore
     this.camera.setRotation_(...this.cameraRotation.toArray());
 
     this.camera.updateWorldMatrix();
@@ -85,63 +57,12 @@ export class FirstPersonPlayer {
     this.updateAudio();
   }
 
-  wallCollision(wallFaces: Face[]) {
-    const wallCollisions = findWallCollisionsFromList(wallFaces, this.feetCenter, 1.1, 1.5);
-    this.feetCenter.x += wallCollisions.xPush;
-    this.feetCenter.z += wallCollisions.zPush;
-    if (wallCollisions.numberOfWallsHit > 0) {
-      this.velocity.x = 0;
-      this.velocity.z = 0;
-    }
-  }
-
   collideWithLevel(groupedFaces: {floorFaces: Face[], wallFaces: Face[]}) {
-   this.wallCollision(groupedFaces.wallFaces);
-
-    const floorData = findFloorHeightAtPosition(groupedFaces!.floorFaces, this.feetCenter);
-    if (!floorData) {
-      this.isJumping = true;
-      return;
-    }
-
-    const collisionDepth = floorData.height - this.feetCenter.y;
-
-    if (collisionDepth > 0) {
-      this.feetCenter.y += collisionDepth;
-      this.velocity.y = 0;
-
-      if (this.isOnDirt && floorData.height > 21) {
-        this.footstepsPlayer.stop();
-        this.footstepsPlayer = this.determineFootstepPlayer(floorData.height);
-        this.footstepsPlayer.loop = true;
-        this.footstepsPlayer.start();
-        this.isOnDirt = false;
-      }
-
-      if (!this.isOnDirt && floorData.height === 21) {
-        this.footstepsPlayer.stop();
-        this.footstepsPlayer = this.determineFootstepPlayer(floorData.height);
-        this.footstepsPlayer.loop = true;
-        this.footstepsPlayer.start();
-        this.isOnDirt = true;
-      }
-
-      this.isJumping = false;
-    } else {
-      this.isJumping = true;
-    }
-  }
-
-  determineFootstepPlayer(height_: number) {
-    if (height_ === 21) {
-      return outsideFootsteps();
-    } else {
-      return indoorFootsteps();
-    }
+    findWallCollisionsFromList([...groupedFaces.floorFaces, ...groupedFaces.wallFaces], this.feetCenter, 1.1, 4, this);
   }
 
   protected updateVelocityFromControls() {
-    const speed = 0.18;
+    const speed = 0.3;
 
     const depthMovementZ = Math.cos(this.cameraRotation.y) * controls.inputDirection.y;
     const depthMovementX = Math.sin(this.cameraRotation.y) * controls.inputDirection.y;

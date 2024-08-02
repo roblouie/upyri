@@ -67,7 +67,7 @@ export class EnhancedDOMPoint extends DOMPoint {
     return this.x * otherVector.x + this.y * otherVector.y + this.z * otherVector.z;
   }
 
-  toArray() {
+  toArray(): [x: number, y: number, z: number] {
     return [this.x, this.y, this.z];
   }
 

@@ -30,7 +30,7 @@ export class DoorData extends Object3d {
     this.children_[0].position_.x = 2 * swapHingeSideX;
 
     this.closedDoorCollisionM = new Mesh(
-      new MoldableCubeGeometry(isMainGate ? 6 : 4, 7, 1)
+      new MoldableCubeGeometry(20, 7, 20)
         .translate_(position_.x - (swapOpenClosed ? 4 : 0), position_.y, position_.z)
         .done_()
       , new Material());
