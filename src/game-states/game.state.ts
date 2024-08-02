@@ -72,8 +72,9 @@ export class GameState implements State {
     const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap).spreadTextureCoords(), materials.grass);
     const floorCollision = new Mesh( new PlaneGeometry(1024, 1024, 4, 4).translate_(0, 20.5).done_(), materials.grass);
     const test = new Mesh(new MoldableCubeGeometry(20, 4, 20).translate_(0, 21).done_(), materials.wood);
-    const test2 = new Mesh(new MoldableCubeGeometry(20, 10, 20).translate_(10, 28).rotate_(1).done_(), materials.wood);
-    const test3 = new Mesh(new MoldableCubeGeometry(20, 10, 20).translate_(-20, 38).done_(), materials.wood);
+    const test2 = new Mesh(new MoldableCubeGeometry(20, 24, 40).translate_(30, 23).rotate_(0.3).done_(), materials.wood);
+    const test3 = new Mesh(new MoldableCubeGeometry(20, 2, 20).translate_(-30, 34).done_(), materials.wood);
+    const test4 = new Mesh(new MoldableCubeGeometry(90, 20, 90).translate_(0, 21).done_(), materials.wood);
 
     const doorsFromLeverDoors = this.leverDoors.flatMap(leverDoor => leverDoor.doorDatas);
 

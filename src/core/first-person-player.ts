@@ -9,6 +9,15 @@ import { audioCtx } from '@/engine/audio/audio-player';
 import { clamp } from '@/engine/helpers';
 import { outsideFootsteps } from '@/sound-effects';
 
+class Sphere {
+  center: EnhancedDOMPoint;
+  radius: number;
+
+  constructor(center: EnhancedDOMPoint, radius: number) {
+    this.center = center;
+    this.radius = radius;
+  }
+}
 
 export class FirstPersonPlayer {
   feetCenter = new EnhancedDOMPoint(0, 0, 0);
@@ -20,9 +29,11 @@ export class FirstPersonPlayer {
   cameraRotation = new EnhancedDOMPoint(0, 0, 0);
   listener: AudioListener;
   footstepsPlayer;
+  collisionSphere: Sphere;
 
   constructor(camera: Camera) {
     this.feetCenter.set(44, 26, -26);
+    this.collisionSphere = new Sphere(this.feetCenter, 4);
     this.camera = camera;
     this.listener = audioCtx.listener;
 
@@ -42,9 +53,9 @@ export class FirstPersonPlayer {
 
   update(gridFaces: {floorFaces: Face[], wallFaces: Face[]}) {
     this.updateVelocityFromControls();
-    this.velocity.y -= 0.006; // gravity
-    this.collideWithLevel(gridFaces);
+    this.velocity.y -= 0.008; // gravity
 
+    findWallCollisionsFromList([...gridFaces.floorFaces, ...gridFaces.wallFaces], this.feetCenter, 1.1, 4, this);
     this.feetCenter.add_(this.velocity);
 
 
@@ -58,33 +69,26 @@ export class FirstPersonPlayer {
     this.updateAudio();
   }
 
-  collideWithLevel(groupedFaces: {floorFaces: Face[], wallFaces: Face[]}) {
-    findWallCollisionsFromList([...groupedFaces.floorFaces, ...groupedFaces.wallFaces], this.feetCenter, 1.1, 4, this);
-  }
-
   isJumping = false;
 
   protected updateVelocityFromControls() {
-    const speed = 0.3;
+    const speed = 0.24;
 
-    const depthMovementZ = Math.cos(this.cameraRotation.y) * controls.inputDirection.y;
-    const depthMovementX = Math.sin(this.cameraRotation.y) * controls.inputDirection.y;
+    const depthMovementZ = Math.cos(this.cameraRotation.y) * controls.inputDirection.y * speed;
+    const depthMovementX = Math.sin(this.cameraRotation.y) * controls.inputDirection.y * speed;
 
-    const sidestepZ = Math.cos(this.cameraRotation.y + Math.PI / 2) * controls.inputDirection.x;
-    const sidestepX = Math.sin(this.cameraRotation.y + Math.PI / 2) * controls.inputDirection.x;
-
-    if (controls.isJump) {
-      if (!this.isJumping) {
-        this.velocity.y += 0.5;
-        this.isJumping = true;
-      }
-    }
+    const sidestepZ = Math.cos(this.cameraRotation.y + Math.PI / 2) * controls.inputDirection.x * speed;
+    const sidestepX = Math.sin(this.cameraRotation.y + Math.PI / 2) * controls.inputDirection.x * speed;
 
     this.velocity.z = depthMovementZ + sidestepZ;
     this.velocity.x = depthMovementX + sidestepX;
-    let oldY = this.velocity.y;
-    this.velocity.normalize_().scale_(speed);
-    this.velocity.y = oldY;
+
+    if (controls.isJump) {
+      if (!this.isJumping) {
+        this.velocity.y = 0.4;
+        this.isJumping = true;
+      }
+    }
   }
 
   private updateAudio() {

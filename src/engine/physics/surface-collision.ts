@@ -40,15 +40,6 @@ export function findFloorHeightAtPosition(floorFaces: Face[], positionPoint: Enh
 }
 
 
-class Sphere {
-  center: EnhancedDOMPoint;
-  radius: number;
-
-  constructor(center: EnhancedDOMPoint, radius: number) {
-    this.center = center;
-    this.radius = radius;
-  }
-}
 
 export function findWallCollisionsFromList(walls: Face[], position: EnhancedDOMPoint, offsetY: number, radius: number, player: FirstPersonPlayer) {
   const collisionData = {
@@ -58,36 +49,29 @@ export function findWallCollisionsFromList(walls: Face[], position: EnhancedDOMP
     numberOfWallsHit: 0,
   };
 
-  const { x, z } = position;
-  const y = position.y;
 
-  const test = new EnhancedDOMPoint(x, y, z);
-
-  const sphere = new Sphere(test, radius);
   for (const wall of walls) {
 
 
     // const newWallHit = isPointInTriangle(test, wall.points[0], wall.points[1], wall.points[2]);
     // const oldResult = findWallCollisionsFromListOld(wall, position, offsetY, radius);
-    const newWallHit = testSphereTriangle(sphere, wall.points[0], wall.points[1], wall.points[2]);
+    const newWallHit = testSphereTriangle(player.collisionSphere, wall.points[0], wall.points[1], wall.points[2]);
 
     if (newWallHit) {
-      // const offset = wall.normal.dot(position) + wall.originOffset;
-        const push = newWallHit.penetrationNormal.scale_(newWallHit.penetrationDepth + 0.000000001);
-        player.feetCenter.x += push.x;
-        player.feetCenter.y += push.y;
-        player.feetCenter.z += push.z;
+      const correctionVector = newWallHit.penetrationNormal.scale_(newWallHit.penetrationDepth + 0.00000001);
+      player.collisionSphere.center.add_(correctionVector);
 
-        sphere.center.x = player.feetCenter.x;
-        sphere.center.y = player.feetCenter.y;
-        sphere.center.z = player.feetCenter.z;
+      const normalComponent = newWallHit.penetrationNormal.scale_(player.velocity.dot(newWallHit.penetrationNormal));
+      player.velocity.subtract(normalComponent);
 
-        if (Math.abs(wall.normal.y) >= 0.6) {
-          player.velocity.y = 0; // Slightly sketch way of dealing with gravity on a sloped surface, but it does work
-          player.isJumping = false;
-        }
-
+      // Slightly sketch way of dealing with gravity on a sloped surface, but it does work
+      if (wall.normal.y >= 0.6 && player.velocity.y < 0) {
+        player.velocity.y = 0;
+        player.isJumping = false;
+      } else if (wall.normal.y <= -0.6 && player.velocity.y > 0) {
+        player.velocity.y = 0;
       }
+    }
 
       collisionData.walls.push(wall);
       collisionData.numberOfWallsHit++;
@@ -97,79 +81,6 @@ export function findWallCollisionsFromList(walls: Face[], position: EnhancedDOMP
 
   }
 
-export function findWallCollisionsFromListOld(wall: Face, position: EnhancedDOMPoint, offsetY: number, radius: number) {
-  const collisionData = {
-    xPush: 0,
-    zPush: 0,
-    walls: [] as Face[],
-    numberOfWallsHit: 0,
-  };
-
-  const { x, z } = position;
-  const y = position.y + offsetY;
-
-    if (y < wall.lowerY || y > wall.upperY) {
-      return false;
-    }
-
-    const offset = wall.normal.dot(position) + wall.originOffset;
-    if (offset < -radius || offset > radius) {
-      return false;
-    }
-
-    const isXProjection = wall.normal.x < -0.707 || wall.normal.x > 0.707;
-    const w = isXProjection ? -z : x;
-    const wNormal = isXProjection ? wall.normal.x : wall.normal.z;
-
-    let w1 = -wall.points[0].z;
-    let w2 = -wall.points[1].z;
-    let w3 = -wall.points[2].z;
-
-    if (!isXProjection) {
-      w1 = wall.points[0].x;
-      w2 = wall.points[1].x;
-      w3 = wall.points[2].x;
-    }
-    let y1 = wall.points[0].y;
-    let y2 = wall.points[1].y;
-    let y3 = wall.points[2].y;
-
-    const invertSign = wNormal > 0 ? 1 : -1;
-
-    if (((y1 - y) * (w2 - w1) - (w1 - w) * (y2 - y1)) * invertSign > 0) {
-      return false;
-    }
-    if (((y2 - y) * (w3 - w2) - (w2 - w) * (y3 - y2)) * invertSign > 0) {
-      return false;
-    }
-    if (((y3 - y) * (w1 - w3) - (w3 - w) * (y1 - y3)) * invertSign > 0) {
-      return false;
-    }
-
-    collisionData.xPush += wall.normal.x * (radius - offset);
-    collisionData.zPush += wall.normal.z * (radius - offset);
-    collisionData.walls.push(wall);
-    collisionData.numberOfWallsHit++;
-
-  return true;
-}
-
-function isPointInTriangle(p: EnhancedDOMPoint, a: EnhancedDOMPoint, b: EnhancedDOMPoint, c: EnhancedDOMPoint): boolean {
-  const movedA = new EnhancedDOMPoint().subtractVectors(a, p);
-  const movedB = new EnhancedDOMPoint().subtractVectors(b, p);
-  const movedC = new EnhancedDOMPoint().subtractVectors(c, p);
-
-  const ab = movedA.dot(movedB);
-  const ac = movedA.dot(movedC);
-  const bc = movedB.dot(movedC);
-  const cc = movedC.dot(movedC);
-
-  if (bc * ac - cc * ab < 0) return false;
-
-  const bb = movedB.dot(movedB);
-
-  return ab * bc - ac * bb >= 0;
-}
 
 function testSphereTriangle(s: Sphere, a: EnhancedDOMPoint, b: EnhancedDOMPoint, c: EnhancedDOMPoint) {
   const p = closestPointInTriangle(s.center, a, b, c);
