@@ -2,6 +2,7 @@ import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 
 class Controls {
   isConfirm? = false;
+  isJump? = false;
   inputDirection: EnhancedDOMPoint;
   private mouseMovement = new EnhancedDOMPoint();
   private onMouseMoveCallback?: (mouseMovement: EnhancedDOMPoint) => void;
@@ -34,6 +35,7 @@ class Controls {
     this.inputDirection.x = (leftVal + rightVal);
     this.inputDirection.y = (upVal + downVal);
     this.isConfirm = this.keyMap.get('KeyE');
+    this.isJump = this.keyMap.get('Space');
   }
 
   private toggleKey(event: { code: string }, isPressed: boolean) {

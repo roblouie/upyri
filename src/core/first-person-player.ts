@@ -42,10 +42,11 @@ export class FirstPersonPlayer {
 
   update(gridFaces: {floorFaces: Face[], wallFaces: Face[]}) {
     this.updateVelocityFromControls();
-    this.velocity.y -= 0.003; // gravity
+    this.velocity.y -= 0.006; // gravity
+    this.collideWithLevel(gridFaces);
+
     this.feetCenter.add_(this.velocity);
 
-    this.collideWithLevel(gridFaces);
 
     this.camera.position_.set(this.feetCenter);
     this.camera.position_.y += 3.5;
@@ -61,6 +62,8 @@ export class FirstPersonPlayer {
     findWallCollisionsFromList([...groupedFaces.floorFaces, ...groupedFaces.wallFaces], this.feetCenter, 1.1, 4, this);
   }
 
+  isJumping = false;
+
   protected updateVelocityFromControls() {
     const speed = 0.3;
 
@@ -69,6 +72,13 @@ export class FirstPersonPlayer {
 
     const sidestepZ = Math.cos(this.cameraRotation.y + Math.PI / 2) * controls.inputDirection.x;
     const sidestepX = Math.sin(this.cameraRotation.y + Math.PI / 2) * controls.inputDirection.x;
+
+    if (controls.isJump) {
+      if (!this.isJumping) {
+        this.velocity.y += 0.5;
+        this.isJumping = true;
+      }
+    }
 
     this.velocity.z = depthMovementZ + sidestepZ;
     this.velocity.x = depthMovementX + sidestepX;

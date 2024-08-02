@@ -73,14 +73,20 @@ export function findWallCollisionsFromList(walls: Face[], position: EnhancedDOMP
 
     if (newWallHit) {
       // const offset = wall.normal.dot(position) + wall.originOffset;
-        const push = newWallHit.penetrationNormal.scale_(newWallHit.penetrationDepth + 0.0001);
+        const push = newWallHit.penetrationNormal.scale_(newWallHit.penetrationDepth + 0.000000001);
         player.feetCenter.x += push.x;
         player.feetCenter.y += push.y;
         player.feetCenter.z += push.z;
-        player.velocity.y = 0; // TODO: This is wrong, overall need to change how velocity works
+
         sphere.center.x = player.feetCenter.x;
         sphere.center.y = player.feetCenter.y;
         sphere.center.z = player.feetCenter.z;
+
+        if (Math.abs(wall.normal.y) >= 0.6) {
+          player.velocity.y = 0; // Slightly sketch way of dealing with gravity on a sloped surface, but it does work
+          player.isJumping = false;
+        }
+
       }
 
       collisionData.walls.push(wall);
