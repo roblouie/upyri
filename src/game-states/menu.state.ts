@@ -2,7 +2,6 @@ import { State } from '@/core/state';
 import { gameStateMachine } from '@/game-state-machine';
 import { gameStates } from '@/game-states/game-states';
 import { drawFullScreenText, overlaySvg } from '@/draw-helpers';
-import { NoiseType, text } from '@/engine/svg-maker/base';
 import { drawBloodText, materials, skyboxes, testHeightmap } from '@/textures';
 import { newNoiseLandscape } from '@/engine/new-new-noise';
 import { Mesh } from '@/engine/renderer/mesh';
@@ -39,7 +38,7 @@ export class MenuState implements State {
   isSongPlaying = false;
 
   async onEnter() {
-    const heightmap = await newNoiseLandscape(256, 6, 0.05, 3, NoiseType.Fractal, 113);
+    const heightmap = await newNoiseLandscape(256, 6, 0.05, 3, 'fractalNoise', 113);
     const floor = new Mesh(new PlaneGeometry(1024, 1024, 255, 255, heightmap).spreadTextureCoords(), materials.grass);
     const castle = new Mesh(castleContainer.value!, materials.brickWall);
     const bridge = new Mesh(new MoldableCubeGeometry(18, 1, 65).translate_(0, 20.5, -125).done_(), materials.planks);
@@ -53,10 +52,10 @@ export class MenuState implements State {
     this.scene.updateWorldMatrix();
     this.scene.skybox.bindGeometry();
 
-    tmpl.innerHTML = overlaySvg({ style: 'text-anchor: middle' },
-      drawBloodText({ x: '50%', y: 300 }, 'UPYRI'),
-      text({ x: '50%', y: 900, id_: 'Start' }, 'Start'),
-      text({ x: '50%', y: 1010, id_: 'Fullscreen' }, 'Fullscreen'),
+    tmpl.innerHTML = overlaySvg(
+      drawBloodText('50%', 300, undefined, 'UPYRI'),
+      '<text x="50%" y="900" id="Start">Start</text>',
+      '<text x="50%" y="1010" id="Fullscreen">Fullscreen</text>',
     );
     // TODO: Probably add this to the svg library, if I have enough space to keep it anyway
     tmpl.querySelectorAll('feTurbulence').forEach((el: HTMLElement) => {

@@ -2,9 +2,49 @@ import { Face } from './face';
 import { EnhancedDOMPoint } from "@/engine/enhanced-dom-point";
 import { FirstPersonPlayer } from '@/core/first-person-player';
 
-export function findWallCollisionsFromList(walls: Face[], player: FirstPersonPlayer) {
+export const halfLevelSize = 128;
+const cellSize = 8;
+const cellsInEachDirection = 16;
+
+export function getGridPosition(point: EnhancedDOMPoint) {
+  return Math.floor((point.x + halfLevelSize) / cellSize) + (Math.floor((point.z + halfLevelSize) / cellSize) * cellsInEachDirection);
+}
+
+export function getGridPositionWithNeighbors(point: EnhancedDOMPoint, gridLength: number) {
+  const gridPos = getGridPosition(point);
+  return [
+    gridPos,
+    gridPos - 1 - cellsInEachDirection, // Upper left neighbor
+    gridPos - cellsInEachDirection, // upper neighbor
+    gridPos + 1 - cellsInEachDirection, // upper right neighbor
+    gridPos - 1, // left neighbor
+    gridPos + 1, // right neighbor
+    gridPos - 1 + cellsInEachDirection, // lower left neighbor
+    gridPos + cellsInEachDirection, // lower neighbor
+    gridPos + 1 + cellsInEachDirection // lower right neighbor
+  ].filter(gp => gp >= 0 && gp < gridLength);
+}
+
+
+export function build2dGrid(allFaces: Face[]) {
+  const gridFaces: Set<Face>[] = [];
+
+  allFaces.forEach(face => {
+    face.points.map(getGridPosition).forEach(gp => {
+      if (!gridFaces[gp]) {
+        gridFaces[gp] = new Set<Face>();
+      }
+      gridFaces[gp].add(face);
+    });
+  });
+
+  return gridFaces;
+}
+
+
+export function findWallCollisionsFromList(walls: Set<Face>, player: FirstPersonPlayer) {
   for (const wall of walls) {
-    const newWallHit = testSphereTriangle(player.collisionSphere, wall.points[0], wall.points[1], wall.points[2]);
+    const newWallHit = testSphereTriangle(player.collisionSphere, wall);
 
     if (newWallHit) {
       const correctionVector = newWallHit.penetrationNormal.scale_(newWallHit.penetrationDepth + 0.00000001);
@@ -25,8 +65,14 @@ export function findWallCollisionsFromList(walls: Face[], player: FirstPersonPla
   }
 
 
-function testSphereTriangle(s: Sphere, a: EnhancedDOMPoint, b: EnhancedDOMPoint, c: EnhancedDOMPoint) {
-  const p = closestPointInTriangle(s.center, a, b, c);
+function testSphereTriangle(s: Sphere, wall: Face) {
+  // Ignore back sides of triangles
+  const dist = new EnhancedDOMPoint().subtractVectors(s.center, wall.points[0]).dot(wall.normal);
+  if (dist < 0) {
+    return;
+  }
+
+  const p = closestPointInTriangle(s.center, wall.points[0], wall.points[1], wall.points[2]);
   const v = new EnhancedDOMPoint().subtractVectors(s.center, p);
   const squaredDistanceFromPointOnTriangle = v.dot(v);
   const isColliding = squaredDistanceFromPointOnTriangle <= s.radius * s.radius;

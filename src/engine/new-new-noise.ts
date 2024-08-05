@@ -1,30 +1,18 @@
-import {
-  ellipse,
-  feTurbulence,
-  filter,
-  NoiseType, radialGradient,
-  rect,
-  svg, svgStop,
-} from '@/engine/svg-maker/base';
 import { toHeightmap } from '@/engine/svg-maker/converters';
 
-
-export async function newNoiseLandscape(size: number,seed_: number, baseFrequency: number, numOctaves_: number, type_: NoiseType, scale_: number) {
-  const s = svg({ width_: 256, height_: 256 },
-    filter({ id_: 'n' },
-      feTurbulence({ seed_, baseFrequency, numOctaves_, type_ }),
-    ),
-    radialGradient({ id_: 'l' },
-      svgStop({ offset_: '10%', stopColor: '#0004' }),
-      svgStop({ offset_: '22%', stopColor: '#0000' }),
-    ),
-    rect({ x: 0, y: 0, width_: '100%', height_: '100%', filter: 'n' }),
-    ellipse({ cx: 128, cy: 128, fill: 'url(#l)', rx: 200, ry: 200 }),
-    //    <ellipse cx="128" cy="130" fill="#bbb" rx="23" ry="23"/>
-    ellipse({ cx: 128, cy: 128, fill: '#afafaf', rx: 26, ry: 26 }),
-
-    // rect({ x: 109, y: 109, width_: 38, height_: 42, fill: '#afafaf' }),
-    rect({ x: 125, y: 10, width_: 6, height_: 80, fill: '#afafaf' })
-  );
+export async function newNoiseLandscape(size: number,seed_: number, baseFrequency: number, numOctaves_: number, type_: 'fractalNoise' | 'turbulentNoise', scale_: number) {
+  const s = `<svg width="${256}" height="${256}" xmlns="http://www.w3.org/2000/svg">
+    <filter id="n">
+        <feTurbulence seed="${seed_}" baseFrequency="${baseFrequency}" numOctaves="${numOctaves_}" type="${type_}"/>
+    </filter>
+    <radialGradient id="l">
+        <stop offset="10%" stop-color="#0004" />
+        <stop offset="22%" stop-color="#0000" />
+    </radialGradient>
+    <rect x="0" y="0" width="100%" height="100%" filter="url(#n)"/>
+    <ellipse rx="200" ry="200" cx="128" cy="128" fill="url(#l)"/>
+    <ellipse rx="26" ry="26" cx="128" cy="128" fill="#afafaf"/>
+    <rect x="125" y="10" width="6" height="80" fill="#afafaf"/>
+</svg>`;
   return toHeightmap(s, scale_);
 }

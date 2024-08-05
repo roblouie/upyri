@@ -1,28 +1,3 @@
-import {
-  AllSvgAttributes,
-  ellipse,
-  feColorMatrix,
-  feComponentTransfer,
-  feComposite,
-  feDiffuseLighting,
-  feDisplacementMap,
-  feDistantLight,
-  feFunc,
-  feMorphology,
-  feTurbulence,
-  filter,
-  group,
-  linearGradient,
-  mask,
-  NoiseType,
-  radialGradient,
-  rect,
-  svg,
-  SvgAttributes,
-  svgStop,
-  SvgTextAttributes,
-  text
-} from '@/engine/svg-maker/base';
 import { toHeightmap, toImage } from '@/engine/svg-maker/converters';
 import { doTimes } from '@/engine/helpers';
 import { Material } from '@/engine/renderer/material';
@@ -30,8 +5,6 @@ import { textureLoader } from '@/engine/renderer/texture-loader';
 
 const textureSize = 512;
 const skyboxSize = 2048;
-
-const fullSize = (otherProps: Partial<AllSvgAttributes>): Partial<AllSvgAttributes> => ({ x: 0, y: 0, width_: '100%', height_: '100%', ...otherProps });
 
 export const materials: {[key: string]: Material} = {};
 export const skyboxes: {[key: string]: TexImageSource[]} = {};
@@ -41,9 +14,9 @@ export async function initTextures() {
   // materials.grass.texture!.textureRepeat.x = 160;
   // materials.grass.texture!.textureRepeat.y = 10;
 
-  // materials.brickWall = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(true, true))});
-  // materials.brickWall.texture?.textureRepeat.set(1.5, 1.5);
-  // materials.stone = new Material({texture: textureLoader.load_(await bricksRocksPlanksWood(true, false))});
+  materials.brickWall = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(true, true))});
+  materials.brickWall.texture?.textureRepeat.set(1.5, 1.5);
+  materials.stone = new Material({texture: textureLoader.load_(await bricksRocksPlanksWood(true, false))});
   materials.wood = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(false, false))});
   materials.planks = new Material({ texture: textureLoader.load_(await bricksRocksPlanksWood(false, true))});
   materials.castleWriting = new Material({ texture: textureLoader.load_(await castleSign()), isTransparent: true, emissive: [0.5, 0.5, 0.5, 0.5] });
@@ -72,59 +45,19 @@ export async function initTextures() {
 }
 
 function castleSign() {
-  return toImage(
-    svg({ width_: textureSize, height_: textureSize },
-      drawBloodText({ x: 10, y: '30%', style: 'font-size: 120px; transform: scaleY(1.5); font-family: sans-serif' }, 'KEEP', 30)
-    )
-  )
+  return toImage(`<svg width="${textureSize}" height="${textureSize}" xmlns="http://www.w3.org/2000/svg">${drawBloodText(10, '30%', 'font-size: 120px; transform: scaleY(1.5); font-family: sans-serif' , 'KEEP', 30)}</svg>`);
 }
 
 function handprint() {
-  return toImage(
-    svg({ width_: textureSize, height_: textureSize },
-      drawBloodText({ x: 10, y: '30%', style: 'font-size: 120px; transform: scaleY(1.5); font-family: sans-serif' }, '🖐️', 50)
-    )
-  )
+  return toImage(`<svg width="${textureSize}" height="${textureSize}" xmlns="http://www.w3.org/2000/svg">${drawBloodText(10, '30%', 'font-size: 120px; transform: scaleY(1.5); font-family: sans-serif' , '🖐️', 50)}</svg>`);
 }
 
 function stars() {
-  return filter(fullSize({id_: 's'}),
-    feTurbulence({ baseFrequency: 0.2, stitchTiles_: 'stitch' }),
-    feColorMatrix({ values: [
-        0, 0, 0, 9, -5.5,
-        0, 0, 0, 9, -5.5,
-        0, 0, 0, 9, -5.5,
-        0, 0, 0, 0, 1
-      ]
-    })
-  );
+  return `<filter x="0" y="0" width="100%" height="100%" id="s"><feTurbulence baseFrequency="0.2" stitchTiles="stitch" /><feColorMatrix values="0, 0, 0, 9, -5.5, 0, 0, 0, 9, -5.5, 0, 0, 0, 9, -5.5, 0, 0, 0, 0, 1"/></filter>`;
 }
 
 function drawClouds() {
-  return stars() + filter(fullSize({ id_: 'f' }),
-      feTurbulence({ seed_: 2, type_: NoiseType.Fractal, numOctaves_: 6, baseFrequency: 0.003, stitchTiles_: 'stitch' }),
-      feComponentTransfer({},
-        feFunc('R',  'table', [0.8, 0.8]),
-        feFunc('G',  'table', [0.8, 0.8]),
-        feFunc('B',  'table', [1, 1]),
-        feFunc('A',  'table', [0, 0, 1])
-      )
-    ) +
-    mask({ id_: 'mask' },
-      radialGradient({ id_: 'g' },
-        svgStop({ offset_: '20%', stopColor: 'white' }),
-        svgStop({ offset_: '30%', stopColor: '#666' }),
-        svgStop({ offset_: '100%', stopColor: 'black' })
-      ),
-      ellipse({ cx: 1000, cy: 1000, rx: '50%', ry: '50%', fill: 'url(#g)'})
-    )
-    + radialGradient({ id_: 'l' },
-      svgStop({ offset_: '10%', stopColor: '#fff' }),
-      svgStop({ offset_: '30%', stopColor: '#0000' })
-    )
-    + rect(fullSize({ filter: 's' }))
-    + ellipse({cx: 1000, cy: 1000, rx: 200, ry: 200, fill: 'url(#l)' })
-    + rect(fullSize({ filter: 'f', mask: 'url(#mask)' }));
+  return stars() + `<filter height="100%" id="f" width="100%" x="0" y="0"> <feTurbulence baseFrequency="0.003" numOctaves="6" seed="2" stitchTiles="stitch" type="fractalNoise"/><feComponentTransfer color-interpolation-filters="sRGB"><feFuncR type="table" tableValues="0.8,0.8"/><feFuncG type="table" tableValues="0.8,0.8"/><feFuncB type="table" tableValues="1,1"/><feFuncA type="table" tableValues="0,0,1"/></feComponentTransfer></filter><mask id="mask"><radialGradient id="g"><stop offset="20%" stop-color="white"/><stop offset="30%" stop-color="#666"/><stop offset="100%" stop-color="black"/></radialGradient><ellipse cx="1000" cy="1000" fill="url(#g)" rx="50%" ry="50%" /></mask><radialGradient id="l"><stop offset="10%" stop-color="#fff"/><stop offset="30%" stop-color="#0000"/></radialGradient><rect filter="url(#s)" height="100%" width="100%" x="0" y="0"/><ellipse cx="1000" cy="1000" fill="url(#l)" rx="200" ry="200"/><rect filter="url(#f)" height="100%" mask="url(#mask)" width="100%" x="0" y="0"/>`;
 }
 
 function drawBetterClouds(width_: number) {
@@ -139,63 +72,28 @@ function drawBetterClouds(width_: number) {
   ];
 
   const clouds = doTimes(2, index => {
-    return filter(fullSize({ id_: `f${index}` }),
-      feTurbulence({ seed_: seeds[index], type_: NoiseType.Fractal, numOctaves_: numOctaves[index], baseFrequency: baseFrequencies[index], stitchTiles_: 'stitch' }),
-      feComponentTransfer({},
-        feFunc('R',  'table', [0.2, 0.2]),
-        feFunc('G',  'table', [0.2, 0.2]),
-        feFunc('B',  'table', [0.25, 0.25]),
-        feFunc('A',  'table', alphaTableValues[index])
-      )
-    ) +
-      linearGradient({ id_: `g${index}`, gradientTransform: 'rotate(90)'},
-        svgStop({ offset_: 0, stopColor: 'black'}),
-        svgStop({ offset_: 0.3, stopColor: 'white'}),
-        svgStop({ offset_: 0.7, stopColor: 'white'}),
-        svgStop({ offset_: 1, stopColor: 'black'}),
-      ) +
-      mask({ id_: `m${index}`},
-        rect({ x: 0, y: yPositions[index], width_, height_: heights[index], fill: `url(#g${index})`})
-      ) +
-      rect({ filter: `f${index}`, height_: heights[index], width_, x: 0, y: yPositions[index], mask: `url(#m${index})`});
+    return `<filter id="f${index}"><feTurbulence seed="${seeds[index]}" type="fractalNoise" numOctaves="${numOctaves[index]}" baseFrequency="${baseFrequencies[index]}" stitchTiles="stitch" /><feComponentTransfer><feFuncR type="table" tableValues="0.2, 0.2"/><feFuncG type="table" tableValues="0.2, 0.2"/><feFuncB type="table" tableValues="0.25 0.25"/><feFuncA type="table" tableValues="${alphaTableValues[index]}"/></feComponentTransfer></filter><linearGradient id="g${index}" gradientTransform="rotate(90)"><stop offset="0" stop-color="black" /><stop offset="0.3" stop-color="white"/><stop offset="0.7" stop-color="white"/><stop offset="1" stop-color="black"/></linearGradient><mask id="m${index}"><rect fill="url(#g${index})" height="${heights[index]}" width="${width_}" x="0" y="${yPositions[index]}"/></mask><rect filter="url(#f${index})" height="${heights[index]}" mask="url(#m${index})" width="${width_}" x="0" y="${yPositions[index]}"/>`;
   }).join('');
 
-  return stars() + rect(fullSize({ filter: 's' })) + clouds;
+  return stars() + '<rect x="0" y="0" width="100%" height="100%" filter="url(#s)" />' + clouds;
 }
 
 
 function drawSkyboxHor() {
-  return horizontalSkyboxSlice({ width_: skyboxSize * 4, height_: skyboxSize, style: `background: #000;` },
-    drawBetterClouds(skyboxSize * 4),
-    //y: number, color: string, seed_: number, numOctaves: number
-    filter({ id_: 'f', x: 0, width_: '100%', height_: '150%' },
-      feTurbulence({ type_: NoiseType.Fractal, baseFrequency: [0.008, 0], numOctaves_: 4, seed_: 15, stitchTiles_: 'stitch' }),
-      feDisplacementMap({ in: 'SourceGraphic', scale_: 100 }),
-    ) +
-    filter({ id_: 'g', x: 0, width_: '100%' },
-      feTurbulence({ baseFrequency: [0.02, 0.01], numOctaves_: 4, type_: NoiseType.Fractal, result: `n`, seed_: 15, stitchTiles_: 'stitch' }),
-      feDiffuseLighting({ in: 'n', lightingColor: '#1c1d2d', surfaceScale: 22 },
-        feDistantLight(45, 60)
-      ),
-      feComposite({ in2: 'SourceGraphic', operator: 'in' }),
-    ) +
-    group({ filter: 'g' },
-      rect({ x: 0, y: 1000, width_: skyboxSize * 4, height_: '50%', filter: 'f'})
-    )
-  );
+  return horizontalSkyboxSlice(drawBetterClouds(skyboxSize * 4), `<filter height="150%" id="f" width="100%" x="0" ><feTurbulence baseFrequency="0.008,0" numOctaves="4" seed="15" stitchTiles="stitch" type="fractalNoise" /><feDisplacementMap in="SourceGraphic" scale="100"/></filter><filter id="g" width="100%" x="0" ><feTurbulence baseFrequency="0.02,0.01" numOctaves="4" result="n" seed="15" stitchTiles="stitch" type="fractalNoise"/><feDiffuseLighting in="n" lighting-color="#1c1d2d" surfaceScale="22"><feDistantLight azimuth="45" elevation="60"/></feDiffuseLighting><feComposite in2="SourceGraphic" operator="in" /></filter><g filter="url(#g)"><rect filter="url(#f)" height="50%" width="8192" x="0" y="1000"/></g>`);
 }
 
 function drawSkyboxTop() {
-  return svg({ width_: skyboxSize, height_: skyboxSize, style: `background: #000;` }, drawClouds());
+  return `<svg width="${skyboxSize}" height="${skyboxSize}" style="background: #000" xmlns="http://www.w3.org/2000/svg">${drawClouds()}</svg>`;
 }
 
-function horizontalSkyboxSlice(svgSetting: SvgAttributes, ...elements: string[]) {
+function horizontalSkyboxSlice(...elements: string[]) {
   let xPos = 0;
   const context = new OffscreenCanvas(skyboxSize, skyboxSize).getContext('2d')!;
 
   return async (): Promise<ImageData> => {
     // @ts-ignore
-    context.drawImage(await toImage(svg(svgSetting, ...elements)), xPos, 0);
+    context.drawImage(await toImage(`<svg width="${skyboxSize * 4}" height="${skyboxSize}" style="background: #000"  xmlns="http://www.w3.org/2000/svg">${elements.join('')}</svg>`), xPos, 0);
     xPos -= skyboxSize;
     // @ts-ignore
     return context.getImageData(0, 0, skyboxSize, skyboxSize);
@@ -203,20 +101,7 @@ function horizontalSkyboxSlice(svgSetting: SvgAttributes, ...elements: string[])
 }
 
 export function drawGrass() {
-  return toImage(svg({ width_: textureSize, height_: textureSize },
-    filter(fullSize({ id_: 'n' }),
-      feTurbulence({ seed_: 3, type_: NoiseType.Fractal, baseFrequency: 0.04, numOctaves_: 4, stitchTiles_: 'stitch' }),
-      feMorphology({ operator: 'dilate', radius: 3 }),
-      feComponentTransfer({},
-        feFunc('R',  'table', [0.2, 0.2]),
-        feFunc('G',  'table', [0.2, 0.2]),
-        feFunc('B',  'table', [0.25, 0.25]),
-        // feFunc('A',  'table', [0.])
-      )
-    ),
-    rect(fullSize({ fill: '#171717' })),
-    rect(fullSize({ filter: 'n' })),
-  ));
+  return toImage(`<svg width="${textureSize}" height="${textureSize}" style="background: #000" xmlns="http://www.w3.org/2000/svg"><filter x="0" y="0" width="100%" height="100%" id="n"><feTurbulence seed="3" type="fractalNoise" baseFrequency=".04" numOctaves="4" stitchTiles="stitch"/><feMorphology operator="dilate" radius="3" /><feComponentTransfer><feFuncR type="table" tableValues=".2, .2"/><feFuncG type="table" tableValues=".2, .2"/><feFuncB type="table" tableValues=".25, .25"/></feComponentTransfer></filter><rect x="0" y="0" width="100%" height="100%" fill="#171717"/><rect x="0" y="0" width="100%" height="100%" filter="url(#n)" /></svg>`);
 }
 
 function getPattern(width_ = 160, height_ = 256) {
@@ -224,70 +109,27 @@ function getPattern(width_ = 160, height_ = 256) {
 }
 
 function rockWoodFilter(isRock = true) {
-  return filter(fullSize({ id_: 'rw' }),
-    `<feDropShadow dx="${isRock ? 1 : 300}" dy="${isRock ? 1 : 930}" result="s"/>` +
-    feTurbulence({ type_: NoiseType.Fractal, baseFrequency: isRock ? 0.007 : [0.1, 0.007], numOctaves_: isRock ? 9 : 6, stitchTiles_: 'stitch' }),
-    feComposite({ in: 's', operator: 'arithmetic', k2: isRock ? 0.5 : 0.5, k3: 0.5 }),
-    feComponentTransfer({}, feFunc('A', 'table', [0, .1, .2, .3, .4, .2, .4, .2, .4])),
-    feDiffuseLighting({ surfaceScale: 2.5, lightingColor: isRock ? '#ffd' : '#6e5e42' },
-      feDistantLight(isRock ? 265 : 110, isRock ? 4 : 10),
-    ),
-    fffix(),
-  )
+  return `<filter x="0" y="0" width="100%" height="100%" id="rw"><feDropShadow dx="${isRock ? 1 : 300}" dy="${isRock ? 1 : 930}" result="s"/><feTurbulence type="fractalNoise" baseFrequency="${isRock ? 0.007 : [0.1, 0.007]}" numOctaves="${isRock ? 9 : 6}" stitchTiles="stitch" /><feComposite in="s" operator="arithmetic" k2="0.5" k3="0.5" /><feComponentTransfer><feFuncA type="table" tableValues="0, .1, .2, .3, .4, .2, .4, .2, .4"/></feComponentTransfer><feDiffuseLighting color-interpolation-filters="sRGB" surfaceScale="2.5" lighting-color="${isRock ? '#ffd' : '#6e5e42'}"><feDistantLight azimuth="${isRock ? 265 : 110}" elevation="${isRock ? 4 : 10}"/></feDiffuseLighting></filter>${fffix()}`;
 }
 
 function bricksRocksPlanksWood(isRock = true, isPattern = true) {
-  return toImage(svg({ width_: 512, height_: 512 },
-    (isPattern ? getPattern( isRock ? 160 : 75, isRock ? 256 : 1) : '') +
-    rockWoodFilter(isRock),
-    rect({ x: 0, y: 0, width_: '100%', height_: '100%', fill: isPattern ? 'url(#p)' : undefined, filter: 'rw' })
-  ));
+  return toImage(`<svg width="${textureSize}" height="${textureSize}" xmlns="http://www.w3.org/2000/svg">${isPattern ? getPattern( isRock ? 160 : 75, isRock ? 256 : 1) : ''}${rockWoodFilter(isRock)}<rect height="100%" width="100%" x="0" y="0" fill="${isPattern ? 'url(#p)' : ''}" filter="url(#rw)"/></svg>`);
 }
 
 export function drawBloodCircle() {
-  return toImage(
-    svg({ width_: textureSize, height_: textureSize },
-      bloodEffect(ellipse({ cx: 256, cy: 256, rx: 220, ry: 220, filter: 'd' }), 250, [0.03, 0.03])
-    )
-  );
+  return toImage(`<svg width="${textureSize}" height="${textureSize}" xmlns="http://www.w3.org/2000/svg">${bloodEffect(`<ellipse cx="256" cy="256" rx="220" ry="220" filter="url(#d)"/>`, 250, [0.03, 0.03])}</svg>`);
 }
 
-export function drawBloodText(attributes: SvgTextAttributes, textToDisplay: string, scale = 70) {
-  return bloodEffect(text({ style: 'font-size: 360px; transform: scaleY(1.5);', ...attributes, filter: 'd' }, textToDisplay), scale)
+export function drawBloodText(x: number | string, y: number | string, style: string | undefined, textToDisplay: string, scale = 70) {
+  return bloodEffect(`<text x="${x}" y="${y}" style="${style ?? 'font-size: 360px; transform: scaleY(1.5);'}" filter="url(#d)">${textToDisplay}</text>`, scale)
 }
 
 export function bloodEffect(component: string, scale_ = 70, freq1: [number, number] = [0.13, 0.02], freq2 = 0.04) {
-    return filter({ id_: 'd' },
-      feTurbulence({ baseFrequency: freq1, numOctaves_: 1, type_: NoiseType.Fractal, result: 'd' }),
-      feDisplacementMap({ in: 'SourceGraphic', in2: 'd', scale_ }),
-    ) +
-    filter({ id_: 'b' },
-      feTurbulence({ baseFrequency: freq2, numOctaves_: 1, type_: NoiseType.Fractal }),
-      feColorMatrix({ values: [
-          0.4, 0.2, 0.2, 0, -0.1,
-          0, 2, 0, 0, -1.35,
-          0, 2, 0, 0, -1.35,
-          0, 0, 0, 0, 1,
-        ] }),
-      feComposite({ in2: 'SourceGraphic', operator: 'in' }),
-    ) +
-    group({ filter: 'b' }, component);
+  return `<filter id="d"><feTurbulence baseFrequency="${freq1}" numOctaves="1" type="fractalNoise" result="d"/><feDisplacementMap in="SourceGraphic" in2="d" scale="${scale_}"/></filter><filter id="b"><feTurbulence baseFrequency="${freq2}" numOctaves="1" type="fractalNoise"/><feColorMatrix values="0.4, 0.2, 0.2, 0, -0.1, 0, 2, 0, 0, -1.35, 0, 2, 0, 0, -1.35, 0, 0, 0, 0, 1"/><feComposite in2="SourceGraphic" operator="in"/></filter><g filter="url(#b)">${component}</g>`;
 }
 
 export function face() {
-    return toImage(svg({ width_: 512, height_: 512, style: 'filter: invert()', viewBox: '0 0 512 512' },
-      filter({ id_: 'filter', x: '-0.01%', primitiveUnits: 'objectBoundingBox', width_: '100%', height_: '100%'},
-          feTurbulence({ seed_: 7, type_: NoiseType.Fractal, baseFrequency: 0.005, numOctaves_: 5, result: 'n'}),
-          feComposite({ in: 'SourceAlpha', operator: 'in' }),
-          feDisplacementMap({ in2: 'n', scale_: 0.9 })
-        ),
-      rect(fullSize({ id_: 'l', filter: 'filter', y: -14 })),
-      rect({ fill: '#fff', width_: '100%', height_: '100%' }),
-    `
-    <use href="#l" x="22%" y="42" transform="scale(2.2, 1.2)"></use>
-    <use href="#l" x="-22%" y="42" transform="rotate(.1) scale(-2.2 1.2)"></use>`,
-      rect({ fill: '#777', x: 220, y: 230, width_: 50, height_: 50 })
-    ));
+  return toImage(`<svg width="${textureSize}" height="${textureSize}" xmlns="http://www.w3.org/2000/svg"><filter id="filter" x="-0.01%" primitiveUnits="objectBoundingBox" width="100%" height="100%"><feTurbulence seed="7" type="fractalNoise" baseFrequency="0.005" numOctaves="5" result="n"/><feComposite in="SourceAlpha" operator="in"/><feDisplacementMap in2="n" scale="0.9"/></filter><rect x="0" y="-14" width="100%" height="100%" id="l" filter="url(#filter)"/><rect fill="#fff" width="100%" height="100%"/><use href="#l" x="22%" y="42" transform="scale(2.2, 1.2)"></use><use href="#l" x="-22%" y="42" transform="rotate(.1) scale(-2.2 1.2)"></use><rect fill="#777" x="220" y="230" width="50" height="50"/></svg>`);
 }
 
 const matrices = [
@@ -315,13 +157,7 @@ const matrices = [
 
 export function metals(goldSilverIron: number, isHeightmap = false) {
   const method = isHeightmap ? toHeightmap : toImage;
-  return method(svg({ width_: isHeightmap ? 32 : 512, height_: isHeightmap ? 32 : 512 },
-    filter({ id_: 'b' },
-      feTurbulence({ baseFrequency: (goldSilverIron < 2 ? [0.1, 0.004] : 1.2), numOctaves_: (goldSilverIron < 2 ? 1 : 5), type_: NoiseType.Fractal }),
-      feColorMatrix({ values: matrices[goldSilverIron] })
-    ),
-    rect(fullSize({ filter: 'b' })),
-  ), 1);
+  return method(`<svg width="${isHeightmap ? 32 : textureSize}" height="${isHeightmap ? 32 : textureSize}" xmlns="http://www.w3.org/2000/svg"><filter id="b"><feTurbulence baseFrequency="${goldSilverIron < 2 ? [0.1, 0.004] : 1.2}" numOctaves="${goldSilverIron < 2 ? 1 : 5}" type="fractalNoise" /><feColorMatrix values="${matrices[goldSilverIron]}"/></filter><rect x="0" y="0" width="100%" height="100%" filter="url(#b)"/></svg>`, 1);
 }
 
 export function testHeightmap() {
@@ -329,26 +165,13 @@ export function testHeightmap() {
 }
 
 function keyLock() {
-  return toImage(svg({ width_: 512, height_: 512 },
-    filter({ id_: 'b' },
-      feTurbulence({ baseFrequency: [0.1, 0.004], numOctaves_: 1, type_: NoiseType.Fractal }),
-      feColorMatrix({ values: matrices[0] })
-    ),
-    rect(fullSize({ filter: 'b' })),
-    ellipse({ cx: 256, cy: 170, rx: 100, ry: 100, fill: '#000'}),
-    rect({ x: 216, y: 260, width_: 80, height_: 160 })
-  ));
+  return toImage(`<svg width="${textureSize}" height="${textureSize}" xmlns="http://www.w3.org/2000/svg"><filter id="b"><feTurbulence baseFrequency="0.1, 0.004" numOctaves="1" type="fractalNoise"/><feColorMatrix values="${matrices[0]}"/></filter><rect x="0" y="0" width="100%" height="100%" filter="url(#b)"/><ellipse rx="100" ry="100" cx="256" cy="170" fill="#000"/><rect x="216" y="260" width="80" height="160"/></svg>`);
 }
 
 
 function fffix() {
   if (navigator.userAgent.includes('fox')) {
-    return feComponentTransfer({},
-      feFunc('R',  'gamma', []),
-      feFunc('G',  'gamma', []),
-      feFunc('B',  'gamma', []),
-      feFunc('A',  'gamma', [])
-    );
+    return `<feComponentTransfer amplitude="1" exponent="0.55"><feFuncR type="gamma"/><feFuncG type="gamma"/><feFuncB type="gamma"/><feFuncA type="gamma"/></feComponentTransfer>`;
   } else {
     return '';
   }
@@ -358,18 +181,11 @@ const bannerColor = '#460c0c';
 const symbolColor = '#ce9b3c';
 
 function banner() {
-  return toImage(svg({ width_: 512, height_: 512, },
-    rect(fullSize({ fill: bannerColor })),
-  ));
+  return toImage(`<svg width="${textureSize}" height="${textureSize}" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="100%" height="100%" fill="${bannerColor}"></rect></svg>`);
 }
 
 function bannerIcon() {
-  return toImage(svg({ width_: 512, height_: 512, },
-    rect(fullSize({ fill: bannerColor })),
-    ellipse({ cx: 256, cy: 128, ry: 128, rx: 128, fill: symbolColor }),
-    ellipse({ cx: 256, cy: 384, ry: 128, rx: 128, fill: symbolColor }),
-    ellipse({ cx: 256, cy: 448, ry: 128, rx: 128, fill:  bannerColor })
-  ));
+  return toImage(`<svg width="${textureSize}" height="${textureSize}" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="100%" height="100%" fill="${bannerColor}"></rect><ellipse rx="128" ry="128" cx="256" cy="128" fill="${symbolColor}" /><ellipse rx="128" ry="128" cx="256" cy="384" fill="${symbolColor}" /><ellipse rx="128" ry="128" cx="256" cy="448" fill="${bannerColor}" /></svg>`);
 }
 
 

@@ -3,7 +3,7 @@ import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
 import { Face } from '@/engine/physics/face';
 import { controls } from '@/core/controls';
 import {
-  findWallCollisionsFromList,
+  findWallCollisionsFromList, getGridPosition, getGridPositionWithNeighbors,
 } from '@/engine/physics/surface-collision';
 import { audioCtx } from '@/engine/audio/audio-player';
 import { clamp } from '@/engine/helpers';
@@ -30,10 +30,11 @@ export class FirstPersonPlayer {
   listener: AudioListener;
   footstepsPlayer;
   collisionSphere: Sphere;
+  isOnDirt = true;
 
   constructor(camera: Camera) {
-    this.feetCenter.set(44, 26, -26);
-    this.collisionSphere = new Sphere(this.feetCenter, 4);
+    this.feetCenter.set(44, 46, -36);
+    this.collisionSphere = new Sphere(this.feetCenter, 2);
     this.camera = camera;
     this.listener = audioCtx.listener;
 
@@ -51,11 +52,31 @@ export class FirstPersonPlayer {
     });
   }
 
-  update(faces: Face[]) {
-    this.updateVelocityFromControls();
+  private isFootstepsStopped = true;
+
+  update(gridFaces: Set<Face>[]) {
+    if (!this.isFrozen) {
+      this.updateVelocityFromControls();
+    }
+
+    if (!this.isJumping && this.velocity.magnitude > 0) {
+      if (this.isFootstepsStopped) {
+        this.footstepsPlayer.stop();
+        this.footstepsPlayer.loop = true;
+        // this.footstepsPlayer.start();
+        this.isFootstepsStopped = false;
+      }
+    } else {
+      this.isFootstepsStopped = true;
+      this.footstepsPlayer.loop = false;
+    }
     this.velocity.y -= 0.008; // gravity
 
-    findWallCollisionsFromList(faces, this);
+    const playerGridPositions = getGridPositionWithNeighbors(this.feetCenter, gridFaces.length);
+
+    playerGridPositions.forEach(p => findWallCollisionsFromList(gridFaces[p], this));
+
+    //findWallCollisionsFromList(faces, this);
     this.feetCenter.add_(this.velocity);
 
 

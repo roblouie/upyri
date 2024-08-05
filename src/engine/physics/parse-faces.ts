@@ -9,7 +9,15 @@ function indexToFaceVertexPoint(index: number, positionData: Float32Array, matri
   )
 }
 
+
+let mostNegativeX = Infinity;
+let mostPositiveX = -Infinity;
+let mostNegativeZ = Infinity;
+let mostPositiveZ = -Infinity;
+
 export function meshToFaces(meshes: Mesh[], transformMatrix?: DOMMatrix) {
+
+
   return meshes.flatMap(mesh => {
     const indices = mesh.geometry.getIndices();
 
@@ -24,11 +32,31 @@ export function meshToFaces(meshes: Mesh[], transformMatrix?: DOMMatrix) {
       const point1 = indexToFaceVertexPoint(secondIndex, positions.data, transformMatrix ?? mesh.worldMatrix);
       const point2 = indexToFaceVertexPoint(thirdIndex, positions.data, transformMatrix ?? mesh.worldMatrix);
 
-      triangles.push([
+      const trianglePoints = [
         point0,
         point1,
         point2,
-      ]);
+      ];
+
+      trianglePoints.forEach(p => {
+        if (p.x < mostNegativeX) {
+          mostNegativeX = p.x;
+        }
+
+        if (p.x > mostPositiveX) {
+          mostPositiveX = p.x;
+        }
+
+        if (p.z < mostNegativeZ) {
+          mostNegativeZ = p.z;
+        }
+
+        if (p.z > mostPositiveZ) {
+          mostPositiveZ = p.z;
+        }
+      });
+
+      triangles.push(trianglePoints);
     }
 
     return triangles.map(triangle => new Face(triangle));
