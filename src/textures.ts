@@ -10,7 +10,7 @@ export const materials: {[key: string]: Material} = {};
 export const skyboxes: {[key: string]: TexImageSource[]} = {};
 
 export async function initTextures() {
-  materials.grass = new Material({texture: textureLoader.load_(await drawGrass())});
+  materials.grass = new Material({texture: textureLoader.load_(...(await drawGrass()))});
   // materials.grass.texture!.textureRepeat.x = 160;
   // materials.grass.texture!.textureRepeat.y = 10;
 
@@ -101,7 +101,37 @@ function horizontalSkyboxSlice(...elements: string[]) {
 }
 
 export function drawGrass() {
-  return toImage(`<svg width="${textureSize}" height="${textureSize}" style="background: #000" xmlns="http://www.w3.org/2000/svg"><filter x="0" y="0" width="100%" height="100%" id="n"><feTurbulence seed="3" type="fractalNoise" baseFrequency=".04" numOctaves="4" stitchTiles="stitch"/><feMorphology operator="dilate" radius="3" /><feComponentTransfer><feFuncR type="table" tableValues=".2, .2"/><feFuncG type="table" tableValues=".2, .2"/><feFuncB type="table" tableValues=".25, .25"/></feComponentTransfer></filter><rect x="0" y="0" width="100%" height="100%" fill="#171717"/><rect x="0" y="0" width="100%" height="100%" filter="url(#n)" /></svg>`);
+  const testAnim = new OffscreenCanvas(textureSize, textureSize);
+  const context = testAnim.getContext('2d')!;
+
+
+  function test() {
+    context.beginPath(); // Start a new path
+    context.fillStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+    context.rect(Math.random() * 512, Math.random() * 512, 20, 20);
+    context.fill(); // Render the path
+  }
+
+  return [testAnim, test];
+
+//   return toImage(`<svg width="${textureSize}" height="${textureSize}" style="background: #000" xmlns="http://www.w3.org/2000/svg">
+// <filter x="0" y="0" width="100%" height="100%" id="n">
+// <feTurbulence seed="3" type="fractalNoise" baseFrequency=".04" numOctaves="4" stitchTiles="stitch">
+// <animate
+//       attributeName="baseFrequency"
+//       values=".005;.01;.005"
+//       dur="10s"
+//       repeatCount="indefinite" />
+// </feTurbulence>
+// <feMorphology operator="dilate" radius="3" />
+// <feComponentTransfer><feFuncR type="table" tableValues=".2, .2"/>
+// <feFuncG type="table" tableValues=".2, .2"/>
+// <feFuncB type="table" tableValues=".25, .25"/>
+// </feComponentTransfer>
+// </filter>
+// <rect x="0" y="0" width="100%" height="100%" fill="#171717"/>
+// <rect x="0" y="0" width="100%" height="100%" filter="url(#n)" />
+// </svg>`);
 }
 
 function getPattern(width_ = 160, height_ = 256) {

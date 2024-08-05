@@ -12,6 +12,7 @@ import {
 } from '@/engine/shaders/shaders';
 import { createOrtho, Object3d } from '@/engine/renderer/object-3d';
 import { EnhancedDOMPoint } from '@/engine/enhanced-dom-point';
+import { textureLoader } from '@/engine/renderer/texture-loader';
 
 // IMPORTANT! The index of a given buffer in the buffer array must match it's respective data location in the shader.
 // This allows us to use the index while looping through buffers to bind the attributes. So setting a buffer
@@ -100,7 +101,7 @@ export function render(camera: Camera, scene: Scene) {
   const renderMesh = (mesh: Mesh, projection: DOMMatrix) => {
     // @ts-ignore
     gl.useProgram(lilgl.program);
-    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, mesh.material.texture?.animationFunction ? gl.LINEAR : gl.LINEAR_MIPMAP_LINEAR);
     const modelViewProjectionMatrix = projection.multiply(mesh.worldMatrix);
 
     gl.uniform4fv(emissiveLocation, mesh.material.emissive);
@@ -118,6 +119,8 @@ export function render(camera: Camera, scene: Scene) {
     }
     gl.drawElements(gl.TRIANGLES, mesh.geometry.getIndices()!.length, gl.UNSIGNED_SHORT, 0);
   };
+
+  textureLoader.updateAnimatedTextures();
 
 
   // Render shadow map to depth texture
